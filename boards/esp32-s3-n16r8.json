@@ -1,0 +1,27 @@
+{
+  "name": "ESP32-S3-WROOM-1 N16R8",
+  "url": "https://www.espressif.com/en/products/devkits",
+  "vendor": "Espressif",
+
+  "build": {
+    "core": "esp32",
+    "mcu": "esp32s3",
+    "variant": "esp32s3",
+    "f_cpu": "240000000L",
+    "f_flash": "80000000L",
+    "flash_mode": "qio",
+    "extra_flags": [
+      "-DBOARD_HAS_PSRAM"
+    ]
+  },
+
+  "upload": {
+    "maximum_size": 16777216,
+    "maximum_ram_size": 524288,
+    "speed": 921600
+  },
+
+  "frameworks": [
+    "arduino"
+  ]
+}
