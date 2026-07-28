@@ -23,10 +23,10 @@ Cleanup
 DNS Features
 - Response cache
 - Configurable upstream DNS server
-☐ Wildcard blocklist support
+- Wildcard blocklist support
 ☐ Import larger blocklists
 ☐ Local whitelist
-☐ Query logging
+- Query logging
 
 Dashboard
 ☐ Basic web server

@@ -7,12 +7,14 @@
 #include "dns_server.h"
 #include "wifi_manager.h"
 #include "dns_cache.h"
+#include "query_log.h"
 
 
 //setup
 void setup() {
   Serial.begin(115200);
   initCache();
+  initQueryLog();
   connectWiFi();
   startDNSServer();
 }
@@ -21,6 +23,16 @@ void setup() {
 //main program
 void loop() {
   handleDNS();
+  //debug stuff
+  if(Serial.available())
+  {
+    char command = Serial.read();
+
+    if(command == 'l')
+    {
+      printLogs();
+    }
+  }
 }
 
 

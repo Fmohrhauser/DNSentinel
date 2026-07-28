@@ -5,6 +5,7 @@
 #include <WiFiUdp.h>
 #include "config.h"
 #include "dns_cache.h"
+#include "query_log.h"
 
 WiFiUDP udp;
 WiFiUDP upstreamUdp;
@@ -208,6 +209,7 @@ void handleDNS(){
     byte ip4;
 
     if(blocked){
+      logQuery(domain, BLOCKED);
       blockedRequests++;
       ip1 = 0;
       ip2 = 0;
@@ -221,6 +223,8 @@ void handleDNS(){
 
         if(cacheLookup(domain, cachedResponse, cachedLength))
         {
+
+            logQuery(domain, CACHE_HIT);
             //Restore transaction ID from current request
             cachedResponse[0] = dnsPacket[0];
             cachedResponse[1] = dnsPacket[1];
@@ -239,9 +243,9 @@ void handleDNS(){
 
             return;
         }
-
+        
         forwardedRequests++;
-
+        logQuery(domain, FORWARDED);
         byte upstreamResponse[MAX_DNS_PACKET_SIZE];
         int responseLength = 0;
 
