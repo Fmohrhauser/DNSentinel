@@ -273,6 +273,12 @@ void handleDNS(){
         udp.endPacket();
 
         DEBUG_PRINTLN("Forwarded DNS response");
+        DEBUG_PRINT("TTL: ");
+        DEBUG_PRINTLN(getDNSResponseTTL(
+          upstreamResponse,
+          responseLength
+        ));
+
       }
       else{
         DEBUG_PRINTLN("Upstream DNS failed");

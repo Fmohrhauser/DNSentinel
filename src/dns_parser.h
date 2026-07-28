@@ -5,4 +5,9 @@
 #include <Arduino.h>
 String readDomain(byte buffer[], int length, int &pos);
 
+unsigned long getDNSResponseTTL(
+    const byte response[],
+    int responseLength
+);
+
 #endif

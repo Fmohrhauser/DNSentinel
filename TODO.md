@@ -21,8 +21,8 @@ Cleanup
 ☐ Create README with setup instructions
 
 DNS Features
-☐ Response cache
-☐ Configurable upstream DNS server
+- Response cache
+- Configurable upstream DNS server
 ☐ Wildcard blocklist support
 ☐ Import larger blocklists
 ☐ Local whitelist

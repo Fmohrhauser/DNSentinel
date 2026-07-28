@@ -1,5 +1,6 @@
 #include "dns_cache.h"
 #include "debug.h"
+#include "dns_parser.h"
 
 
 CacheEntry cache[CACHE_SIZE];
@@ -35,8 +36,19 @@ void cacheInsert(
                 responseLength,
                 (int)MAX_DNS_PACKET_SIZE
             );
+            unsigned long ttl = getDNSResponseTTL(
+                response,
+                responseLength
+            );
 
-            cache[i].expiresAt = millis() + 60000;
+            if(ttl == 0)
+            {
+                DEBUG_PRINT("Not caching (TTL 0): ");
+                DEBUG_PRINTLN(domain);
+
+                return;
+            }
+            cache[i].expiresAt = millis() + (ttl * 1000);
             DEBUG_PRINT("Cached: ");
             DEBUG_PRINTLN(domain);
 
