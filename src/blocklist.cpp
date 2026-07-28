@@ -1,7 +1,7 @@
 #include "blocklist.h"
 #include "debug.h"
 
-const int blockedCount = 2;
+
 
 
 String blockedDomains[] = {
@@ -9,7 +9,7 @@ String blockedDomains[] = {
   "googleadservices.com"
 };
 
-
+const int blockedCount = sizeof(blockedDomains)/ sizeof(blockedDomains[0]);
 
 bool isBlocked(String domain) {
     DEBUG_PRINT("Checking: ");
@@ -18,7 +18,6 @@ bool isBlocked(String domain) {
     //Match exact domains and subdomains
     //Prevent false positives like notexample.com
     for(int i =0; i < blockedCount; i++) {
-        
       if(domain == blockedDomains[i])
       {
         return true;
