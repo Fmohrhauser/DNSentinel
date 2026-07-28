@@ -3,6 +3,8 @@
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <secrets.h>
+#include "dns_parser.h"
+#include "blocklist.h"
 
 //objects
 
@@ -13,16 +15,13 @@ const int upstreamTimeout = 2000;
 
 
 const int dnsPort = 53;
-const int blockedCount = 2;
+
 //variables
 WiFiUDP udp;
 WiFiUDP upstreamUdp;
 IPAddress dnsServer(8,8,8,8);
 byte dnsPacket[512];
-String blockedDomains[] = {
-  "doubleclick.net",
-  "googleadservices.com"
-};
+
 int pos;
 unsigned long totalRequests = 0;
 unsigned long blockedRequests = 0;
@@ -30,55 +29,13 @@ unsigned long forwardedRequests = 0;
 unsigned long statsDelay = 0;
 //extra functions
 
-String readDomain(byte buffer[], int length, int &pos) {
-    pos = 0;
-    String domain = "";
-    
-    
-    while(pos < length) {
-
-      byte labelLength = buffer[pos];
-      pos++;
-
-
-      if(labelLength ==0) {
-        break;
-      }
-
-
-      for(int i =0; i < labelLength; i++) {
-        domain += char(buffer[pos]);
-        pos++;
-      }
-
-
-      domain +=".";
-    }
-
-    if(domain.length() > 0) {
-      domain.remove(domain.length() - 1);
-
-    }
-  
-    return domain;
-}
 
 
 
 
 
-bool isBlocked(String domain) {
-
-    for(int i =0; i < blockedCount; i++) {
-
-      if (domain.endsWith(blockedDomains[i])){
-        return true;
-      }
-    }
 
 
-    return false;
-}
 
 
 void createHeader(byte response[], byte idHigh, byte idLow, bool hasAnswer) {
