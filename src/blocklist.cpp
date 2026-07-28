@@ -1,5 +1,5 @@
 #include "blocklist.h"
-
+#include "debug.h"
 
 const int blockedCount = 2;
 
@@ -12,10 +12,21 @@ String blockedDomains[] = {
 
 
 bool isBlocked(String domain) {
+    DEBUG_PRINT("Checking: ");
+    DEBUG_PRINTLN(domain);
 
+    //Match exact domains and subdomains
+    //Prevent false positives like notexample.com
     for(int i =0; i < blockedCount; i++) {
+        
+      if(domain == blockedDomains[i])
+      {
+        return true;
+      }
 
-      if (domain.endsWith(blockedDomains[i])){
+      String suffix = "." + blockedDomains[i];
+
+      if(domain.endsWith(suffix)) {
         return true;
       }
     }
