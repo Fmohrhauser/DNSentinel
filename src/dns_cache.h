@@ -10,6 +10,7 @@ struct CacheEntry
     bool valid;
 
     String domain;
+    uint16_t qType;
 
     byte response[MAX_DNS_PACKET_SIZE];
 
@@ -20,12 +21,14 @@ struct CacheEntry
 
 bool cacheLookup(
     const String& domain,
+    uint16_t qType,
     byte response[],
     int& responseLength
 );
 
 void cacheInsert(
     const String& domain,
+    uint16_t qType,
     const byte response[],
     int responseLength
 );

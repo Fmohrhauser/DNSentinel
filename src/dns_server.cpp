@@ -203,25 +203,33 @@ void handleDNS(){
     DEBUG_PRINT("Blocked? ");
     DEBUG_PRINTLN(blocked);
 
-    byte ip1;
-    byte ip2;
-    byte ip3;
-    byte ip4;
+    byte ipv41;
+    byte ipv42;
+    byte ipv43;
+    byte ipv44;
+
 
     if(blocked){
       logQuery(domain, BLOCKED);
       blockedRequests++;
-      ip1 = 0;
-      ip2 = 0;
-      ip3 = 0;
-      ip4 = 0;
+      if(qType == 1)
+      {
+      ipv41 = 0;
+      ipv42 = 0;
+      ipv43 = 0;
+      ipv44 = 0;
+      }
+      
+      
+      
+      
     }
     else{
       
         byte cachedResponse[MAX_DNS_PACKET_SIZE];
         int cachedLength = 0;
 
-        if(cacheLookup(domain, cachedResponse, cachedLength))
+        if(cacheLookup(domain, qType, cachedResponse, cachedLength))
         {
 
             logQuery(domain, CACHE_HIT);
@@ -261,6 +269,7 @@ void handleDNS(){
 
         cacheInsert(
           domain,
+          qType,
           upstreamResponse,
           responseLength
         );
@@ -294,26 +303,35 @@ void handleDNS(){
 
 
     //DNS answer
-    byte answer[] = {
-      0xC0, 0x0C,
+     byte answerv4[] = {
+       0xC0, 0x0C,
 
 
-      0x00,0x01,
-      0x00,0x01,
+       0x00,0x01,
+       0x00,0x01,
 
 
-      0x00,0x00,0x00,0x3C,
+       0x00,0x00,0x00,0x3C,
 
 
-      0x00, 0x04,
+       0x00, 0x04,
 
 
-      ip1,ip2,ip3,ip4
-    };
+       ipv41,ipv42,ipv43,ipv44
+       };
+      byte answerv6[] = {
+        0xC0, 0x0C,
+        0x00, 0x1C,
+        0x00, 0x01,
+        0x00, 0x00, 0x01, 0x2C,
+        0x00, 0x10,
+        0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+      };
+      
 
 
     //Send Response
-    if(qType != 1){//ipv6 not supported yet
+    if(qType != 1 && qType != 28){//excludes unsupported DNS formats
       DEBUG_PRINT("Unsupported DNS type: ");
       DEBUG_PRINTLN(qType);
 
@@ -347,14 +365,23 @@ void handleDNS(){
 
     udp.write(response, sizeof(response));
     udp.write(question, questionLength);
-    udp.write(answer,sizeof(answer));
+    if (qType == 1)
+    {
+      udp.write(answerv4,sizeof(answerv4));
+      DEBUG_PRINTLN("Sending DNS response");
+      DEBUG_PRINT("Response size: ");
+      DEBUG_PRINTLN(sizeof(response) + questionLength +sizeof(answerv4));
+    }
+    else if(qType == 28)
+    {
+       udp.write(answerv6,sizeof(answerv6));
+       DEBUG_PRINTLN("Sending DNS response");
+       DEBUG_PRINT("Response size: ");
+       DEBUG_PRINTLN(sizeof(response) + questionLength +sizeof(answerv6));
+    }
 
-    DEBUG_PRINTLN("Sending DNS response");
-    DEBUG_PRINT("Response size: ");
-    DEBUG_PRINTLN(sizeof(response) + questionLength +sizeof(answer));
+    
     udp.endPacket();
-
-
 
 
     }

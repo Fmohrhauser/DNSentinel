@@ -1,5 +1,7 @@
 # DNSentinel TODO
-
+☐ = TODO
+/ = partly finished(working on)
+- = done
 Core
 - Migrate to PlatformIO
 - Configure ESP32-S3 N16R8
@@ -60,3 +62,11 @@ Ideas
 ☐ Multiple user profiles
 ☐ Pi-hole compatible blocklists
 ☐ Web configuration wizard
+
+DNS Record Types
+- A
+- AAAA
+☐ CNAME
+☐ MX
+☐ TXT
+☐ SRV

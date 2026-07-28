@@ -16,6 +16,7 @@ void initCache()
 
 void cacheInsert(
     const String& domain,
+    uint16_t qType,
     const byte response[],
     int responseLength
 )
@@ -27,6 +28,7 @@ void cacheInsert(
             cache[i].valid = true;
 
             cache[i].domain = domain;
+            cache[i].qType = qType;
             memcpy(
                 cache[i].response,
                 response,
@@ -61,6 +63,7 @@ void cacheInsert(
 
 bool cacheLookup(
     const String& domain,
+    uint16_t qType,
     byte response[],
     int& responseLength
 )
@@ -78,7 +81,9 @@ bool cacheLookup(
             continue;
         }
 
-        if(cache[i].domain == domain)
+        if(cache[i].domain == domain &&
+           cache[i].qType == qType 
+        )
         {
             memcpy(
                 response,

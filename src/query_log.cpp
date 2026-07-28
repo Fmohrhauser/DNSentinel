@@ -139,5 +139,5 @@ String actionToString(QueryAction action)
             return "FORWARDED";
     }
 
-    return "UNKnOWN";
+    return "UNKNOWN";
 }
