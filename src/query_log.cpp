@@ -87,3 +87,57 @@ void printLogs()
 
     }
 }
+
+void getLatestQueries(
+    QueryLogEntry output[],
+    int amount
+)
+{
+    if(amount > queryCount)
+    {
+        amount = queryCount;
+    }
+
+    for(int i = 0; i < amount; i++)
+    {
+        int index = logIndex - 1 - i;
+
+        if(index < 0)
+        {
+            index += MAX_QUERY_LOGS;
+        }
+
+
+        output[i] = logs[index];
+    }
+}
+
+void testLatest()
+{
+    QueryLogEntry recent[5];
+
+    getLatestQueries(recent, 5);
+
+    for(int i = 0; i < 5; i++)
+    {
+        DEBUG_PRINT(recent[i].domain);
+        DEBUG_PRINT(" ");
+
+        DEBUG_PRINTLN(actionToString(logs[i].action));
+    }
+}
+
+String actionToString(QueryAction action)
+{
+    switch(action)
+    {
+        case BLOCKED:
+            return "BLOCKED";
+        case CACHE_HIT:
+            return "CACHE HIT";
+        case FORWARDED:
+            return "FORWARDED";
+    }
+
+    return "UNKnOWN";
+}

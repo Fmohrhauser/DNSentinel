@@ -50,7 +50,7 @@ Future Hardware
 ☐ Add OLED status display
 
 Known Bugs
-
+☐ no ipv6 support (semi-bug, it adds a couple problems)
 
 
 Ideas

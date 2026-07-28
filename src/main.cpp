@@ -30,7 +30,7 @@ void loop() {
 
     if(command == 'l')
     {
-      printLogs();
+      testLatest();
     }
   }
 }

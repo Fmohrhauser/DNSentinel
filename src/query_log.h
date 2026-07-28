@@ -38,4 +38,13 @@ QueryLogEntry getQuery(
 
 void printLogs();
 
+void getLatestQueries(
+    QueryLogEntry output[],
+    int amount
+);
+
+void testLatest();
+
+String actionToString(QueryAction action);
+
 #endif
