@@ -1,7 +1,7 @@
 #include "dns_server.h"
 #include "dns_parser.h"
 #include "blocklist.h"
-
+#include "debug.h"
 #include <WiFiUdp.h>
 
 WiFiUDP udp;
@@ -21,8 +21,9 @@ void startDNSServer(){
     bool success = udp.begin(dnsPort);
   upstreamUdp.begin(0);
 
-  Serial.print("UDP begin result: ");
-  Serial.println(success);
+  if(success){
+    Serial.println("DNS Server started");
+  }
   statsDelay = millis();
 }
 
@@ -115,28 +116,28 @@ void handleDNS(){
 
   if(packetSize){
     totalRequests++;
-    Serial.println("PACKET!");
+    DEBUG_PRINTLN("PACKET!");
 
     int bytesRead = udp.read(dnsPacket, 512);
 
-    Serial.println("RAW PACKET:");
+    DEBUG_PRINT("RAW PACKET:");
     for (int i = 0; i < bytesRead; i++) {
-      Serial.printf("%02x ", dnsPacket[i]);
+      DEBUG_PRINTF("%02x ", dnsPacket[i]);
     } 
-      Serial.println();
+      DEBUG_PRINTLN();
     
 
-    Serial.print("Bytes copied: ");
-    Serial.println(bytesRead);
+    DEBUG_PRINT("Bytes copied: ");
+    DEBUG_PRINTLN(bytesRead);
 
-    Serial.print("Size: ");
-    Serial.println(packetSize);
+    DEBUG_PRINT("Size: ");
+    DEBUG_PRINTLN(packetSize);
 
-    Serial.print("From: ");
-    Serial.println(udp.remoteIP());
+    DEBUG_PRINT("From: ");
+    DEBUG_PRINTLN(udp.remoteIP());
 
-    Serial.print("Port: ");
-    Serial.println(udp.remotePort());
+    DEBUG_PRINT("Port: ");
+    DEBUG_PRINTLN(udp.remotePort());
   
     //save transaction id
     byte idHigh = dnsPacket[0];
@@ -166,25 +167,25 @@ void handleDNS(){
 
     int qType = (qTypeHigh << 8) | qTypeLow;
     int qClass = (qClassHigh << 8) | qClassLow;
-    Serial.print("QTYPE: ");
-    Serial.println(qType);
-    Serial.print("QCLASS: ");
-    Serial.println(qClass);
+    DEBUG_PRINT("QTYPE: ");
+    DEBUG_PRINTLN(qType);
+    DEBUG_PRINT("QCLASS: ");
+    DEBUG_PRINTLN(qClass);
     
     
 
     
 
 
-    Serial.println("Parser finished");
+    DEBUG_PRINTLN("Parser finished");
 
 
 
     domain.toLowerCase();
 
 
-    Serial.print("DNS request: ");
-    Serial.println(domain);
+    DEBUG_PRINT("DNS request: ");
+    DEBUG_PRINTLN(domain);
 
    
 
@@ -198,8 +199,8 @@ void handleDNS(){
     bool blocked =isBlocked(domain);
 
 
-    Serial.print("Blocked? ");
-    Serial.println(blocked);
+    DEBUG_PRINT("Blocked? ");
+    DEBUG_PRINTLN(blocked);
 
     byte ip1;
     byte ip2;
@@ -234,11 +235,11 @@ void handleDNS(){
         udp.beginPacket(udp.remoteIP(),udp.remotePort());
         udp.write(upstreamResponse, responseLength);
         udp.endPacket();
-        Serial.println("Forwarded DNS response");
+        DEBUG_PRINTLN("Forwarded DNS response");
 
       }
       else{
-        Serial.println("Upstream DNS failed");
+        DEBUG_PRINTLN("Upstream DNS failed");
       }
 
 
@@ -267,7 +268,7 @@ void handleDNS(){
 
     //Send Response
     if(qType != 1){//ipv6 not supported yet
-      Serial.println("Non A record request");
+      DEBUG_PRINTLN("Non A record request");
 
 
       byte response[12];
@@ -294,9 +295,9 @@ void handleDNS(){
     udp.write(question, questionLength);
     udp.write(answer,sizeof(answer));
 
-    Serial.println("Sending DNS response");
-    Serial.print("Response size: ");
-    Serial.println(sizeof(response) + questionLength +sizeof(answer));
+    DEBUG_PRINTLN("Sending DNS response");
+    DEBUG_PRINT("Response size: ");
+    DEBUG_PRINTLN(sizeof(response) + questionLength +sizeof(answer));
     udp.endPacket();
 
 

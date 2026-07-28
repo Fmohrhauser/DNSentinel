@@ -1,5 +1,5 @@
 #include "dns_parser.h"
-
+#include "debug.h"
 
 String readDomain(byte buffer[], int length, int &pos) {
     pos = 0;
