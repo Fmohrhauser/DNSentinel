@@ -3,22 +3,22 @@
 #include "blocklist.h"
 #include "debug.h"
 #include <WiFiUdp.h>
+#include "config.h"
+#include "dns_cache.h"
 
 WiFiUDP udp;
 WiFiUDP upstreamUdp;
-IPAddress dnsServer(8,8,8,8);
-byte dnsPacket[512];
+byte dnsPacket[MAX_DNS_PACKET_SIZE];
 unsigned long totalRequests = 0;
 unsigned long blockedRequests = 0;
 unsigned long forwardedRequests = 0;
 unsigned long statsDelay = 0;
-const int upstreamTimeout = 2000;
 int pos;
-const int dnsPort = 53;
+
 
 
 void startDNSServer(){
-    bool success = udp.begin(dnsPort);
+    bool success = udp.begin(DNS_PORT);
   upstreamUdp.begin(0);
 
   if(success){
@@ -65,7 +65,7 @@ void createHeader(byte response[], byte idHigh, byte idLow, bool hasAnswer) {
   response[11] = 0x00;
 }
 bool forwardDNS(byte packet[], int length, byte response[], int &responseLength) {
-  upstreamUdp.beginPacket(dnsServer, 53);
+  upstreamUdp.beginPacket(UPSTREAM_DNS, 53);
 
 
   upstreamUdp.write(packet, length);
@@ -77,13 +77,13 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
   unsigned long start = millis();
 
 
-  while(millis() - start < upstreamTimeout){
+  while(millis() - start < UPSTREAM_TIMEOUT){
     int size = upstreamUdp.parsePacket();
 
     if(size){
 
 
-      responseLength = upstreamUdp.read(response, 512);
+      responseLength = upstreamUdp.read(response, MAX_DNS_PACKET_SIZE);
 
       return true;
     }
@@ -118,7 +118,7 @@ void handleDNS(){
     totalRequests++;
     DEBUG_PRINTLN("PACKET!");
 
-    int bytesRead = udp.read(dnsPacket, 512);
+    int bytesRead = udp.read(dnsPacket, MAX_DNS_PACKET_SIZE);
 
     DEBUG_PRINT("RAW PACKET:");
     for (int i = 0; i < bytesRead; i++) {
@@ -215,28 +215,64 @@ void handleDNS(){
       ip4 = 0;
     }
     else{
-      forwardedRequests++;
+      
+        byte cachedResponse[MAX_DNS_PACKET_SIZE];
+        int cachedLength = 0;
+
+        if(cacheLookup(domain, cachedResponse, cachedLength))
+        {
+            //Restore transaction ID from current request
+            cachedResponse[0] = dnsPacket[0];
+            cachedResponse[1] = dnsPacket[1];
 
 
-      byte upstreamResponse[512];
-      int responseLength = 0;
+            udp.beginPacket(
+              udp.remoteIP(),
+              udp.remotePort()
+            );
 
+            udp.write(cachedResponse, cachedLength);
 
-      bool success = forwardDNS(
-        dnsPacket,
-        bytesRead,
-        upstreamResponse,
-        responseLength
-      );
+            udp.endPacket();
 
+            DEBUG_PRINTLN("Sent cached response");
 
+            return;
+        }
+
+        forwardedRequests++;
+
+        byte upstreamResponse[MAX_DNS_PACKET_SIZE];
+        int responseLength = 0;
+
+        bool success = forwardDNS(
+          dnsPacket,
+          bytesRead,
+          upstreamResponse,
+          responseLength
+        );
+
+      
       if(success){
 
-        udp.beginPacket(udp.remoteIP(),udp.remotePort());
-        udp.write(upstreamResponse, responseLength);
-        udp.endPacket();
-        DEBUG_PRINTLN("Forwarded DNS response");
+        cacheInsert(
+          domain,
+          upstreamResponse,
+          responseLength
+        );
 
+        udp.beginPacket(
+          udp.remoteIP(),
+          udp.remotePort()
+        );
+
+        udp.write(
+          upstreamResponse,
+          responseLength
+        );
+        udp.endPacket();
+
+        DEBUG_PRINTLN("Forwarded DNS response");
       }
       else{
         DEBUG_PRINTLN("Upstream DNS failed");
@@ -268,7 +304,8 @@ void handleDNS(){
 
     //Send Response
     if(qType != 1){//ipv6 not supported yet
-      DEBUG_PRINTLN("Non A record request");
+      DEBUG_PRINT("Unsupported DNS type: ");
+      DEBUG_PRINTLN(qType);
 
 
       byte response[12];
@@ -281,6 +318,13 @@ void handleDNS(){
 
       udp.write(response, sizeof(response));
       udp.write(question,questionLength);
+
+      //Include qtype and qclass
+      udp.write(question[pos]);
+      udp.write(question[pos+1]);
+      udp.write(question[pos+2]);
+      udp.write(question[pos+3]);
+
 
 
       udp.endPacket();
