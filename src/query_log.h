@@ -47,4 +47,6 @@ void testLatest();
 
 String actionToString(QueryAction action);
 
+String createQueryLogJSON();
+
 #endif

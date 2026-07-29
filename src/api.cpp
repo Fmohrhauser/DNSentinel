@@ -1,6 +1,7 @@
 #include "api.h"
 #include "stats.h"
 #include "dashboard.h"
+#include "query_log.h"
 
 #include <WebServer.h>
 
@@ -15,6 +16,15 @@ void startAPI()
             200,
             "application/json",
             createStatsJSON()
+        );
+    });
+
+    server.on("/api/logs", HTTP_GET, []()
+    {
+        server.send(
+            200,
+            "application/json",
+            createQueryLogJSON()
         );
     });
 

@@ -3,12 +3,16 @@
 
 <head>
     <title>DNSentinel</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     <h1>DNSentinel Dashboard</h1>
 
-    <p>Hello from LittleFS!</p>
+    <hr>
+
+    <h2>Statistics</h2>
+
 
     <p>Total Requests: <span id="total">0</span></p>
 
@@ -16,7 +20,26 @@
 
     <p>Forwarded: <span id="forwarded">0</span></p>
 
+    <hr>
 
+    <h2>Recent Queries</h2>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Domain</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="logs">
+
+        </tbody>
+        
+    </table>
+
+
+    
     <script src="script.js"></script>
 </body>
 

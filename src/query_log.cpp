@@ -141,3 +141,36 @@ String actionToString(QueryAction action)
 
     return "UNKNOWN";
 }
+
+String createQueryLogJSON()
+{
+    String json = "[";
+
+    for(int i = getQueryCount() - 1; i>= 0; i--)
+    {
+        QueryLogEntry query = getQuery(i);
+
+        json += "{" ;
+
+        json += "\"domain\":\"";
+        json += query.domain;
+        json += "\",";
+
+        json += "\"action\":\"";
+        json += actionToString(query.action);
+        json += "\"";
+
+        json += "}";
+
+        if(i !=0)
+        {
+            json += ",";
+        }
+
+        
+        
+    }
+    json += "]";
+
+    return json;
+}

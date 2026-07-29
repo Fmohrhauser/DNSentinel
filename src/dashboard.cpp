@@ -44,6 +44,21 @@ void startDashboard()
         file.close();
     });
 
+    server.on("/style.css", HTTP_GET, [](){
+        File file = LittleFS.open("/style.css", "r");
+
+        if(!file)
+        {
+            server.send(404, "text/plain", "File not found");
+
+            return;
+        }
+
+        server.streamFile(file, "text/css");
+
+        file.close();
+    });
+
     server.begin();
 
     Serial.println("Dashboard started");
