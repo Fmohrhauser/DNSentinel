@@ -9,6 +9,7 @@
 #include "dns_cache.h"
 #include "query_log.h"
 #include "dashboard.h"
+#include <LittleFS.h>
 
 
 //setup
@@ -17,6 +18,12 @@ void setup() {
   initCache();
   initQueryLog();
   connectWiFi();
+  if (!LittleFS.begin()){
+    Serial.println("Failed to mount LittleFs");
+  }
+  else{
+    Serial.println("LittleFs mounted");
+  }
   startDNSServer();
   startDashboard();
 }
