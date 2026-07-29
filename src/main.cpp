@@ -8,6 +8,7 @@
 #include "wifi_manager.h"
 #include "dns_cache.h"
 #include "query_log.h"
+#include "dashboard.h"
 
 
 //setup
@@ -17,11 +18,13 @@ void setup() {
   initQueryLog();
   connectWiFi();
   startDNSServer();
+  startDashboard();
 }
 
 
 //main program
 void loop() {
+  handleDashboard();
   handleDNS();
   //debug stuff
   if(Serial.available())

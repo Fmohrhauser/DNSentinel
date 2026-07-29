@@ -6,13 +6,11 @@
 #include "config.h"
 #include "dns_cache.h"
 #include "query_log.h"
+#include "stats.h"
 
 WiFiUDP udp;
 WiFiUDP upstreamUdp;
 byte dnsPacket[MAX_DNS_PACKET_SIZE];
-unsigned long totalRequests = 0;
-unsigned long blockedRequests = 0;
-unsigned long forwardedRequests = 0;
 unsigned long statsDelay = 0;
 int pos;
 
@@ -207,6 +205,7 @@ void handleDNS(){
     byte ipv42;
     byte ipv43;
     byte ipv44;
+
 
 
     if(blocked){

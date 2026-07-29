@@ -4,15 +4,15 @@ Version 0.1
 ✅ Working DNS sinkhole
 
 Version 0.2
-☐ Code cleanup
+✅ Code cleanup
 ☐ Documentation
 
 Version 0.3
-☐ DNS cache
+✅ DNS cache
 ☐ Better blocklists
 
 Version 0.4
-☐ Web dashboard
+✅ Web dashboard
 
 Version 1.0
 ☐ Stable release

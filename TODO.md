@@ -31,8 +31,8 @@ DNS Features
 - Query logging
 
 Dashboard
-☐ Basic web server
-☐ Live statistics page
+- Basic web server
+- Live statistics page
 ☐ Blocked vs forwarded graph
 ☐ Current uptime
 ☐ Top blocked domains
