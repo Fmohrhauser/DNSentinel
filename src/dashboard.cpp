@@ -3,6 +3,7 @@
 #include "stats.h"
 #include "query_log.h"
 #include <LittleFS.h>
+#include "system.h"
 
 WebServer server(80);
 
@@ -57,6 +58,15 @@ void startDashboard()
         server.streamFile(file, "text/css");
 
         file.close();
+    });
+
+    server.on("/api/system", HTTP_GET, [](){
+        
+        server.send(
+            200,
+            "application/json",
+            createSystemJSON()
+        );
     });
 
     server.begin();

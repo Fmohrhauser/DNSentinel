@@ -44,3 +44,36 @@ function updateLogs()
 setInterval(updateLogs, 2000);
 
 updateLogs();
+
+
+let currentIP = "";
+
+
+function updateSystem()
+{
+    fetch("/api/system")
+        .then(response => response.json())
+        .then(data => {
+
+            currentIP = data.ip;
+
+            document.getElementById("ip").innerHTML = currentIP;
+
+        });
+}
+
+
+updateSystem();
+
+document.getElementById("hideIP").addEventListener("change", function(){
+
+    if(this.checked)
+    {
+        document.getElementById("ip").innerHTML = "Hidden";
+    }
+    else
+    {
+        document.getElementById("ip").innerHTML = currentIP;
+    }
+
+});

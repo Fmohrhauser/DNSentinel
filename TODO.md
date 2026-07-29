@@ -58,7 +58,7 @@ Future Hardware
 ☐ Add OLED status display
 
 Known Bugs
-
+☐ DNS requests ipv4 & ipv6 so two dns requests are created(kinda a bug for full stats its technically the correct way to do it but it may confuse some users)
 
 
 Ideas

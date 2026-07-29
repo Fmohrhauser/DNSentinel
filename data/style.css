@@ -120,4 +120,29 @@ tr:hover {
     color: white;
 }
 
+footer {
+
+    margin-top: 50px;
+    padding: 20px;
+
+    background: var(--card);
+
+    border-radius: 12px;
+
+    color: var(--secondary-text);
+
+    text-align: center;
+}
+
+footer h3 {
+    color: var(--primary);
+
+    margin-bottom: 5px;
+}
+
+footer label {
+
+    cursor: pointer;
+}
+
 
