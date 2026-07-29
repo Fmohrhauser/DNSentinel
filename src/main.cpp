@@ -10,6 +10,7 @@
 #include "query_log.h"
 #include "dashboard.h"
 #include <LittleFS.h>
+#include "api.h"
 
 
 //setup
@@ -26,6 +27,7 @@ void setup() {
   }
   startDNSServer();
   startDashboard();
+  startAPI();
 }
 
 

@@ -7,4 +7,6 @@ extern unsigned long totalRequests;
 extern unsigned long blockedRequests;
 extern unsigned long forwardedRequests;
 
+String createStatsJSON();
+
 #endif
