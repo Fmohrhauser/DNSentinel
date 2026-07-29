@@ -28,7 +28,11 @@ function updateLogs()
                 let row = `
                     <tr>
                         <td>${query.domain}</td>
-                        <td>${query.action}</td>
+                        <td>
+                            <span class="action ${query.action.toLowerCase().replaceAll(" ", "_")}">
+                                ${query.action}
+                            </span>
+                        </td>
                     </tr>
                 `;
 
