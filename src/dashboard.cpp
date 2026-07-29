@@ -29,6 +29,21 @@ void startDashboard()
         file.close();
     });
 
+    server.on("/script.js", HTTP_GET,[](){
+        File file = LittleFS.open("/script.js", "r");
+
+        if(!file)
+        {
+            server.send(404, "text/plain", "File not found");
+
+            return;
+        }
+
+        server.streamFile(file, "application/javascript");
+
+        file.close();
+    });
+
     server.begin();
 
     Serial.println("Dashboard started");

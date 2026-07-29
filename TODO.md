@@ -37,7 +37,7 @@ Dashboard
 ☐ Current uptime
 ☐ Top blocked domains
 ☐ Settings page
-
+/ API
 Performance
 ☐ Memory profiling
 ☐ PSRAM cache optimization
@@ -70,3 +70,7 @@ DNS Record Types
 ☐ MX
 ☐ TXT
 ☐ SRV
+
+Debug Type Settings
+-overall debug serial print
+☐specific debug serial prints
