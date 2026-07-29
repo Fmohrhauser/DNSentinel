@@ -13,6 +13,8 @@ Version 0.3
 
 Version 0.4
 ✅ Web dashboard
+/ Dashboard improvements
+☐ Web configuration
 
 Version 1.0
 ☐ Stable release

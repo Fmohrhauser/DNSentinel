@@ -32,12 +32,18 @@ DNS Features
 
 Dashboard
 - Basic web server
+- LittleFS webpage hosting
+- Live statistics API
+- Recent query log API
 - Live statistics page
+- Recent queries display
+/ UI improvements
 ☐ Blocked vs forwarded graph
 ☐ Current uptime
 ☐ Top blocked domains
 ☐ Settings page
-/ API
+☐ Web configuration controls
+
 Performance
 ☐ Memory profiling
 ☐ PSRAM cache optimization
