@@ -1,6 +1,7 @@
 #include "dns_cache.h"
 #include "debug.h"
 #include "dns_parser.h"
+#include "stats.h"
 
 
 CacheEntry cache[CACHE_SIZE];
@@ -95,6 +96,7 @@ bool cacheLookup(
 
             DEBUG_PRINT("Cache hit: ");
             DEBUG_PRINTLN(domain);
+            incrementCacheHits();
 
             return true;
         }

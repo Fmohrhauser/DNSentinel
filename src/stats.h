@@ -7,6 +7,10 @@ extern unsigned long totalRequests;
 extern unsigned long blockedRequests;
 extern unsigned long forwardedRequests;
 
+
+int getCacheHits();
+void incrementCacheHits();
+
 String createStatsJSON();
 
 #endif

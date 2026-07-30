@@ -42,7 +42,70 @@
             <p id="forwarded">0</p>
         </div>
 
+        <div class="card">
+            <h2>Cache Hits</h2>
+            <p id="cache_hits">0</p>
+        </div>
+
     </div>
+
+    <h2>Request Breakdown</h2>
+    <div class="breakdown">
+
+        <div class="bar-group">
+            <label>Forwarded</label>
+
+            <div class="bar-background">
+                <div id="forwarded-bar" class="bar forwarded-bar"></div>
+            </div>
+
+            <span id="forwarded-percent">0%</span>
+
+        </div>
+
+        <div class="bar-group">
+            <label>Blocked</label>
+
+            <div class="bar-background">
+                <div id="blocked-bar" class="bar blocked-bar"></div>
+            </div>
+
+            <span id="blocked-percent">0%</span>
+
+        </div>
+
+        <div class="bar-group">
+            <label>Cache Hits</label>
+
+            <div class="bar-background">
+                <div id="cache-bar" class="bar cache-bar"></div>
+            </div>
+            
+            <span id="cache-percent">0%</span>
+
+        </div>
+
+    </div>
+
+    <h2>Top Blocked Domains</h2>
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>#</th>
+                <th>Domain</th>
+                <th>Blocks</th>
+            </tr>
+
+        </thead>
+
+        <tbody id="top-blocked">
+
+        </tbody>
+
+    </table>
 
     <h2>Recent Queries</h2>
 
@@ -67,10 +130,6 @@
     <h3>DNSentinel</h3>
 
     <p>
-        ESP32-S3-N16R8
-    </p>
-
-    <p>
         IP Address:
         <span id="ip">Loading...</span>
     </p>
@@ -80,6 +139,19 @@
         Hide IP Address
     </label>
 
+    <p id="chip">
+        Loading...
+    </p>
+
+    <p>
+        Uptime:
+        <span id="uptime">Loading...</span>
+    </p>
+
+    <p>
+        Free Memory:
+        <span id="memory">Loading...</span>
+    </p>
 </footer>
     <script src="/script.js"></script>
 

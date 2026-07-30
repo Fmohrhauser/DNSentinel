@@ -4,6 +4,7 @@
 #include "query_log.h"
 #include <LittleFS.h>
 #include "system.h"
+#include "blocked_stats.h"
 
 WebServer server(80);
 

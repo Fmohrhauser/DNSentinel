@@ -7,6 +7,41 @@ function updateStats()
             document.getElementById("total").innerHTML = data.total;
             document.getElementById("blocked").innerHTML = data.blocked;
             document.getElementById("forwarded").innerHTML = data.forwarded;
+            document.getElementById("cache_hits").innerHTML = data.cache_hits;
+
+            let total = data.total
+
+            if(total >0)
+            {
+                let forwarded = 
+                    (data.forwarded / total) * 100;
+
+                let blocked = 
+                    (data.blocked / total) * 100;
+
+                let cache = 
+                    (data.cache_hits / total) *100;
+
+                document.getElementById("forwarded-bar").style.width = 
+                    forwarded + "%";
+
+                document.getElementById("blocked-bar").style.width = 
+                    blocked + "%";
+
+                document.getElementById("cache-bar").style.width = 
+                    cache + "%";
+                
+                
+                document.getElementById("forwarded-percent").innerHTML =
+                    Math.round(forwarded) + "%";
+
+                document.getElementById("blocked-percent").innerHTML =
+                    Math.round(blocked) + "%";
+
+                document.getElementById("cache-percent").innerHTML =
+                    Math.round(cache) + "%";
+
+            }
 
         });
 }
@@ -45,6 +80,36 @@ setInterval(updateLogs, 2000);
 
 updateLogs();
 
+function updateTopBlocked()
+{
+    fetch("/api/topblocked")
+        .then(response => response.json())
+        .then(domains => {
+            let table =
+                document.getElementById("top-blocked");
+
+            table.innerHTML = "";
+
+            domains.forEach((entry, index)=> {
+
+                let row =`
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${entry.domain}</td>
+                        <td>${entry.count}</td>
+                    </tr>
+
+                    `;
+
+                    table.innerHTML += row;
+            });
+        });
+}
+
+updateTopBlocked();
+
+setInterval(updateTopBlocked, 5000);
+
 
 let currentIP = "";
 
@@ -59,11 +124,32 @@ function updateSystem()
 
             document.getElementById("ip").innerHTML = currentIP;
 
+            document.getElementById("chip").innerHTML =
+                data.chip;
+
+            document.getElementById("uptime").innerHTML = 
+                formatTime(data.uptime);
+
+            document.getElementById("memory").innerHTML = 
+                Math.round(data.memory / 1024) + " KB";
         });
+}
+
+function formatTime(seconds)
+{
+    let hours = Math.floor(seconds / 3600);
+
+    let minutes = Math.floor(
+        (seconds % 3600) / 60
+    );
+
+    return hours + "h " + minutes + "m"
 }
 
 
 updateSystem();
+
+setInterval(updateSystem, 5000);
 
 document.getElementById("hideIP").addEventListener("change", function(){
 

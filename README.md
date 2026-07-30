@@ -12,8 +12,11 @@ An ESP32-based DNS sinkhole designed to block unwanted domains at the network le
 - DNS caching
 - Query logging
 - Request statistics
+- Cache hit tracking
+- Top blocked domain analytics
 - Web dashboard hosted from LittleFS
 - JSON API for live dashboard data
+- System monitoring (IP address, uptime, memory usage)
 
 ## Hardware
 
@@ -21,17 +24,33 @@ An ESP32-based DNS sinkhole designed to block unwanted domains at the network le
 
 ## Dashboard
 
-DNSentinel includes a web dashboard that provides:
+DNSentinel includes a web dashboard hosted directly from the ESP32 using LittleFS.
+
+The dashboard provides:
 
 - Live DNS statistics
+- Request breakdown visualization
 - Recent DNS queries
-- Blocked/forwarded status
+- Top blocked domains
+- Cache hit statistics
+- System information
 - Browser-based monitoring
+
+## Architecture
+
+DNSentinel separates the firmware and dashboard frontend:
+
+- ESP32 firmware handles DNS processing, blocking, caching, and statistics
+- LittleFS stores dashboard files (HTML/CSS/JavaScript)
+- JSON APIs provide live data to the frontend
+
+This allows the dashboard and firmware to be developed independently.
 
 ## Planned Features
 
 - Larger blocklists
-- Wildcard blocklist support
 - Local whitelist
-- Settings configuration through dashboard
+- Dashboard settings configuration
+- Persistent configuration storage
 - ESP32-P4 Ethernet version
+- Custom PCB

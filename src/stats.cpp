@@ -3,6 +3,17 @@
 unsigned long totalRequests = 0;
 unsigned long blockedRequests = 0;
 unsigned long forwardedRequests = 0;
+int cacheHits = 0;
+
+void incrementCacheHits()
+{
+    cacheHits++;
+}
+
+int getCacheHits()
+{
+    return cacheHits;
+}
 
 String createStatsJSON()
 {
@@ -18,8 +29,13 @@ String createStatsJSON()
 
     json += "\"forwarded\":";
     json += forwardedRequests;
+    json += ",";
+
+    json += "\"cache_hits\":";
+    json += getCacheHits();
 
     json += "}";
 
     return json;
 }
+

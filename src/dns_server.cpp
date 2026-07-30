@@ -7,6 +7,7 @@
 #include "dns_cache.h"
 #include "query_log.h"
 #include "stats.h"
+#include "blocked_stats.h"
 
 WiFiUDP udp;
 WiFiUDP upstreamUdp;
@@ -211,6 +212,7 @@ void handleDNS(){
     if(blocked){
       logQuery(domain, BLOCKED);
       blockedRequests++;
+      incrementBlockedDomain(domain);
       if(qType == 1)
       {
       ipv41 = 0;

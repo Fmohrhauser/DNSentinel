@@ -1,8 +1,13 @@
 # DNSentinel TODO
+
 ☐ = TODO
-/ = partly finished(working on)
-- = done
-Core
+/ = In progress
+- = Complete
+
+---
+
+# Core
+
 - Migrate to PlatformIO
 - Configure ESP32-S3 N16R8
 - Verify PSRAM
@@ -18,50 +23,77 @@ Core
 - Finished dns_server cleanup
 - Reduce unnecessary Serial output
 
-Cleanup
 ☐ Add project comments/documentation
 ☐ Create README with setup instructions
 
-DNS Features
-- Response cache
-- Configurable upstream DNS server
-- Wildcard blocklist support
-☐ Import larger blocklists
-☐ Local whitelist
-- Query logging
+---
 
-Dashboard
+# DNS Features
+
+- DNS cache
+- Configurable upstream DNS server
+- A record support
+- AAAA record support
+- Query logging
+- Cache hit tracking
+
+☐ Import larger blocklists
+☐ Wildcard blocklist support
+☐ Local whitelist
+
+---
+
+# Dashboard
+
 - Basic web server
 - LittleFS webpage hosting
 - Live statistics API
 - Recent query log API
+- System information API
 - Live statistics page
 - Recent queries display
-/ UI improvements
-☐ Blocked vs forwarded graph
-☐ Current uptime
-☐ Top blocked domains
+- Request breakdown visualization
+- Top blocked domains analytics
+- Hide IP privacy toggle
+
+/ Dashboard UI improvements
+
 ☐ Settings page
 ☐ Web configuration controls
+☐ Persistent settings storage
+☐ Configuration API
 
-Performance
+---
+
+# Performance
+
 ☐ Memory profiling
 ☐ PSRAM cache optimization
 ☐ Stress test with many DNS requests
 ☐ Measure response latency
+☐ Optimize memory usage
 
-Future Hardware
+---
+
+# Future Hardware
+
 ☐ Port project to ESP32-P4
 ☐ Port project to ESP32-S31
 ☐ Design custom PCB
 ☐ Add Ethernet support
 ☐ Add OLED status display
 
-Known Bugs
-☐ DNS requests ipv4 & ipv6 so two dns requests are created(kinda a bug for full stats its technically the correct way to do it but it may confuse some users)
+---
 
+# Known Bugs
 
-Ideas
+☐ IPv4 + IPv6 requests create duplicate statistics entries
+    (Technically correct DNS behavior, but may confuse users)
+
+---
+
+# Ideas
+
 ☐ DNS-over-HTTPS support
 ☐ DNS-over-TLS
 ☐ OTA updates
@@ -69,14 +101,22 @@ Ideas
 ☐ Pi-hole compatible blocklists
 ☐ Web configuration wizard
 
-DNS Record Types
+---
+
+# DNS Record Types
+
 - A
 - AAAA
+
 ☐ CNAME
 ☐ MX
 ☐ TXT
 ☐ SRV
 
-Debug Type Settings
--overall debug serial print
-☐specific debug serial prints
+---
+
+# Debug Type Settings
+
+- Overall debug serial print
+
+☐ Specific debug serial prints
