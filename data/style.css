@@ -10,6 +10,7 @@
     --warning: #FF8020;
     --danger: #FF4444;
     --accent: #8388FF;
+    --checking: #FFCC00;
 }
 body{
     background: var(--background);
@@ -375,6 +376,12 @@ footer label {
     margin: auto;
 
     pointer-events: none;
+}
+
+#settingStatus {
+    margin-top: 10px;
+    font-weight: bold;
+    color: var(--warning);
 }
 
 

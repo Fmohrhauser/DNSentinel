@@ -132,6 +132,31 @@ function updateSystem()
 
             document.getElementById("memory").innerHTML = 
                 Math.round(data.memory / 1024) + " KB";
+
+            if(data.dnsStatus == 1)
+            {
+                document.getElementById("status-text").innerHTML =
+                    "Protection Active";
+
+                document.getElementById("status-dot").style.background = 
+                    "#00D084";
+            }
+            else if(data.dnsStatus == 2)
+            {
+                document.getElementById("status-text").innerHTML =
+                    "Upstream DNS Offline";
+                
+                document.getElementById("status-dot").style.background =
+                    "#FF4444";
+            }
+            else
+            {
+                document.getElementById("status-text").innerHTML = 
+                    "Checking DNS...";
+
+                document.getElementById("status-dot").style.background =
+                    "#FFCC00"
+            }
         });
 }
 
@@ -174,8 +199,7 @@ updateSettings();
 
 function sendSettings()
 {
-    document.getElementById("settingStatus").innerHTML =
-        "Settings saved ✓";
+    
     
     let settings = {
         
@@ -200,6 +224,20 @@ function sendSettings()
         },
 
         body: JSON.stringify(settings)
+    })
+    .then(response => response.json())
+    .then(data => {
+
+        settingsChanged = false;
+
+        document.getElementById("settingStatus").innerHTML =
+        "Settings saved ✓";
+        document.getElementById("settingStatus").style.color =
+            "var(--success)";
+
+        setTimeout(()=>{
+            document.getElementById("settingStatus").innerHTML="";
+        },3000);
     });
 }
 
@@ -240,9 +278,12 @@ function restoreSettings()
     .then(data=> {
 
         updateSettings();
+        settingsChanged = false;
 
         document.getElementById("settingStatus").innerHTML =
         "Defaults restored ✓";
+        document.getElementById("settingStatus").style.color =
+            "var(--warning)";
 
         setTimeout(() => {
             document.getElementById("settingStatus").innerHTML = "";
@@ -253,3 +294,34 @@ function restoreSettings()
 document
 .getElementById("restore-settings")
 .addEventListener("click",restoreSettings);
+
+let settingsChanged = false;
+
+function markSettingsChanged()
+{
+    if(!settingsChanged)
+    {
+        settingsChanged = true;
+
+        document.getElementById("settingStatus").innerHTML =
+            "Unsaved changes";
+        document.getElementById("settingStatus").style.color =
+            "#FF4444";
+    }
+}
+
+document
+.getElementById("blockingEnabled")
+.addEventListener("change", markSettingsChanged);
+
+document
+.getElementById("cacheEnabled")
+.addEventListener("change",markSettingsChanged);
+
+document
+.getElementById("queryLoggingEnabled")
+.addEventListener("change", markSettingsChanged);
+
+document
+.getElementById("upstreamDNS")
+.addEventListener("input", markSettingsChanged);

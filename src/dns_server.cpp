@@ -15,6 +15,7 @@ WiFiUDP udp;
 WiFiUDP upstreamUdp;
 byte dnsPacket[MAX_DNS_PACKET_SIZE];
 unsigned long statsDelay = 0;
+int dnsStatus = 0;
 int pos;
 
 
@@ -272,9 +273,11 @@ void handleDNS(){
           responseLength
         );
 
+        
+
       
       if(success){
-
+        dnsStatus = 1;
         cacheInsert(
           domain,
           qType,
@@ -303,6 +306,7 @@ void handleDNS(){
       }
       else{
         DEBUG_PRINTLN("Upstream DNS failed");
+        dnsStatus = 2;
       }
 
 

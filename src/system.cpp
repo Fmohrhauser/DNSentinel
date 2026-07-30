@@ -2,27 +2,23 @@
 #include <WiFi.h>
 
 #include <Arduino.h>
+#include <ArduinoJson.h>
+extern bool dnsStatus;
 
 String createSystemJSON()
 {
-    String json = "{";
+    JsonDocument doc;
 
-    json += "\"ip\":\"";
-    json += WiFi.localIP().toString();
-    json += "\",";
+    doc["ip"] = WiFi.localIP().toString();
+    doc["chip"] = ESP.getChipModel();
+    doc["uptime"] = millis()/1000;
+    doc["memory"] = ESP.getFreeHeap();
 
-    json += "\"chip\":\"ESP32-S3\"";
-    json += ",";
+    doc["dnsStatus"] = dnsStatus;
 
-    json += "\"uptime\":";
-    json += String(millis() / 1000);
-    json += ",";
+    String json;
 
-    json += "\"memory\":";
-    json += String(ESP.getFreeHeap());
-
-
-    json += "}";
+    serializeJson(doc, json);
 
     return json;
 }
