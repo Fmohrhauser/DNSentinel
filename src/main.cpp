@@ -11,6 +11,7 @@
 #include "dashboard.h"
 #include <LittleFS.h>
 #include "api.h"
+#include "settings.h"
 
 
 //setup
@@ -28,6 +29,8 @@ void setup() {
   startDNSServer();
   startDashboard();
   startAPI();
+  initializeSettings();
+  loadSettings();
 }
 
 

@@ -8,6 +8,8 @@
 #include "query_log.h"
 #include "stats.h"
 #include "blocked_stats.h"
+#include "settings.h"
+#include "api.h"
 
 WiFiUDP udp;
 WiFiUDP upstreamUdp;
@@ -65,7 +67,12 @@ void createHeader(byte response[], byte idHigh, byte idLow, bool hasAnswer) {
   response[11] = 0x00;
 }
 bool forwardDNS(byte packet[], int length, byte response[], int &responseLength) {
-  upstreamUdp.beginPacket(UPSTREAM_DNS, 53);
+
+  Settings currentSettings = getSettings();
+  Serial.print("Forwarding DNS to: ");
+  Serial.println(currentSettings.upstreamDNS);
+
+  upstreamUdp.beginPacket(currentSettings.upstreamDNS.c_str(), 53);
 
 
   upstreamUdp.write(packet, length);
@@ -208,8 +215,8 @@ void handleDNS(){
     byte ipv44;
 
 
-
-    if(blocked){
+    if(getSettings().blockingEnabled && blocked){
+    
       logQuery(domain, BLOCKED);
       blockedRequests++;
       incrementBlockedDomain(domain);

@@ -70,6 +70,29 @@ void startDashboard()
         );
     });
 
+    server.on("/settings.svg", HTTP_GET, [](){
+
+        File file = LittleFS.open("/settings.svg", "r");
+
+        if(!file)
+        {
+            server.send(
+                404,
+                "text/plain",
+                "File not found"
+            );
+
+            return;
+        }
+
+        server.streamFile(
+            file,
+            "image/svg+xml"
+        );
+
+        file.close();
+    });
+
     server.begin();
 
     Serial.println("Dashboard started");

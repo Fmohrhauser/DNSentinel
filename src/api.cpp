@@ -4,6 +4,8 @@
 #include "query_log.h"
 #include "blocked_stats.h"
 #include <WebServer.h>
+#include "settings.h"
+#include <ArduinoJson.h>
 
 extern WebServer server;
 
@@ -34,6 +36,95 @@ void startAPI()
             200,
             "application/json",
             createTopBlockedJSON()
+        );
+    });
+
+    server.on("/api/settings", HTTP_GET, [](){
+
+        server.send(
+            200,
+            "application/json",
+            createSettingsJSON()
+        );
+    });
+
+    server.on("/api/settings", HTTP_POST, [](){
+
+        String body = server.arg("plain");
+
+        Serial.println("Received settings:");
+        Serial.println(body);
+
+        JsonDocument doc;
+
+        DeserializationError error = deserializeJson(doc, body);
+
+        if(error)
+        {
+            server.send(
+                400,
+                "application/json",
+                "{\"error\":\"Invalid JSON\"}"
+            );
+
+            return;
+        }
+
+        Settings newSettings = getSettings();
+
+        if(doc["blockingEnabled"].is<bool>())
+        {
+            newSettings.blockingEnabled =
+                doc["blockingEnabled"];
+        }
+
+        if(doc["cacheEnabled"].is<bool>())
+        {
+            newSettings.cacheEnabled =
+                doc["cacheEnabled"];
+        }
+
+        if(doc["queryLoggingEnabled"].is<bool>())
+        {
+            newSettings.queryLoggingEnabled =
+                doc["queryLoggingEnabled"];
+        }
+
+        if(doc["upstreamDNS"].is<String>())
+        {
+            String dns =
+                doc["upstreamDNS"].as<String>();
+            
+            if(dns.length() > 0)
+            {
+                newSettings.upstreamDNS = dns;
+            }
+        }
+            Serial.print("New upstream DNS: ");
+            Serial.println(newSettings.upstreamDNS);
+        updateSettings(newSettings);
+        Serial.println(getSettings().blockingEnabled);
+
+
+        server.send(
+            200,
+            "application/json",
+            "{\"status\":\"updated\"}"
+        );
+    });
+
+    server.on("/api/settings/reset", HTTP_POST,[](){
+
+        initializeSettings();
+
+        saveSettings();
+
+        Serial.println("Serttings restored to defaults");
+
+        server.send(
+            200,
+            "application/json",
+            "{\"status\":\"defaults restored\"}"
         );
     });
 

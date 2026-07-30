@@ -5,6 +5,11 @@
     --text: #ffffff;
     --secondary-text: #aaaaaa;
     --border: #444;
+    --complement: #0B1F3A;
+    --success: #00D084;
+    --warning: #FF8020;
+    --danger: #FF4444;
+    --accent: #8388FF;
 }
 body{
     background: var(--background);
@@ -26,7 +31,7 @@ h1{
 }
 
 .status {
-    background: #1e1e1e;
+    background: var(--card);
     padding: 12px 20px;
     border-radius: 20px;
     color: var(--primary);
@@ -37,7 +42,7 @@ h1{
     display: inline-block;
     width: 10px;
     height: 10px;
-    background: #00d084;
+    background: var(--success);
     border-radius: 50%;
     margin-right: 8px;
 }
@@ -105,7 +110,7 @@ tr:hover {
 }
 
 .blocked {
-    background: #ff4444;
+    background: var(--danger);
     color: white;
 }
 
@@ -116,7 +121,7 @@ tr:hover {
 
 
 .cache_hit {
-    background: #b388ff;
+    background: var(--accent);
     color: white;
 }
 
@@ -175,11 +180,11 @@ footer label {
 }
 
 .blocked-bar {
-    background: #ff4444;
+    background: var(--danger);
 }
 
 .cache-bar {
-    background: #b388ff;
+    background: var(--accent);
 }
 
 .bar-group label {
@@ -228,6 +233,150 @@ footer label {
 #top-blocked tr:nth-child(3) td:first-child {
     color: #cd7f32;
 }
+
+.settings-container {
+
+    position: fixed;
+
+    top: 20px;
+    right: 20px;
+}
+
+#settings-button {
+
+    background: var(--card);
+
+    color: var(--primary);
+
+    border: none;
+
+    font-size: 28px;
+
+    width: 50px;
+    height: 50px;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+    transition: transform 0.3s ease;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#settings-button:hover{
+
+    transform: rotate(45deg);
+}
+
+#settings-panel {
+    position: absolute;
+
+    right: 0;
+    top: 60px;
+
+    width: 280px;
+
+    background: var(--card);
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    box-shadow: 0px 5px 15px #00000066;
+
+    opacity: 0;
+
+    transform: translateY(-20px);
+
+    pointer-events: none;
+
+    transition: 
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+#settings-panel.open {
+
+    opacity: 1;
+
+    transform: translateY(0);
+
+    pointer-events: auto;
+}
+
+#settings-panel label {
+
+    display: block;
+
+    margin: 15px 0;
+}
+
+#settings-panel input[type="text"] {
+
+    width: 100%;
+
+    margin-top: 5px;
+
+    padding: 8px;
+
+    background: #111;
+
+    color: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: 6px;
+}
+
+#save-settings{
+
+    width: 100%;
+
+    padding: 10px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: var(--primary);
+
+    cursor: pointer;
+
+    color: var(--complement);
+
+}
+
+#restore-settings{
+    width: 100%;
+
+    padding: 10px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: var(--complement);
+
+    cursor: pointer;
+
+    color: var(--primary);
+}
+
+#settings-button img {
+
+    width: 24px;
+    height: 24px;
+
+    display: block;
+
+    margin: auto;
+
+    pointer-events: none;
+}
+
 
 
 

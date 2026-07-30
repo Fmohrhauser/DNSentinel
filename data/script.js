@@ -151,6 +151,62 @@ updateSystem();
 
 setInterval(updateSystem, 5000);
 
+function updateSettings()
+{
+    fetch("/api/settings")
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("blockingEnabled").checked = 
+            data.blockingEnabled;
+
+        document.getElementById("cacheEnabled").checked =
+            data.cacheEnabled;
+
+        document.getElementById("queryLoggingEnabled").checked =
+            data.queryLoggingEnabled;
+
+        document.getElementById("upstreamDNS").value =
+            data.upstreamDNS;
+    });
+}
+
+updateSettings();
+
+function sendSettings()
+{
+    document.getElementById("settingStatus").innerHTML =
+        "Settings saved ✓";
+    
+    let settings = {
+        
+        blockingEnabled:
+            document.getElementById("blockingEnabled").checked,
+
+        cacheEnabled:
+            document.getElementById("cacheEnabled").checked,
+
+        queryLoggingEnabled:
+            document.getElementById("queryLoggingEnabled").checked,
+
+        upstreamDNS:
+            document.getElementById("upstreamDNS").value
+    };
+
+    fetch("/api/settings", {
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body: JSON.stringify(settings)
+    });
+}
+
+document
+.getElementById("save-settings")
+.addEventListener("click", sendSettings)
+
 document.getElementById("hideIP").addEventListener("change", function(){
 
     if(this.checked)
@@ -163,3 +219,37 @@ document.getElementById("hideIP").addEventListener("change", function(){
     }
 
 });
+
+const settingsButton =
+    document.getElementById("settings-button");
+
+const settingsPanel =
+    document.getElementById("settings-panel");
+
+settingsButton.addEventListener("click", function(){
+
+    settingsPanel.classList.toggle("open");
+});
+
+function restoreSettings()
+{
+    fetch("/api/settings/reset", {
+        method:"POST"
+    })
+    .then(response => response.json())
+    .then(data=> {
+
+        updateSettings();
+
+        document.getElementById("settingStatus").innerHTML =
+        "Defaults restored ✓";
+
+        setTimeout(() => {
+            document.getElementById("settingStatus").innerHTML = "";
+        }, 3000);
+    });
+}
+
+document
+.getElementById("restore-settings")
+.addEventListener("click",restoreSettings);
