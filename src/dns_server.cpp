@@ -15,8 +15,12 @@ WiFiUDP udp;
 WiFiUDP upstreamUdp;
 byte dnsPacket[MAX_DNS_PACKET_SIZE];
 unsigned long statsDelay = 0;
-int dnsStatus = 0;
 int pos;
+bool upstreamOnline = false;
+unsigned long lastUpstreamSuccess = 0;
+unsigned long totalUpstreamLatency = 0;
+unsigned long upstreamRequests = 0;
+unsigned long upstreamFailures = 0;
 
 
 
@@ -73,6 +77,8 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
   Serial.print("Forwarding DNS to: ");
   Serial.println(currentSettings.upstreamDNS);
 
+  unsigned long start = millis();
+
   upstreamUdp.beginPacket(currentSettings.upstreamDNS.c_str(), 53);
 
 
@@ -82,7 +88,7 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
   upstreamUdp.endPacket();
 
 
-  unsigned long start = millis();
+  
 
 
   while(millis() - start < UPSTREAM_TIMEOUT){
@@ -90,13 +96,30 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
 
     if(size){
 
+      unsigned long latency =
+        millis() - start;
 
-      responseLength = upstreamUdp.read(response, MAX_DNS_PACKET_SIZE);
+      totalUpstreamLatency +=latency;
+
+      upstreamRequests++;
+
+      lastUpstreamSuccess = millis();
+
+      upstreamOnline = true;
+
+      responseLength =
+        upstreamUdp.read(
+          response,
+          MAX_DNS_PACKET_SIZE
+        );
 
       return true;
     }
   }
 
+  upstreamFailures ++;
+
+  upstreamOnline = false;
 
   return false;
 }
@@ -277,7 +300,6 @@ void handleDNS(){
 
       
       if(success){
-        dnsStatus = 1;
         cacheInsert(
           domain,
           qType,
@@ -306,7 +328,6 @@ void handleDNS(){
       }
       else{
         DEBUG_PRINTLN("Upstream DNS failed");
-        dnsStatus = 2;
       }
 
 

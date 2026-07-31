@@ -14,8 +14,6 @@ String createSystemJSON()
     doc["uptime"] = millis()/1000;
     doc["memory"] = ESP.getFreeHeap();
 
-    doc["dnsStatus"] = dnsStatus;
-
     String json;
 
     serializeJson(doc, json);

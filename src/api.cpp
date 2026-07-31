@@ -7,6 +7,7 @@
 #include "settings.h"
 #include <ArduinoJson.h>
 #include "blocklist.h"
+#include "dns_health.h"
 
 extern WebServer server;
 
@@ -208,4 +209,13 @@ void startAPI()
         );
     });
 
+
+    server.on("/api/dnshealth", HTTP_GET, [](){
+
+        server.send(
+            200,
+            "application/json",
+            createDNSHealthJSON()
+        );
+    });
 }
