@@ -61,10 +61,13 @@
 - Web configuration controls
 - Persistent configuration storage
 - Configuration API
+- Blocklist management
 
-☐ Blocklist management
 ☐ DNS health monitoring
 ☐ Dashboard redesign
+☐ Larger blocklist importing
+☐ Wildcard support
+☐ Whitelist management
 
 ---
 

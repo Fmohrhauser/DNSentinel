@@ -39,7 +39,7 @@
 
 ☐ Import larger blocklists
 ☐ Wildcard blocklist support
-☐ web blocklist management
+- Web blocklist management
 ☐ Local whitelist
 ☐ Upstream DNS health monitoring
 ☐ Measure upstream latency

@@ -244,6 +244,20 @@ Goal:
 
 Create a polished configuration interface similar to a commercial network appliance.
 
+# Blocklist Management
+
+Implemented a web-managed persistent blocklist system.
+
+Features:
+
+- View blocked domains from dashboard
+- Add domains remotely
+- Remove domains remotely
+- Store blocklist in LittleFS
+- Apply changes immediately without rebooting
+
+The dashboard now allows users to manage DNS blocking rules directly from the device.
+
 ---
 
 # Future Plans
@@ -295,3 +309,4 @@ DNSentinel has involved learning:
 - Firmware architecture
 - LittleFS storage
 - Debugging hardware/software systems
+
