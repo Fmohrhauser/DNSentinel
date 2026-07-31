@@ -169,14 +169,7 @@ void startDashboard()
         file.close();
     });
 
-    server.on("/api/system", HTTP_GET, [](){
-        
-        server.send(
-            200,
-            "application/json",
-            createSystemJSON()
-        );
-    });
+    
 
     server.on("/settings.svg", HTTP_GET, [](){
 
@@ -200,6 +193,7 @@ void startDashboard()
 
         file.close();
     });
+    
 
     server.begin();
 

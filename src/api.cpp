@@ -8,6 +8,7 @@
 #include <ArduinoJson.h>
 #include "blocklist.h"
 #include "dns_health.h"
+#include "system.h"
 
 extern WebServer server;
 
@@ -280,6 +281,15 @@ void startAPI()
             200,
             "application/json",
             "{\"success\":true}"
+        );
+    });
+
+    server.on("/api/system", HTTP_GET, [](){
+        
+        server.send(
+            200,
+            "application/json",
+            createSystemJSON()
         );
     });
 }

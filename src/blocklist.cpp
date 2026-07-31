@@ -10,7 +10,7 @@ void loadBlocklist()
 {
   blockedDomains.clear();
 
-  File file = LittleFS.open("/blocklist.json", "r");
+  File file = LittleFS.open("/blocklist.txt", "r");
 
   if(!file)
   {
@@ -19,20 +19,19 @@ void loadBlocklist()
     return;
   }
 
-  JsonDocument doc;
+  int count = 0;
 
-  if(deserializeJson(doc, file))
+  while(file.available())
   {
-    Serial.println("Blocklist JSON invalid.");
+    String domain = file.readStringUntil('\n');
 
-    file.close();
+    domain = normalizeDomain(domain);
 
-    return;
-  }
-
-  for(JsonVariant domain : doc.as<JsonArray>())
-  {
-    blockedDomains.insert(domain.as<String>());
+    if(domain.length() > 0)
+    {
+      blockedDomains.insert(domain);
+      count++;
+    }
   }
 
   file.close();
@@ -40,12 +39,16 @@ void loadBlocklist()
   Serial.print("Loaded ");
   Serial.print(blockedDomains.size());
   Serial.println(" blocked domains.");
+  Serial.print("Free heap: ");
+  Serial.println(ESP.getFreeHeap());
+  Serial.print("Free PSRAM: ");
+  Serial.println(ESP.getFreePsram());
 }
 
 
 void saveBlocklist()
 {
-  File file = LittleFS.open("/blocklist.json", "w");
+  File file = LittleFS.open("/blocklist.txt", "w");
 
   if(!file)
   {
@@ -53,16 +56,10 @@ void saveBlocklist()
     return;
   }
 
-  JsonDocument doc;
-
-  JsonArray array = doc.to<JsonArray>();
-
-  for(const String& domain : blockedDomains)
+  for(const String& domain: blockedDomains)
   {
-    array.add(domain);
+    file.println(domain);
   }
-
-  serializeJsonPretty(doc, file);
 
   file.close();
   Serial.println("Blocklist saved.");
