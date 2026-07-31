@@ -77,11 +77,35 @@
         <button id="import-button">
             Import Blocklist
         </button>
+        <div id="import-summary" class="summary-card hidden">
 
-        <p id="import-status"></p>
+            <h3>
+                Import Complete
+            </h3>
+
+
+        <p>
+            Added:
+            <span id="import-added"></span>
+        </p>
+
+        <p>
+            Duplicates:
+            <span id="import-duplicates">0</span>
+        </p>
+
+        <p>
+            Ignored:
+            <span id="import-ignored">0</span>
+        </p>
+
+        <button id="close-summary">
+            Close
+        </button>
 
         
         </div>
+    </div>
     </div>
 
     <script src="/blocklist.js"></script>

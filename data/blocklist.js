@@ -18,13 +18,23 @@ function updateBlocklist()
                 item.className =
                     "blocklist-entry";
 
-                    item.innerHTML = `
-                        <span>${domain}</span>
-                        
-                        <button class = "remove-domain">
-                            Remove
-                        </button>
-                    `;
+                    const span = document.createElement("span");
+
+                    span.textContent = domain;
+
+                    const button = document.createElement("button");
+
+                    button.className = "remove-domain";
+
+                    button.textContent = "remove";
+
+                    button.addEventListener("click", () => {
+                        removeDomain(domain);
+                    });
+
+                    item.appendChild(span);
+
+                    item.appendChild(button);
 
                     item.querySelector("button")
                     .addEventListener("click",() => {
@@ -131,12 +141,31 @@ function importBlocklist()
     .then(response => response.json())
     .then(result => {
 
+        document.getElementById("import-summary")
+        .classList
+        .remove("hidden");
+        setTimeout(() => {
+
+            document
+            .getElementById("import-summary")
+            .classList
+            .add("hidden");
+        }, 8000);
+
         document
-        .getElementById("import-status")
+        .getElementById("import-added")
         .innerHTML =
-            `Added ${result.added} domains.<br>
-             Skipped ${result.duplicates} duplicates.<br>
-             Ignored ${result.ignored} invalid/comment lines.`;
+        result.added;
+
+        document
+        .getElementById("import-duplicates")
+        .innerHTML =
+        result.duplicates;
+
+        document
+        .getElementById("import-ignored")
+        .innerHTML =
+        result.ignored;
         
         updateBlocklist();
         document
@@ -159,3 +188,16 @@ setTimeout(() => {
     .getElementById("import-status")
     .innerHTML = "";
 }, 5000);
+
+document
+.getElementById("close-summary")
+.addEventListener(
+    "click",
+    () => {
+
+        document
+        .getElementById("import-summary")
+        .classList
+        .add("hidden");
+    }
+)

@@ -479,6 +479,34 @@ footer label {
     margin-left: 260px;
 }
 
+.summary-card
+{
+    margin-top: 20px;
+    padding: 20px;
+
+    border-radius: 10px;
+
+    background: #1f2937;
+
+    border-left: 5px solid #22c55e;
+}
+
+.summary-card h3{
+    margin-top: 0;
+}
+
+.summary-card p {
+    margin: 8px 0;
+}
+
+.summary-card button{
+    margin-top: 10px;
+}
+
+.hidden
+{
+    display:none;
+}
 
 
 
