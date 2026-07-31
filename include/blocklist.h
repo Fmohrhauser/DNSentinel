@@ -3,9 +3,15 @@
 
 
 #include <Arduino.h>
-#include <vector>
+#include <set>
 
-extern std::vector<String> blockedDomains;
+extern std::set<String> blockedDomains;
+struct ImportResult
+{
+    int added = 0;
+    int duplicates = 0;
+    int ignored = 0;
+};
 
 void loadBlocklist();
 void saveBlocklist();
@@ -16,5 +22,7 @@ bool removeBlockedDomain(String domain);
 String createBlocklistJSON();
 
 bool isBlocked(String domain);
+
+ImportResult importBlocklist(String data);
 
 #endif

@@ -1,10 +1,10 @@
 #include "blocklist.h"
 #include "debug.h"
-#include <vector>
+#include <set>
 #include <ArduinoJson.h>
 #include <LittleFS.h>
 
-std::vector<String> blockedDomains;
+std::set<String> blockedDomains;
 
 void loadBlocklist()
 {
@@ -32,7 +32,7 @@ void loadBlocklist()
 
   for(JsonVariant domain : doc.as<JsonArray>())
   {
-    blockedDomains.push_back(domain.as<String>());
+    blockedDomains.insert(domain.as<String>());
   }
 
   file.close();
@@ -80,7 +80,7 @@ bool addBlockedDomain(String domain)
     }
   }
 
-  blockedDomains.push_back(domain);
+  blockedDomains.insert(domain);
 
   saveBlocklist();
 
@@ -88,24 +88,19 @@ bool addBlockedDomain(String domain)
 }
 
 bool removeBlockedDomain(String domain)
-{   
-    domain.toLowerCase();
+{
 
-    for(size_t i =0; i < blockedDomains.size(); i++)
-    {
-      if(blockedDomains[i] == domain)
-      {
-        blockedDomains.erase(
-          blockedDomains.begin() + i
-        );
+  domain.toLowerCase();
 
-        saveBlocklist();
+  auto result = blockedDomains.erase(domain);
 
-        return true;
-      }
-    }
+  if(result)
+  {
+    saveBlocklist();
+    return true;
+  }
 
-    return false;
+  return false;
 }
 
 String createBlocklistJSON()
@@ -127,24 +122,120 @@ String createBlocklistJSON()
 }
 
 bool isBlocked(String domain) {
-    DEBUG_PRINT("Checking: ");
-    DEBUG_PRINTLN(domain);
+  DEBUG_PRINT("Checking: ");
+  DEBUG_PRINTLN(domain);
 
-    //Match exact domains and subdomains
-    //Prevent false positives like notexample.com
-    for(size_t i =0; i < blockedDomains.size(); i++) {
-      if(domain == blockedDomains[i])
-      {
-        return true;
-      }
+  for(const String& blocked : blockedDomains)
+  {
 
-      String suffix = "." + blockedDomains[i];
-
-      if(domain.endsWith(suffix)) {
-        return true;
-      }
+    if(domain == blocked)
+    {
+      return true;
     }
 
 
-    return false;
+    String suffix = "." + blocked;
+
+    if(domain.endsWith(suffix))
+    {
+      return true;
+    }
+  }
+
+
+  return false;
+
+}
+
+String normalizeDomain(String line)
+{
+  line.trim();
+
+  if(line.length() ==0)
+    return "";
+
+  //skip comments
+  if(line.startsWith("#"))
+    return "";
+
+  if(line.startsWith("!"))
+    return "";
+
+  //Remove AdBlock syntax
+  if(line.startsWith("||"))
+  {
+    line.remove(0,2);
+  }
+
+  if(line.endsWith("^"))
+  {
+    line.remove(line.length() - 1);
+  }
+
+  //Remove hosts file IPs
+  if(line.startsWith("0.0.0.0 "))
+  {
+    line.remove(0,8);
+  }
+
+  if(line.startsWith("127.0.0.1 "))
+  {
+    line.remove(0,10);
+  }
+
+  line.trim();
+  line.toLowerCase();
+
+  if(line == "localhost")
+    return "";
+
+  return line;
+}
+
+ImportResult importBlocklist(String data)
+{
+
+  ImportResult result;
+
+  int start = 0;
+
+  while(start < data.length())
+  {
+    int end = data.indexOf('\n', start);
+
+    if(end == -1)
+    {
+      end = data.length();
+    }
+
+    String domain = data.substring(start, end);
+
+    start = end + 1;
+
+    domain = normalizeDomain(domain);
+
+    if(domain.length() == 0)
+    {
+      result.ignored++;
+    }
+    else
+    {
+      size_t oldSize = blockedDomains.size();
+
+      blockedDomains.insert(domain);
+
+      if(blockedDomains.size() > oldSize)
+      {
+        result.added++;
+      }
+      else
+      {
+          result.duplicates++;        
+      }
+    }
+  }
+
+  saveBlocklist();
+
+  return result;
 }

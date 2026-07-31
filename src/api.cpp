@@ -218,4 +218,40 @@ void startAPI()
             createDNSHealthJSON()
         );
     });
+
+    server.on("/api/blocklist/import", HTTP_POST,[](){
+
+        if(!server.hasArg("plain"))
+        {
+            server.send(400, "text/plain", "Missing data");
+            return;
+        }
+
+        JsonDocument doc;
+
+        deserializeJson(
+            doc,
+            server.arg("plain")
+        );
+
+        String text = doc["domains"];
+
+        ImportResult result = importBlocklist(text);
+
+        JsonDocument response;
+
+        response["added"] = result.added;
+        response["duplicates"] = result.duplicates;
+        response["ignored"] = result.ignored;
+
+        String output;
+
+        serializeJson(response, output);
+
+        server.send(
+            200,
+            "application/json",
+            output
+        );
+    });
 }
