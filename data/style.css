@@ -384,6 +384,65 @@ footer label {
     color: var(--warning);
 }
 
+.blocklist-card {
+    width: 350px;
+}
+
+#blocklist {
+    margin: 15px 0;
+}
+
+.blocklist-entry {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    background: #222;
+
+    padding: 8px;
+
+    margin-bottom: 8px;
+
+    border-radius: 8px;
+
+}
+
+.remmove-domain {
+
+    background: var(--danger);
+
+    color: white;
+
+    border: none;
+
+    border-radius: 6px;
+
+    padding: 5px 10px;
+
+    cursor: pointer;
+}
+
+#add-domain {
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 10px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: var(--primary);
+
+    color: var(--complement);
+
+    cursor: pointer;
+}
+
 
 
 

@@ -6,6 +6,7 @@
 #include <WebServer.h>
 #include "settings.h"
 #include <ArduinoJson.h>
+#include "blocklist.h"
 
 extern WebServer server;
 
@@ -125,6 +126,85 @@ void startAPI()
             200,
             "application/json",
             "{\"status\":\"defaults restored\"}"
+        );
+    });
+
+    server.on("/api/blocklist", HTTP_GET, [](){
+
+        server.send(
+            200,
+            "application/json",
+            createBlocklistJSON()
+        );
+    });
+
+    server.on("/api/blocklist/add", HTTP_POST, [](){
+
+        String body = server.arg("plain");
+
+        JsonDocument doc;
+
+        DeserializationError error = 
+            deserializeJson(doc, body);
+
+            if(error)
+            {
+                server.send(
+                    400,
+                    "application/json",
+                    "{\"error\":\"Invalid JSON\"}"
+                );
+
+                return;
+            }
+
+            if(!doc["domain"].is<String>())
+            {
+                server.send(
+                    300,
+                    "application/json",
+                    "{\"error\":\"Missing domain\"}"
+                );
+
+                return;
+            }
+
+            String domain = 
+                doc["domain"].as<String>();
+
+                bool success = 
+                    addBlockedDomain(domain);
+
+                    server.send(
+                        200,
+                        "application/json",
+                        success ?
+                        "{\"status\":\"added\"}" :
+                        "{\"status\":\"already exists\"}"
+                    );
+    });
+
+    server.on("/api/blocklist/remove", HTTP_POST, [](){
+
+        String body = server.arg("plain");
+
+        JsonDocument doc;
+
+        deserializeJson(doc, body);
+
+
+        String domain=
+            doc["domain"].as<String>();
+
+
+        bool success =
+            removeBlockedDomain(domain);
+
+        server.send(
+            200,"application/json",
+            success ?
+            "{\"status\":\"removed\"}" :
+            "{\"status\":\"not found\"}"
         );
     });
 

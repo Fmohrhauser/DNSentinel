@@ -57,12 +57,14 @@
 - Cache hit monitoring
 - Request breakdown visualization
 - Top blocked domain analytics
+- Dashboard settings
+- Web configuration controls
+- Persistent configuration storage
+- Configuration API
 
-/ Dashboard UI improvements
-
-☐ Dashboard settings
-☐ Web configuration controls
-☐ Persistent configuration storage
+☐ Blocklist management
+☐ DNS health monitoring
+☐ Dashboard redesign
 
 ---
 
@@ -74,6 +76,10 @@
 ☐ Performance testing
 ☐ User testing
 ☐ Stable firmware release
+☐ Export/import configuration
+☐ complete blocklist management
+☐ DNS health monitoring
+☐ Improve dashboard UX
 
 ---
 

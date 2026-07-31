@@ -31,6 +31,12 @@ void setup() {
   startAPI();
   initializeSettings();
   loadSettings();
+  loadBlocklist();
+  for(const String& domain : blockedDomains)
+  {
+    Serial.println("- " + domain);
+  }
+
 }
 
 

@@ -39,7 +39,11 @@
 
 ☐ Import larger blocklists
 ☐ Wildcard blocklist support
+☐ web blocklist management
 ☐ Local whitelist
+☐ Upstream DNS health monitoring
+☐ Measure upstream latency
+☐ DNS server status API
 
 ---
 
@@ -57,11 +61,21 @@
 - Hide IP privacy toggle
 
 / Dashboard UI improvements
+- settings popup panel
+- Web configuration controls
+- Persistent settings storage
+- Configuration API
+- Save settings button
+- Restore defaults button
 
-☐ Settings page
-☐ Web configuration controls
-☐ Persistent settings storage
-☐ Configuration API
+
+☐ Blocklist management interface
+☐ Dashboard CSS redesign
+☐ mobile responsive layout
+☐ Dashboard Charts
+☐ Tabs
+☐ Configurable "Home Screen"
+
 
 ---
 

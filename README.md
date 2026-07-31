@@ -17,6 +17,10 @@ An ESP32-based DNS sinkhole designed to block unwanted domains at the network le
 - Web dashboard hosted from LittleFS
 - JSON API for live dashboard data
 - System monitoring (IP address, uptime, memory usage)
+- Web-based configuration
+- Persistent settings storage
+- Restore default settings
+- Configurable upstream DNS server
 
 ## Hardware
 
@@ -35,6 +39,8 @@ The dashboard provides:
 - Cache hit statistics
 - System information
 - Browser-based monitoring
+- Settings management
+- Browser based configuration
 
 ## Architecture
 

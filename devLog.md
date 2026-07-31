@@ -223,7 +223,7 @@ Settings are saved automatically after changes.
 
 ## Dashboard Settings Interface
 
-Currently working on:
+Completed:
 
 - Settings cog button
 - Animated popup settings panel
@@ -231,6 +231,15 @@ Currently working on:
 - Restore defaults button
 - Settings status messages
 
+Implemented:
+
+- Persistent configuration storage
+- Configuration API
+- Browser-based settings control
+
+Currently working on:
+
+- Web-managed blocklist system
 Goal:
 
 Create a polished configuration interface similar to a commercial network appliance.
