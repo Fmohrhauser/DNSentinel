@@ -31,8 +31,116 @@ void startDashboard()
         file.close();
     });
 
-    server.on("/script.js", HTTP_GET,[](){
-        File file = LittleFS.open("/script.js", "r");
+    server.on("/blocklist.html",HTTP_GET, [](){
+        
+        File file = LittleFS.open("/blocklist.html","r");
+
+        if(!file)
+        {
+            server.send(
+                404,
+                "text/plain",
+                "File not found"
+            );
+            return;
+        }
+
+        server.streamFile(
+        file,
+        "text/html"
+        );
+        file.close();
+    });
+
+    server.on("/queries.html",HTTP_GET, [](){
+        
+        File file = LittleFS.open("/queries.html","r");
+
+        if(!file)
+        {
+            server.send(
+                404,
+                "text/plain",
+                "File not found"
+            );
+            return;
+        }
+
+        server.streamFile(
+        file,
+        "text/html"
+        );
+        file.close();
+    });
+
+    server.on("/settings.html",HTTP_GET, [](){
+        
+        File file = LittleFS.open("/settings.html","r");
+
+        if(!file)
+        {
+            server.send(
+                404,
+                "text/plain",
+                "File not found"
+            );
+            return;
+        }
+
+        server.streamFile(
+        file,
+        "text/html"
+        );
+        file.close();
+    });
+
+    server.on("/dashboard.js", HTTP_GET,[](){
+        File file = LittleFS.open("/dashboard.js", "r");
+
+        if(!file)
+        {
+            server.send(404, "text/plain", "File not found");
+
+            return;
+        }
+
+        server.streamFile(file, "application/javascript");
+
+        file.close();
+    });
+
+    server.on("/blocklist.js", HTTP_GET,[](){
+        File file = LittleFS.open("/blocklist.js", "r");
+
+        if(!file)
+        {
+            server.send(404, "text/plain", "File not found");
+
+            return;
+        }
+
+        server.streamFile(file, "application/javascript");
+
+        file.close();
+    });
+
+    server.on("/queries.js", HTTP_GET,[](){
+        File file = LittleFS.open("/queries.js", "r");
+
+        if(!file)
+        {
+            server.send(404, "text/plain", "File not found");
+
+            return;
+        }
+
+        server.streamFile(file, "application/javascript");
+
+        file.close();
+    });
+
+    server.on("/settings.js", HTTP_GET,[](){
+        File file = LittleFS.open("/settings.js", "r");
 
         if(!file)
         {

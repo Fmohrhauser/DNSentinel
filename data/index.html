@@ -9,7 +9,28 @@
 
 <body>
 
-    <div class="header">
+    
+    <div class="sidebar">
+        <h2>DNSentinel</h2>
+
+        <a href="/">
+            Dashboard
+        </a>
+
+        <a href="/queries.html">
+            Queries
+        </a>
+
+        <a href="/blocklist.html">
+            Blocklist
+        </a>
+
+        <a href="/settings.html">
+            Settings
+        </a>
+    </div>
+    <div class="content">
+        <div class="header">
 
         <div>
             <h1>DNSentinel</h1>
@@ -22,7 +43,6 @@
         
 
     </div>
-
     <!-- Settings -->
     <div class="settings-container">
 
@@ -114,26 +134,7 @@
 
     </div>
 
-    <div class="card blocklist-card">
-
-        <h2>Blocked Domains</h2>
-
-        <div id="blocklist">
-            Loading...
-        </div>
-
-        <input
-            id="new-domain"
-            type="text"
-            placeholder="example.com"
-        >
-
-        <button id="add-domain">
-            Add Domain
-        </button>
-
-        
-    </div>
+   
 
     <h2>Request Breakdown</h2>
 
@@ -244,8 +245,8 @@
 
     </footer>
 
-    <script src="/script.js"></script>
-
+        <script src="/dashboard.js"></script>
+    </div>
 </body>
 
 </html>

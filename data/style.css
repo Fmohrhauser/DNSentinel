@@ -440,6 +440,46 @@ footer label {
     font-size: 24px;
 }
 
+.sidebar {
+    position: fixed;
+
+    left: 0;
+    top: 0;
+
+    width: 220px;
+
+    height: 100vh;
+    background: var(--card);
+
+    padding: 20px;
+}
+
+.sidebar a {
+    display: block;
+
+    color: var(--text);
+
+    text-decoration: none;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    margin-bottom: 10px;
+}
+
+.sidebar a:hovor {
+
+    background: var(--primary);
+
+    color: var(--complement);
+}
+
+.content {
+    margin-left: 260px;
+}
+
+
 
 
 
