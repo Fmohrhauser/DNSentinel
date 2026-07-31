@@ -10,6 +10,9 @@ String createDNSHealthJSON()
     doc["online"] =
         upstreamOnline;
 
+    doc["checked"] =
+        upstreamChecked;
+
     doc["lastSuccess"] =
         lastUpstreamSuccess;
 

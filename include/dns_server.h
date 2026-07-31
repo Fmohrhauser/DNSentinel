@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 extern bool upstreamOnline;
+extern bool upstreamChecked;
 extern unsigned long lastUpstreamSuccess;
 extern unsigned long totalUpstreamLatency;
 extern unsigned long upstreamRequests;

@@ -17,6 +17,7 @@ byte dnsPacket[MAX_DNS_PACKET_SIZE];
 unsigned long statsDelay = 0;
 int pos;
 bool upstreamOnline = false;
+bool upstreamChecked = false;
 unsigned long lastUpstreamSuccess = 0;
 unsigned long totalUpstreamLatency = 0;
 unsigned long upstreamRequests = 0;
@@ -106,6 +107,7 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
       lastUpstreamSuccess = millis();
 
       upstreamOnline = true;
+      upstreamChecked = true;
 
       responseLength =
         upstreamUdp.read(
@@ -120,6 +122,7 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
   upstreamFailures ++;
 
   upstreamOnline = false;
+  upstreamChecked = true;
 
   return false;
 }

@@ -424,3 +424,38 @@ document
 );
 
 updateBlocklist();
+
+function updateDNSHealth()
+{
+    fetch("/api/dnshealth")
+        .then(response => response.json())
+        .then(data =>
+        {
+            
+            let status = 
+            document.getElementById("dns-status");
+            if(!data.checked)
+            {
+                status.innerHTML = "🟡 Checking"
+            }
+            else if(data.online)
+            {
+                status.innerHTML = "🟢 Online";
+            }
+            else
+            {
+                status.innerHTML = "🔴 Offline"
+            }
+
+            document.getElementById("dns-latency").innerHTML =
+                "Latency: " + data.averageLatency + "ms";
+
+                document.getElementById("dns-failures").innerHTML =
+                    "Failures: " + data.failures;
+
+        });
+}
+
+updateDNSHealth();
+
+setInterval(updateDNSHealth, 5000);
