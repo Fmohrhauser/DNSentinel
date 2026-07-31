@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>DNSentinel - Queries</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="sidebar">
+        <h2>DNSentinel</h2>
+        <a href="/">
+            Dashboard
+        </a>
+
+        <a href="/queries.html">
+            Queries
+        </a>
+
+        <a href="/blocklist.html">
+            Blocklist
+        </a>
+
+        <a href="/settings.html">
+            Settings
+        </a>
+    </div>
+
+    <div class="content">
+        
+        <div class="header">
+
+            <div>
+                <h1>Queries</h1>
+
+                <p class="subtitle">
+                    Recent DNS requests
+                </p>
+            </div>
+        </div>
+
+        <h2>Recent Queries</h2>
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Domain</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="logs">
+
+            </tbody>
+        </table>
+        </div>
+
+        <script src="/queries.js"></script>
+</body>
+</html>

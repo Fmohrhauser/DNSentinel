@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>DNSentinel - Settings</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="sidebar">
+
+        <h2>DNSentinel</h2>
+
+        <a href="/">
+            Dashboard
+        </a>
+
+        <a href="/queries.html">
+            Queries
+        </a>
+
+        <a href="/blocklist.html">
+            Blocklist
+        </a>
+
+        <a href="/settings.html">
+            Settings
+        </a>
+    </div>
+
+    <div class="content">
+
+        <div class="header">
+
+            <div>
+
+                <h1>Settings</h1>
+
+                <p class="subtitle">
+                    Configure DNSentinel behavior
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="card">
+            <label>
+                <input type="checkbox" id="blockingEnabled">
+                Enable Blocking
+            </label>
+
+            <label>
+                <input type="checkbox" id="cacheEnabled">
+                Enable Cache
+            </label>
+
+            <label>
+                <input type="checkbox" id="queryLoggingEnabled">
+                Enable Query Logging
+            </label>
+
+            <label>
+                Upstream DNS
+
+                <input
+                type="text"
+                id="upstreamDNS"
+                placeholder="1.1.1.1">
+            </label>
+
+            <button id="save-settings">
+                Save
+            </button>
+
+            <button id="restore-settings">
+                Resore Defaults
+            </button>
+
+            <p id="settingStatus"></p>
+
+
+        </div>
+    </div>
+
+    <script src="/settings.js"></script>
+</body>
+</html>

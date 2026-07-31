@@ -43,54 +43,7 @@
         
 
     </div>
-    <!-- Settings -->
-    <div class="settings-container">
-
-        <button id="settings-button">
-            <img src="/settings.svg" alt="Settings">
-        </button>
-
-        <div id="settings-panel">
-
-            <h2>Settings</h2>
-
-            <label>
-                <input type="checkbox" id="blockingEnabled">
-                Enable Blocking
-            </label>
-
-            <label>
-                <input type="checkbox" id="cacheEnabled">
-                Enable Cache
-            </label>
-
-            <label>
-                <input type="checkbox" id="queryLoggingEnabled">
-                Enable Query Logging
-            </label>
-
-            <label>
-                Upstream DNS
-                <input
-                    type="text"
-                    id="upstreamDNS"
-                    placeholder="1.1.1.1">
-            </label>
-
-            <button id="save-settings">
-                Save
-            </button>
-
-            <button id="restore-settings">
-                Restore Defaults
-            </button>
-
-            <p id="settingStatus"></p>
-
-        </div>
-
-    </div>
-
+    
     <div class="cards">
 
         <div class="card">
@@ -196,24 +149,6 @@
 
     </table>
 
-    <h2>Recent Queries</h2>
-
-    <table>
-
-        <thead>
-
-            <tr>
-                <th>Domain</th>
-                <th>Action</th>
-            </tr>
-
-        </thead>
-
-        <tbody id="logs">
-
-        </tbody>
-
-    </table>
 
     <footer>
 
