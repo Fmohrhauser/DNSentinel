@@ -253,3 +253,14 @@ ImportResult importBlocklist(String data)
 
   return result;
 }
+
+int getBlocklistSize()
+{
+  return blockedDomains.size();
+}
+void clearBlocklist()
+{
+  blockedDomains.clear();
+
+  saveBlocklist();
+}

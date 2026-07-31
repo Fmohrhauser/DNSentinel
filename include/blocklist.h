@@ -24,5 +24,7 @@ String createBlocklistJSON();
 bool isBlocked(String domain);
 
 ImportResult importBlocklist(String data);
+int getBlocklistSize();
+void clearBlocklist();
 
 #endif

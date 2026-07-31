@@ -1,3 +1,4 @@
+let currentBlocklist = [];
 function updateBlocklist()
 {
     fetch("/api/blocklist", {
@@ -7,44 +8,10 @@ function updateBlocklist()
     .then(response => response.json())
     .then(domains => {
 
-        let container =
-            document.getElementById("blocklist");
+        currentBlocklist = domains;
 
-            container.innerHTML = "";
-            
-            domains.forEach(domain => {
-                let item = document.createElement("div");
-
-                item.className =
-                    "blocklist-entry";
-
-                    const span = document.createElement("span");
-
-                    span.textContent = domain;
-
-                    const button = document.createElement("button");
-
-                    button.className = "remove-domain";
-
-                    button.textContent = "remove";
-
-                    button.addEventListener("click", () => {
-                        removeDomain(domain);
-                    });
-
-                    item.appendChild(span);
-
-                    item.appendChild(button);
-
-                    item.querySelector("button")
-                    .addEventListener("click",() => {
-
-                        removeDomain(domain);
-
-                    });
-
-                    container.appendChild(item);
-            });
+        renderBlocklist(currentBlocklist);
+    
     });
 }
 
@@ -74,6 +41,7 @@ function addDomain()
         document.getElementById("new-domain").value="";
 
         updateBlocklist();
+        updateBlocklistCount();
     });
 }  
 
@@ -97,6 +65,7 @@ function removeDomain(domain)
     .then(() => {
 
         updateBlocklist();
+        updateBlocklistCount();
 
     });
 
@@ -109,7 +78,7 @@ document
     addDomain
 );
 
-updateBlocklist();
+
 
 
 function importBlocklist()
@@ -121,8 +90,13 @@ function importBlocklist()
         .value;
     const button = 
         document.getElementById("import-button");
+
+    const progress =
+        document.getElementById("import-progress");
     
     button.disabled = true;
+    button.innerText = "Importing ...";
+    progress.classList.remove("hidden");
     fetch("/api/blocklist/import", {
         method: "POST",
 
@@ -139,6 +113,15 @@ function importBlocklist()
 
     })
     .then(response => response.json())
+    .catch(error => {
+
+        console.error(error);
+
+        button.disabled = false;
+        button.innerText = "Import Blocklist";
+
+        progress.classList.add("hidden");
+    })
     .then(result => {
 
         document.getElementById("import-summary")
@@ -172,6 +155,11 @@ function importBlocklist()
         .getElementById("import-list")
         .value = "";
         button.disabled = false;
+        button.innerText = "Import Blocklist";
+
+        progress.classList.add("hidden");
+
+        updateBlocklistCount();
         
     })
 }
@@ -182,12 +170,6 @@ document
     "click",
     importBlocklist
 );
-setTimeout(() => {
-
-    document
-    .getElementById("import-status")
-    .innerHTML = "";
-}, 5000);
 
 document
 .getElementById("close-summary")
@@ -201,3 +183,114 @@ document
         .add("hidden");
     }
 )
+
+function updateBlocklistCount()
+{
+    fetch("/api/blocklist/count")
+    .then(response => response.json())
+    .then(data => {
+
+        document
+        .getElementById("blocklist-count")
+        .innerText = "(" + data.count + ")";
+    });
+}
+
+function renderBlocklist(domains)
+{
+    let container = 
+        document.getElementById("blocklist");
+
+    document
+    .getElementById("blocklist-results")
+    .innerText =
+    `Showing ${domains.length} of ${currentBlocklist.length} domains`;
+
+    container.innerHTML = "";
+
+    domains.forEach(domain => {
+
+        let item =
+            document.createElement("div");
+
+        item.className =
+            "blocklist-entry";
+
+        const span =
+            document.createElement("span");
+
+        span.textContent = domain;
+
+        const button =
+            document.createElement("button");
+
+        button.className =
+            "remove-domain";
+
+        button.textContent =
+            "Remove";
+
+        button.addEventListener(
+            "click",
+            () => removeDomain(domain)
+        );
+
+        item.appendChild(span);
+        item.appendChild(button);
+
+        container.appendChild(item);
+    });
+}
+
+function filterBlocklist()
+{
+    let search =
+        document
+        .getElementById("blocklist-search")
+        .value
+        .toLowerCase();
+
+    let filtered =
+        currentBlocklist.filter(domain =>
+            domain
+            .toLowerCase()
+            .includes(search)
+        );
+
+        renderBlocklist(filtered);
+}
+
+function resetBlocklist()
+{
+    let confirmReset =
+        confirm(
+            "Are you sure you want to remove all blocked domains?"
+        );
+
+    if(!confirmReset)
+        return;
+
+    fetch("/api/blocklist/reset",
+        {
+            method:"POST"
+        })
+        .then(() =>{
+            updateBlocklist();
+            updateBlocklistCount();
+        });
+    
+}
+document
+.getElementById("reset-blocklist")
+.addEventListener(
+    "click",
+    resetBlocklist
+);
+document
+.getElementById("blocklist-search")
+.addEventListener(
+    "input",
+    filterBlocklist
+);
+updateBlocklist();
+updateBlocklistCount();

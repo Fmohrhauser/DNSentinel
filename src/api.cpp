@@ -254,4 +254,32 @@ void startAPI()
             output
         );
     });
+
+    server.on("/api/blocklist/count", HTTP_GET, [](){
+
+        JsonDocument doc;
+
+        doc["count"] = getBlocklistSize();
+
+        String json;
+
+        serializeJson(doc, json);
+
+        server.send(
+            200,
+            "application/json",
+            json
+        );
+    });
+
+    server.on("/api/blocklist/reset", HTTP_POST, [](){
+
+        clearBlocklist();
+
+        server.send(
+            200,
+            "application/json",
+            "{\"success\":true}"
+        );
+    });
 }

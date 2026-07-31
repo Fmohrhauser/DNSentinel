@@ -43,8 +43,16 @@
 
         <div class="card blocklist-card">
 
-            <h2>Blocked Domains</h2>
-
+            <h2>Blocked Domains
+                <span id="blocklist-count">(0)</span>
+            </h2>
+            <input
+                id="blocklist-search"
+                type="text"
+                placeholder="Search domains...">
+            <p id="blocklist-results">
+                Loading...
+            </p>
             <div id="blocklist">
                 Loading...
             </div>
@@ -73,10 +81,16 @@
         </textarea>
 
         <br>
-
+        <button id="reset-blocklist">
+            Reset Blocklist
+        </button>
         <button id="import-button">
             Import Blocklist
         </button>
+        <p id="import-progress" class="hidden">
+            Importing blocklist. Please wait...
+        </p>
+
         <div id="import-summary" class="summary-card hidden">
 
             <h3>

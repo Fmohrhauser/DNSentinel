@@ -36,6 +36,17 @@ void setup() {
   {
     Serial.println("- " + domain);
   }
+  if(psramFound())
+{
+    Serial.println("PSRAM FOUND");
+
+    Serial.print("PSRAM size: ");
+    Serial.println(ESP.getPsramSize());
+}
+else
+{
+    Serial.println("NO PSRAM");
+}
 
 }
 
