@@ -4,6 +4,7 @@
 
 Settings settings;
 
+
 void initializeSettings()
 {
     settings.upstreamDNS = "1.1.1.1";
@@ -13,6 +14,8 @@ void initializeSettings()
     settings.cacheEnabled = true;
 
     settings.queryLoggingEnabled = true;
+    settings.blockingMode = REDIRECT;
+    settings.redirectIP = "192.168.50.147";
 }
 
 Settings getSettings()
@@ -74,6 +77,8 @@ void saveSettings()
     doc["queryLoggingEnabled"] = 
         settings.queryLoggingEnabled;
 
+    doc["redirectIP"] = settings.redirectIP;
+
     serializeJson(doc,file);
 
     file.close();
@@ -124,6 +129,11 @@ void loadSettings()
     {
     settings.queryLoggingEnabled =
         doc["queryLoggingEnabled"];
+    }
+    if(doc["redirectIP"].is<String>())
+    {
+        settings.redirectIP =
+            doc["redirectIP"].as<String>();
     }
     file.close();
 

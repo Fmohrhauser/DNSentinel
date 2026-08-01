@@ -35,6 +35,26 @@ void startDNSServer(){
   statsDelay = millis();
 }
 
+void parseIP(
+  String ip,
+  byte &a,
+  byte &b,
+  byte &c,
+  byte &d
+)
+{
+  int first = ip.indexOf('.');
+  int second = ip.indexOf('.', first + 1);
+  int third = ip.indexOf('.', second + 1);
+
+  a = ip.substring(0, first).toInt();
+  b = ip.substring(first + 1, second).toInt();
+  c = ip.substring(second + 1, third).toInt();
+  d = ip.substring(third + 1).toInt();
+}
+
+
+
 void createHeader(byte response[], byte idHigh, byte idLow, bool hasAnswer) {
   response[0] = idHigh;
   response[1] = idLow;
@@ -72,6 +92,44 @@ void createHeader(byte response[], byte idHigh, byte idLow, bool hasAnswer) {
   response[10] = 0x00;
   response[11] = 0x00;
 }
+
+void sendNXDOMAIN(
+  byte idHigh,
+  byte idLow,
+  byte question[],
+  int questionLength
+)
+{
+  byte response[12];
+
+  createHeader(
+    response,
+    idHigh,
+    idLow,
+    false
+  );
+
+  // Set RCODE = 3 (NXDOMAIN)
+  response[3] = 0x83;
+
+  udp.beginPacket(
+    udp.remoteIP(),
+    udp.remotePort()
+  );
+
+  udp.write(response, sizeof(response));
+
+  udp.write(
+    question,
+    questionLength
+  );
+
+  udp.endPacket();
+
+  DEBUG_PRINTLN("Sent NXDOMAIN");
+}
+
+
 bool forwardDNS(byte packet[], int length, byte response[], int &responseLength) {
 
   Settings currentSettings = getSettings();
@@ -247,12 +305,43 @@ void handleDNS(){
       logQuery(domain, BLOCKED);
       blockedRequests++;
       incrementBlockedDomain(domain);
-      if(qType == 1)
+      Settings currentSettings = getSettings();
+
+      if(currentSettings.blockingMode == NULL_IP)
       {
-      ipv41 = 0;
-      ipv42 = 0;
-      ipv43 = 0;
-      ipv44 = 0;
+        if(qType == 1)
+        {
+          ipv41 = 0;
+          ipv42 = 0;
+          ipv43 = 0;
+          ipv44 = 0;
+        }
+      }
+      else if(currentSettings.blockingMode == REDIRECT)
+      {
+        if(qType == 1)
+        {
+        int firstDot = currentSettings.redirectIP.indexOf('.');
+        int secondDot = currentSettings.redirectIP.indexOf('.', firstDot + 1);
+        int thirdDot = currentSettings.redirectIP.indexOf('.', secondDot + 1);
+
+        ipv41 = currentSettings.redirectIP.substring(0,firstDot).toInt();
+        ipv42 = currentSettings.redirectIP.substring(firstDot + 1, secondDot).toInt();
+        ipv43 = currentSettings.redirectIP.substring(secondDot + 1, thirdDot).toInt();
+        ipv44 = currentSettings.redirectIP.substring(thirdDot + 1).toInt();
+        }
+      }
+      else if(currentSettings.blockingMode == NXDOMAIN)
+      {
+        sendNXDOMAIN(
+          idHigh,
+          idLow,
+          question,
+          questionLength
+ 
+        );
+
+        return;
       }
       
       

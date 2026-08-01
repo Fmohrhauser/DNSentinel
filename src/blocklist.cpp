@@ -183,31 +183,44 @@ String createBlocklistJSON()
   return json;
 }
 
-bool isBlocked(String domain) {
-  DEBUG_PRINT("Checking: ");
-  DEBUG_PRINTLN(domain);
-
-  for(int i = 0; i< blockedDomains.size(); i++)
+bool checkDomainAndParents(String domain)
+{
+  while(true)
   {
-    String blocked = blockedDomains.get(i);
-
-    if(domain == blocked)
+    if(blockedDomains.contains(domain))
     {
       return true;
     }
 
+    int dot = domain.indexOf('.');
 
-    String suffix = "." + blocked;
-
-    if(domain.endsWith(suffix))
+    if(dot == -1)
     {
-      return true;
+      break;
+    }
+
+    domain = domain.substring(dot + 1);
+
+    //Don't check TLDs
+    if(domain.indexOf('.') == -1)
+    {
+      break;
     }
   }
 
-
   return false;
+}
 
+
+
+bool isBlocked(String domain)
+{
+  DEBUG_PRINT("Checking: ");
+  DEBUG_PRINTLN(domain);
+
+  domain.toLowerCase();
+
+  return checkDomainAndParents(domain);
 }
 
 

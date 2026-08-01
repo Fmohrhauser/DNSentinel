@@ -2,6 +2,13 @@
 
 #include <Arduino.h>
 
+enum BlockingMode
+{
+    NULL_IP,
+    NXDOMAIN,
+    REDIRECT
+};
+
 struct Settings
 {
     String upstreamDNS;
@@ -11,7 +18,10 @@ struct Settings
     bool cacheEnabled;
 
     bool queryLoggingEnabled;
+    BlockingMode blockingMode;
+    String redirectIP;
 };
+
 
 void initializeSettings();
 
