@@ -14,8 +14,8 @@ void initializeSettings()
     settings.cacheEnabled = true;
 
     settings.queryLoggingEnabled = true;
-    settings.blockingMode = REDIRECT;
-    settings.redirectIP = "192.168.50.147";
+    settings.blockingMode = NULL_IP;
+    settings.redirectIP = "0.0.0.0";
 }
 
 Settings getSettings()
@@ -45,6 +45,12 @@ String createSettingsJSON()
 
     doc["queryLoggingEnabled"] =
         settings.queryLoggingEnabled;
+
+    doc["blockingMode"] =
+        settings.blockingMode;
+
+    doc["redirectIP"] =
+        settings.redirectIP;
 
     String json;
 
@@ -76,6 +82,9 @@ void saveSettings()
 
     doc["queryLoggingEnabled"] = 
         settings.queryLoggingEnabled;
+
+    doc["blockingMode"] =
+        settings.blockingMode;
 
     doc["redirectIP"] = settings.redirectIP;
 
@@ -130,6 +139,13 @@ void loadSettings()
     settings.queryLoggingEnabled =
         doc["queryLoggingEnabled"];
     }
+    if(doc["blockingMode"].is<int>())
+    {
+        settings.blockingMode =
+            static_cast<BlockingMode>(
+            doc["blockingMode"].as<int>()
+            );
+    }
     if(doc["redirectIP"].is<String>())
     {
         settings.redirectIP =
@@ -138,5 +154,48 @@ void loadSettings()
     file.close();
 
     Serial.println("Settings loaded");
+}
+bool validIP(String ip)
+{
+  int start = 0;
+  int parts = 0;
+
+  for(int i =0; i <= ip.length(); i++)
+  {
+    if(ip[i] == '.' || i == ip.length())
+    {
+        String part = ip.substring(start, i);
+
+        if(part.length() == 0)
+        {
+            return false;
+        }
+
+        for(int j = 0; j < part.length(); j++)
+        {
+            if(part[j] < '0' || part[j] > '9')
+            {
+                return false;
+            }
+        }
+
+        int value = part.toInt();
+
+        Serial.print("IP part: ");
+        Serial.print(part);
+        Serial.print(" value: ");
+        Serial.println(value);
+
+        if(value < 0 || value > 255)
+        {
+            return false;
+        }
+
+        parts++;
+        start = i + 1;
+    }
+  }
+
+  return parts == 4;
 }
 

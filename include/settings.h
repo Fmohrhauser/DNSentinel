@@ -33,3 +33,4 @@ String createSettingsJSON();
 
 void saveSettings();
 void loadSettings();
+bool validIP(String ip);

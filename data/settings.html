@@ -47,6 +47,7 @@
         </div>
 
         <div class="card">
+
             <label>
                 <input type="checkbox" id="blockingEnabled">
                 Enable Blocking
@@ -64,11 +65,27 @@
 
             <label>
                 Upstream DNS
-
                 <input
-                type="text"
-                id="upstreamDNS"
-                placeholder="1.1.1.1">
+                    type="text"
+                    id="upstreamDNS"
+                    placeholder="1.1.1.1">
+            </label>
+
+            <label>
+                Blocking Mode
+                <select id="blockingMode">
+                    <option value="0">Null IP</option>
+                    <option value="1">NXDOMAIN</option>
+                    <option value="2">Redirect</option>
+                </select>
+            </label>
+
+            <label id="redirectIPContainer" style="display:none">
+                Redirect IP
+                <input
+                    type="text"
+                    id="redirectIP"
+                    placeholder="192.168.1.10">
             </label>
 
             <button id="save-settings">
@@ -76,15 +93,17 @@
             </button>
 
             <button id="restore-settings">
-                Resore Defaults
+                Restore Defaults
             </button>
 
             <p id="settingStatus"></p>
 
-
         </div>
+
     </div>
 
     <script src="/settings.js"></script>
+
 </body>
+
 </html>

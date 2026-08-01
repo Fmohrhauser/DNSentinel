@@ -1,3 +1,4 @@
+let settingsChanged = false;
 function updateSettings()
 {
     fetch("/api/settings")
@@ -14,6 +15,13 @@ function updateSettings()
 
         document.getElementById("upstreamDNS").value =
             data.upstreamDNS;
+
+        document.getElementById("blockingMode").value =
+            data.blockingMode;
+
+        document.getElementById("redirectIP").value =
+            data.redirectIP;
+        updateRedirectVisibility();
     });
 }
 
@@ -35,7 +43,13 @@ function sendSettings()
             document.getElementById("queryLoggingEnabled").checked,
 
         upstreamDNS:
-            document.getElementById("upstreamDNS").value
+            document.getElementById("upstreamDNS").value,
+
+        blockingMode:
+            Number(document.getElementById("blockingMode").value),
+
+        redirectIP:
+            document.getElementById("redirectIP").value
     };
 
     fetch("/api/settings", {
@@ -47,49 +61,44 @@ function sendSettings()
 
         body: JSON.stringify(settings)
     })
-    .then(response => response.json())
-    .then(data => {
+    .then(async response => {
 
+        const data = await response.json();
+
+        if(!response.ok)
+        {
+            throw new Error(data.error);
+        }
+
+        return data;
+    })
+    .then(data => {
         settingsChanged = false;
 
         document.getElementById("settingStatus").innerHTML =
-        "Settings saved ✓";
-        document.getElementById("settingStatus").style.color =
-            "var(--success)";
+            "Settings saved ✓";
 
-        setTimeout(()=>{
-            document.getElementById("settingStatus").innerHTML="";
-        },3000);
+            document.getElementById("settingStatus").style.color =
+                "var(--success)";
+
+                setTimeout(() => {
+                    document.getElementById("settingStatus").innerHTML = "";
+                }, 3000);
+    })
+    .catch(error => {
+
+        document.getElementById("settingStatus").innerHTML =
+            error.message;
+
+            document.getElementById("settingStatus").style.color =
+                "var(--danger)";
     });
 }
 
 document
 .getElementById("save-settings")
-.addEventListener("click", sendSettings)
+.addEventListener("click", sendSettings);
 
-document.getElementById("hideIP").addEventListener("change", function(){
-
-    if(this.checked)
-    {
-        document.getElementById("ip").innerHTML = "Hidden";
-    }
-    else
-    {
-        document.getElementById("ip").innerHTML = currentIP;
-    }
-
-});
-
-const settingsButton =
-    document.getElementById("settings-button");
-
-const settingsPanel =
-    document.getElementById("settings-panel");
-
-settingsButton.addEventListener("click", function(){
-
-    settingsPanel.classList.toggle("open");
-});
 
 function restoreSettings()
 {
@@ -117,7 +126,6 @@ document
 .getElementById("restore-settings")
 .addEventListener("click",restoreSettings);
 
-let settingsChanged = false;
 
 function markSettingsChanged()
 {
@@ -129,6 +137,23 @@ function markSettingsChanged()
             "Unsaved changes";
         document.getElementById("settingStatus").style.color =
             "#FF4444";
+    }
+}
+
+function updateRedirectVisibility()
+{
+    const mode = document.getElementById("blockingMode").value;
+    const container = document.getElementById("redirectIPContainer");
+
+    console.log("Blocking mode:", mode);
+
+    if(mode == "2")
+    {
+        container.style.display = "block";
+    }
+    else
+    {
+        container.style.display = "none";
     }
 }
 
@@ -147,3 +172,17 @@ document
 document
 .getElementById("upstreamDNS")
 .addEventListener("input", markSettingsChanged);
+
+document
+.getElementById("blockingMode")
+.addEventListener("change", function ()
+{
+    markSettingsChanged();
+    updateRedirectVisibility();
+});
+
+document
+.getElementById("redirectIP")
+.addEventListener("input", markSettingsChanged);
+
+

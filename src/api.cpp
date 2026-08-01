@@ -9,6 +9,8 @@
 #include "blocklist.h"
 #include "dns_health.h"
 #include "system.h"
+#include "dns_server.h"
+#include "settings.h"
 
 extern WebServer server;
 
@@ -103,6 +105,39 @@ void startAPI()
                 newSettings.upstreamDNS = dns;
             }
         }
+
+        if(doc["blockingMode"].is<int>())
+        {
+            newSettings.blockingMode =
+                static_cast<BlockingMode>(
+                    doc["blockingMode"].as<int>()
+                );
+        }
+
+        if(doc["redirectIP"].is<String>())
+        {
+            String ip =
+                doc["redirectIP"].as<String>();
+            Serial.print("Testing redirect IP: ");
+            Serial.println(ip);
+            if(validIP(ip))
+            {
+                newSettings.redirectIP = ip;
+            }
+            else
+            {
+                Serial.println("Invalid redirect IP");
+                server.send(
+                    400,
+                    "application/json",
+                    "{\"error\":\"Invalid redirect IP\"}"
+                );
+
+                return;
+            }
+        }
+
+
             Serial.print("New upstream DNS: ");
             Serial.println(newSettings.upstreamDNS);
         updateSettings(newSettings);

@@ -183,3 +183,15 @@ function updateDNSHealth()
 updateDNSHealth();
 
 setInterval(updateDNSHealth, 5000);
+document.getElementById("hideIP").addEventListener("change", function(){
+
+    if(this.checked)
+    {
+        document.getElementById("ip").innerHTML = "Hidden";
+    }
+    else
+    {
+        document.getElementById("ip").innerHTML = currentIP;
+    }
+
+});
