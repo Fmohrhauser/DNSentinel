@@ -44,7 +44,7 @@ void DomainHashTable::clear()
     for(int i = 0; i < TABLE_SIZE; i++)
     {
 
-        table[i].occupied = false;
+        table[i].state = Entry::EMPTY;
         table[i].hash = 0;
         memset(table[i].domain, 0, sizeof(table[i].domain));
     }
@@ -75,12 +75,22 @@ bool DomainHashTable::add(String domain)
     uint32_t h = hash(domain);
 
     int index = h % TABLE_SIZE;
-
+    int firstDeleted = - 1;
     for(int i = 0; i < TABLE_SIZE; i++)
     {
         int current = (index + i) % TABLE_SIZE;
 
-        if(!table[current].occupied)
+        if(table[current].state == Entry::DELETED)
+        {
+            if(firstDeleted == -1)
+            {
+                firstDeleted = current;
+            }
+
+            continue;
+        }
+
+        if(table[current].state == Entry::EMPTY)
         {
             table[current].hash = h;
 
@@ -94,13 +104,14 @@ bool DomainHashTable::add(String domain)
                 sizeof(table[current].domain) - 1
             ] = '\0';
 
-            table[current].occupied = true;
+            table[current].state = Entry::OCCUPIED;
             entryCount++;
 
             return true;
         }
 
         if(
+            table[current].state == Entry::OCCUPIED &&
             table[current].hash == h &&
             strcmp(table[current].domain, domain.c_str()) == 0
         )
@@ -127,17 +138,16 @@ bool DomainHashTable::remove(String domain)
     {
         int current = (index + i) % TABLE_SIZE;
 
-        if(!table[current].occupied)
+        if(table[current].state == Entry::EMPTY)
             return false;
 
         if(
+            table[current].state == Entry::OCCUPIED &&
             table[current].hash == h &&
             strcmp(table[current].domain, domain.c_str()) == 0
         )
         {
-            table[current].occupied = false;
-            table[current].hash = 0;
-            table[current].domain[0] = '\0';
+            table[current].state = Entry::DELETED;
 
             entryCount--;
 
@@ -163,10 +173,11 @@ bool DomainHashTable::contains(String domain)
     {
         int current = (index + i) % TABLE_SIZE;
 
-        if(!table[current].occupied)
+        if(table[current].state == Entry::EMPTY)
             return false;
 
         if(
+            table[current].state == Entry::OCCUPIED &&
             table[current].hash == h &&
             strcmp(table[current].domain, domain.c_str()) == 0
         )
@@ -192,7 +203,7 @@ String DomainHashTable::get(int index)
 
     for(int i = 0; i < TABLE_SIZE; i++)
     {
-        if(table[i].occupied)
+        if(table[i].state == Entry::OCCUPIED)
         {
             if(found == index)
             {

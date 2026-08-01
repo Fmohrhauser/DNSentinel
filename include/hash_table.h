@@ -26,7 +26,14 @@ private:
     {
         uint32_t hash;
         char domain[128];
-        bool occupied;
+        enum State
+        {
+            EMPTY,
+            OCCUPIED,
+            DELETED
+        };
+
+        State state;
     };
 
     static const int TABLE_SIZE = 4096;
