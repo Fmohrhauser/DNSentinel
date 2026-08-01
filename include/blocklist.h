@@ -3,9 +3,10 @@
 
 
 #include <Arduino.h>
-#include <set>
+#include "hash_table.h"
 
-extern std::set<String> blockedDomains;
+
+extern DomainHashTable blockedDomains;
 struct ImportResult
 {
     int added = 0;

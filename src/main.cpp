@@ -26,30 +26,19 @@ void setup() {
   else{
     Serial.println("LittleFs mounted");
   }
+  Serial.print("PSRAM: ");
+  Serial.println(psramFound());
   startDNSServer();
   startDashboard();
   startAPI();
   initializeSettings();
   loadSettings();
+
+  blockedDomains.begin();
+  
   loadBlocklist();
-  for(const String& domain : blockedDomains)
-  {
-    Serial.println("- " + domain);
-  }
-  if(psramFound())
-{
-    Serial.println("PSRAM FOUND");
-
-    Serial.print("PSRAM size: ");
-    Serial.println(ESP.getPsramSize());
+  
 }
-else
-{
-    Serial.println("NO PSRAM");
-}
-
-}
-
 
 //main program
 void loop() {

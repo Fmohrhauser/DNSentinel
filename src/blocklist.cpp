@@ -1,14 +1,13 @@
 #include "blocklist.h"
 #include "debug.h"
-#include <set>
 #include <ArduinoJson.h>
 #include <LittleFS.h>
+#include "hash_table.h"
 
-std::set<String> blockedDomains;
+DomainHashTable blockedDomains;
 
 void loadBlocklist()
 {
-  blockedDomains.clear();
 
   File file = LittleFS.open("/blocklist.txt", "r");
 
@@ -29,8 +28,14 @@ void loadBlocklist()
 
     if(domain.length() > 0)
     {
-      blockedDomains.insert(domain);
-      count++;
+      if(blockedDomains.add(domain))
+      {
+        count++;
+      }
+      else
+      {
+        Serial.println("Hash table full or duplicate");
+      }
     }
   }
 
@@ -56,10 +61,10 @@ void saveBlocklist()
     return;
   }
 
-  for(const String& domain: blockedDomains)
-  {
-    file.println(domain);
-  }
+  for(int i = 0; i < blockedDomains.size(); i++)
+{
+  file.println(blockedDomains.get(i));
+}
 
   file.close();
   Serial.println("Blocklist saved.");
@@ -127,15 +132,17 @@ bool addBlockedDomain(String domain)
 {
   domain.toLowerCase();
 
-  for(const String& blocked : blockedDomains)
-  {
-    if(blocked == domain)
-    {
-      return false;
-    }
-  }
   domain = normalizeDomain(domain);
-  blockedDomains.insert(domain);
+
+  if(domain.length() == 0)
+  {
+    return false;
+  }
+
+  if(!blockedDomains.add(domain))
+  {
+    return false;
+  }
 
   saveBlocklist();
 
@@ -147,7 +154,7 @@ bool removeBlockedDomain(String domain)
 
   domain.toLowerCase();
 
-  auto result = blockedDomains.erase(domain);
+  auto result = blockedDomains.remove(domain);
 
   if(result)
   {
@@ -164,9 +171,9 @@ String createBlocklistJSON()
 
   JsonArray array = doc.to<JsonArray>();
 
-  for(const String& domain : blockedDomains)
+  for(int i = 0; i < blockedDomains.size(); i++)
   {
-    array.add(domain);
+    array.add(blockedDomains.get(i));
   }
 
   String json;
@@ -180,8 +187,9 @@ bool isBlocked(String domain) {
   DEBUG_PRINT("Checking: ");
   DEBUG_PRINTLN(domain);
 
-  for(const String& blocked : blockedDomains)
+  for(int i = 0; i< blockedDomains.size(); i++)
   {
+    String blocked = blockedDomains.get(i);
 
     if(domain == blocked)
     {
@@ -231,17 +239,13 @@ ImportResult importBlocklist(String data)
     }
     else
     {
-      size_t oldSize = blockedDomains.size();
-
-      blockedDomains.insert(domain);
-
-      if(blockedDomains.size() > oldSize)
+      if(blockedDomains.add(domain))
       {
-        result.added++;
+        result.added ++;
       }
       else
       {
-          result.duplicates++;        
+        result.duplicates++;
       }
     }
   }
