@@ -28,6 +28,7 @@ void DomainHashTable::begin()
     Serial.println("HASH TABLE ALLOCATED");
 
     clear();
+    
 }
 
 void DomainHashTable::clear()
@@ -92,6 +93,10 @@ bool DomainHashTable::add(String domain)
 
         if(table[current].state == Entry::EMPTY)
         {
+            if(firstDeleted != -1)
+            {
+                current = firstDeleted;
+            }
             table[current].hash = h;
 
             strncpy(
@@ -148,7 +153,8 @@ bool DomainHashTable::remove(String domain)
         )
         {
             table[current].state = Entry::DELETED;
-
+            table[current].domain[0] = '\0';
+            table[current].hash = 0;
             entryCount--;
 
             return true;
