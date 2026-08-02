@@ -100,6 +100,7 @@ void getLatestQueries(
 
     for(int i = 0; i < amount; i++)
     {
+
         int index = logIndex - 1 - i;
 
         if(index < 0)
@@ -142,7 +143,7 @@ String actionToString(QueryAction action)
     return "UNKNOWN";
 }
 
-String createQueryLogJSON()
+String createQueryLogJSON(int limit)
 {
     String json = "[";
 
@@ -150,8 +151,17 @@ String createQueryLogJSON()
 
     getLatestQueries(recent, MAX_QUERY_LOGS);
 
-    for(int i = 0; i < queryCount; i++)
+    if(limit > queryCount)
     {
+        limit = queryCount;
+    }
+
+    for(int i = 0; i < limit; i++)
+    {
+        if(i !=0)
+        {
+            json +=",";
+        }
        json += "{";
 
        json += "\"domain\":\"";
@@ -164,10 +174,6 @@ String createQueryLogJSON()
 
        json += "}";
 
-       if(i < queryCount - 1)
-       {
-        json += ",";
-       }
         
     }
     json += "]";

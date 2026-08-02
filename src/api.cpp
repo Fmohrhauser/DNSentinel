@@ -10,7 +10,7 @@
 #include "dns_health.h"
 #include "system.h"
 #include "dns_server.h"
-#include "settings.h"
+
 
 extern WebServer server;
 
@@ -28,10 +28,22 @@ void startAPI()
 
     server.on("/api/logs", HTTP_GET, []()
     {
+        int limit = 25;
+
+        if(server.hasArg("limit"))
+        {
+            limit = server.arg("limit").toInt();
+        }
+
+        if(limit > MAX_QUERY_LOGS)
+        {
+            limit = MAX_QUERY_LOGS;
+        }
+
         server.send(
             200,
             "application/json",
-            createQueryLogJSON()
+            createQueryLogJSON(limit)
         );
     });
 

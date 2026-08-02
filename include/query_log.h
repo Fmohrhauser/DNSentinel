@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define MAX_QUERY_LOGS 50
+#define MAX_QUERY_LOGS 100
 
 enum QueryAction {
     BLOCKED,
@@ -47,7 +47,7 @@ void testLatest();
 
 String actionToString(QueryAction action);
 
-String createQueryLogJSON();
+String createQueryLogJSON(int limit);
 
 void clearLogs();
 

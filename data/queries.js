@@ -1,6 +1,7 @@
+let queryLimit = 25;
 function updateLogs()
 {
-    fetch("/api/logs")
+    fetch("/api/logs?limit=" + queryLimit)
         .then(response => response.json())
         .then(logs => {
             let table = document.getElementById("logs");
@@ -156,4 +157,9 @@ function limitQueries(logs)
 
 document
 .getElementById("queryLimit")
-.addEventListener("change", updateLogs)
+.addEventListener("change", function(){
+
+    queryLimit = Number(this.value);
+
+    updateLogs();
+});
