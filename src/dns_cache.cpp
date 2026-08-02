@@ -93,7 +93,7 @@ bool cacheLookup(
              );
 
             responseLength = cache[i].responseLength;
-
+             incrementCacheHits();
             DEBUG_PRINT("Cache hit: ");
             DEBUG_PRINTLN(domain);
 

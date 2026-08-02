@@ -59,44 +59,6 @@ int getForwardedQueries()
 }
 
 
-String createQueryStatsJSON()
-{
-    String json = "{";
-
-    json += "\"total\":";
-    json += totalQueries;
-    json += ",";
-
-    json += "\"blocked\":";
-    json += blockedQueries;
-    json += ",";
-
-    json += "\"forwarded\":";
-    json += forwardedQueries;
-    json += ",";
-
-    json += "\"cacheHits\":";
-    json += cacheHits;
-
-    json +="}";
-
-    return json;
-}
-
-void incrementTotalQueries()
-{
-    totalQueries++;
-}
-
-void incrementBlockedQueries()
-{
-    blockedQueries++;
-}
-
-void incrementForwardedQueries()
-{
-    forwardedQueries++;
-}
 
 
 

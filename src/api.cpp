@@ -351,14 +351,6 @@ void startAPI()
         );
     });
 
-    server.on("/api/querystats", HTTP_GET, [](){
-
-        server.send(
-            200,
-            "application/json",
-            createQueryStatsJSON()
-        );
-    });
 }
 
 

@@ -35,23 +35,9 @@ void logQuery(
      logs[logIndex].timestamp = getCurrentTime();
 
      logIndex++;
-     incrementTotalQueries();
 
-     switch(action)
-     {
-        case BLOCKED:
-            incrementBlockedQueries();
-            break;
 
-        case FORWARDED:
-            incrementForwardedQueries();
-            break;
-
-        case CACHE_HIT:
-            incrementCacheHits();
-            break;
-
-     }
+     
 
      if(logIndex >= MAX_QUERY_LOGS)
      {
