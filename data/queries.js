@@ -7,7 +7,7 @@ function updateLogs()
 
             table.innerHTML = "";
 
-            sortQueries(logs).forEach(query => {
+            limitQueries(logs).forEach(query => {
                 let row = `
                     <tr>
                         <td>${query.domain}</td>
@@ -145,3 +145,15 @@ function clearQueries()
 document
 .getElementById("clearQueries")
 .addEventListener("click", clearQueries);
+
+function limitQueries(logs)
+{
+    const limit =
+        Number(document.getElementById("queryLimit").value);
+
+    return logs.slice(0, limit);
+}
+
+document
+.getElementById("queryLimit")
+.addEventListener("change", updateLogs)
