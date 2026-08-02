@@ -49,4 +49,6 @@ String actionToString(QueryAction action);
 
 String createQueryLogJSON();
 
+void clearLogs();
+
 #endif

@@ -123,7 +123,7 @@ void testLatest()
         DEBUG_PRINT(recent[i].domain);
         DEBUG_PRINT(" ");
 
-        DEBUG_PRINTLN(actionToString(logs[i].action));
+        DEBUG_PRINTLN(actionToString(recent[i].action));
     }
 }
 
@@ -146,31 +146,46 @@ String createQueryLogJSON()
 {
     String json = "[";
 
-    for(int i = getQueryCount() - 1; i>= 0; i--)
+    QueryLogEntry recent[MAX_QUERY_LOGS];
+
+    getLatestQueries(recent, MAX_QUERY_LOGS);
+
+    for(int i = 0; i < queryCount; i++)
     {
-        QueryLogEntry query = getQuery(i);
+       json += "{";
 
-        json += "{" ;
+       json += "\"domain\":\"";
+       json += recent[i].domain;
+       json += "\",";
 
-        json += "\"domain\":\"";
-        json += query.domain;
-        json += "\",";
+       json += "\"action\":\"";
+       json += actionToString(recent[i].action);
+       json += "\"";
 
-        json += "\"action\":\"";
-        json += actionToString(query.action);
-        json += "\"";
+       json += "}";
 
-        json += "}";
-
-        if(i !=0)
-        {
-            json += ",";
-        }
-
-        
+       if(i < queryCount - 1)
+       {
+        json += ",";
+       }
         
     }
     json += "]";
 
     return json;
+}
+
+void clearLogs()
+{
+    logIndex = 0;
+    queryCount = 0;
+
+    for(int i = 0; i < MAX_QUERY_LOGS; i++)
+    {
+        logs[i].domain = "";
+        logs[i].action = FORWARDED;
+        logs[i].timestamp = 0;
+    }
+
+    DEBUG_PRINTLN("Query log cleared");
 }

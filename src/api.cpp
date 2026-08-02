@@ -327,4 +327,15 @@ void startAPI()
             createSystemJSON()
         );
     });
+
+    server.on("/api/logs/clear", HTTP_POST, [](){
+
+        clearLogs();
+
+        server.send(
+            200,
+            "application/json",
+            "{\"status\":\"cleared\"}"
+        );
+    });
 }

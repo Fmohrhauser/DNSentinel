@@ -40,7 +40,26 @@
                 </p>
             </div>
         </div>
-
+        <input
+            type="text"
+            id="querySearch"
+            placeholder="Search domains...">
+        <select id="queryFilter">
+            <option value="all">All</option>
+            <option value="blocked">Blocked</option>
+            <option value="forwarded">Forwarded</option>
+            <option value="cache">Cache Hit</option>
+        </select>
+        <select id="querySort">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="az">Domain A-Z</option>
+            <option value="za">Domain Z-A</option>
+        </select>
+        <button id="clearQueries">
+            Clear Log
+        </button>
+        <p id="queryStatus"></p>
         <h2>Recent Queries</h2>
 
         <table>
