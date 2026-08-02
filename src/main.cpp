@@ -12,25 +12,27 @@
 #include <LittleFS.h>
 #include "api.h"
 #include "settings.h"
+#include "time_manager.h"
 
 
 //setup
 void setup() {
   Serial.begin(115200);
+  if(!LittleFS.begin())
+{
+    Serial.println("LittleFS mount failed");
+}
+else
+{
+    Serial.println("LittleFS mounted");
+}
   initCache();
   initQueryLog();
   connectWiFi();
-  if (!LittleFS.begin()){
-    Serial.println("Failed to mount LittleFs");
-  }
-  else{
-    Serial.println("LittleFs mounted");
-  }
-  Serial.print("PSRAM: ");
-  Serial.println(psramFound());
   startDNSServer();
   startDashboard();
   startAPI();
+  initTime();
   initializeSettings();
   loadSettings();
 

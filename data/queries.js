@@ -8,9 +8,12 @@ function updateLogs()
 
             table.innerHTML = "";
 
-            limitQueries(logs).forEach(query => {
+            sortQueries(limitQueries(logs)).forEach(query => {
+                    let time = (query.timestamp)
+
                 let row = `
                     <tr>
+                        <td>${time}</td>
                         <td>${query.domain}</td>
                         <td>
                             <span class="action ${query.action.toLowerCase().replaceAll(" ", "_")}">
@@ -47,10 +50,10 @@ function filterQueries()
     rows.forEach(row => {
 
         const domain =
-            row.children[0].textContent.toLowerCase();
+            row.children[1].textContent.toLowerCase();
 
         const action =
-            row.children[1].textContent.toLowerCase();
+            row.children[2].textContent.toLowerCase();
 
         let visible =
             domain.includes(search);
@@ -163,3 +166,4 @@ document
 
     updateLogs();
 });
+

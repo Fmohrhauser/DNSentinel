@@ -17,7 +17,7 @@ struct QueryLogEntry {
 
     QueryAction action;
 
-    unsigned long timestamp;
+    String timestamp;
 };
 
 void initQueryLog();

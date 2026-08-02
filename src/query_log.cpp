@@ -1,5 +1,6 @@
 #include "query_log.h"
 #include "debug.h"
+#include "time_manager.h"
 
 
 
@@ -28,7 +29,7 @@ void logQuery(
     
      logs[logIndex].domain = domain;
      logs[logIndex].action = action;
-     logs[logIndex].timestamp = millis();
+     logs[logIndex].timestamp = getCurrentTime();
 
      logIndex++;
 
@@ -172,6 +173,12 @@ String createQueryLogJSON(int limit)
        json += actionToString(recent[i].action);
        json += "\"";
 
+       json += ",";
+
+       json += "\"timestamp\":\"";
+       json += recent[i].timestamp;
+       json += "\"";
+
        json += "}";
 
         
@@ -190,7 +197,7 @@ void clearLogs()
     {
         logs[i].domain = "";
         logs[i].action = FORWARDED;
-        logs[i].timestamp = 0;
+        logs[i].timestamp = "";
     }
 
     DEBUG_PRINTLN("Query log cleared");
