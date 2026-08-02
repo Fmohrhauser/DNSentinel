@@ -1,3 +1,12 @@
+let previousQueries = 0;
+let previousTime = Date.now();
+let currentUptime = 0;
+let queryRates = [];
+function updateTimestamp(element)
+{
+    document.getElementById(element).innerHTML =
+        "Updated " + new Date().toLocaleTimeString();
+}
 function updateStats()
 {
     fetch("/api/stats")
@@ -42,6 +51,8 @@ function updateStats()
                     Math.round(cache) + "%";
 
             }
+
+            updateTimestamp("stats-updated");
 
         });
 }
@@ -99,8 +110,10 @@ function updateSystem()
             document.getElementById("chip").innerHTML =
                 data.chip;
 
-            document.getElementById("uptime").innerHTML = 
-                formatTime(data.uptime);
+            currentUptime = data.uptime;
+
+            document.getElementById("uptime").innerHTML =
+                formatTime(currentUptime);
 
             document.getElementById("memory").innerHTML = 
                 Math.round(data.memory / 1024) + " KB";
@@ -123,14 +136,19 @@ function updateSystem()
             }
             else
             {
-                document.getElementById("status-text").innerHTML = 
+                document.getElementById("dns-status").innerHTML = 
                     "Checking DNS...";
 
-                document.getElementById("status-dot").style.background =
-                    "#FFCC00"
             }
         });
 }
+setInterval(()=> {
+
+    currentUptime++;
+
+    document.getElementById("uptime").innerHTML =
+        formatTime(currentUptime);
+}, 1000);
 
 function formatTime(seconds)
 {
@@ -140,7 +158,14 @@ function formatTime(seconds)
         (seconds % 3600) / 60
     );
 
-    return hours + "h " + minutes + "m"
+    let secs = 
+        seconds % 60;
+
+    return(
+     hours + "h " +
+     minutes + "m " +
+     secs + "s"
+    );
 }
 
 
@@ -195,3 +220,82 @@ document.getElementById("hideIP").addEventListener("change", function(){
     }
 
 });
+
+function updateLastQuery()
+{
+    fetch("/api/logs?limit=1")
+        .then(response => response.json())
+        .then(logs =>{
+
+            if(logs.length > 0)
+            {
+                document.getElementById("last-query").innerHTML =
+                    logs[0].domain;
+
+                    updateTimestamp("query-updated");
+            }
+            else
+            {
+                document.getElementById("last-query").innerHTML =
+                    "None"
+                
+                    updateTimestamp("query-updated");
+            }
+        });
+}
+
+setInterval(updateLastQuery, 2000);
+
+updateLastQuery();
+
+function updateQueryRate()
+{
+    fetch("/api/stats")
+        .then(response => response.json())
+        .then(data => {
+
+            let currentQueries =
+                Number(data.total);
+
+            let currentTime =
+                Date.now();
+
+            let timeDifference =
+                (currentTime - previousTime) / 60000;
+            if(timeDifference > 0)
+            {
+                let rate =
+                    (currentQueries - previousQueries) / timeDifference;
+
+
+                queryRates.push(rate);
+
+                //keep last 6 readings
+                if(queryRates.length > 6)
+                {
+                    queryRates.shift();
+                }
+
+                let average =
+                    Math.max(
+                        0,
+                        queryRates.reduce(
+                            (sum,value)=>sum+value,
+                            0
+                        ) / queryRates.length
+                    );
+
+
+                document.getElementById("query-rate").innerHTML =
+                    Math.round(average);
+            }
+
+
+            previousQueries = currentQueries;
+            previousTime = currentTime;
+        });
+}
+
+setInterval(updateQueryRate, 5000);
+
+updateQueryRate();
