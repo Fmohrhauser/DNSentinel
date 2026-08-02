@@ -96,7 +96,6 @@ bool cacheLookup(
 
             DEBUG_PRINT("Cache hit: ");
             DEBUG_PRINTLN(domain);
-            incrementCacheHits();
 
             return true;
         }

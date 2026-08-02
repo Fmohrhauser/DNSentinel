@@ -350,4 +350,15 @@ void startAPI()
             "{\"status\":\"cleared\"}"
         );
     });
+
+    server.on("/api/querystats", HTTP_GET, [](){
+
+        server.send(
+            200,
+            "application/json",
+            createQueryStatsJSON()
+        );
+    });
 }
+
+

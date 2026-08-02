@@ -51,4 +51,9 @@ String createQueryLogJSON(int limit);
 
 void clearLogs();
 
+
+
+
+
+
 #endif

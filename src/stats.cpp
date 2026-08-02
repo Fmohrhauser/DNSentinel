@@ -5,6 +5,10 @@ unsigned long blockedRequests = 0;
 unsigned long forwardedRequests = 0;
 int cacheHits = 0;
 
+int totalQueries = 0;
+int blockedQueries = 0;
+int forwardedQueries = 0;
+
 void incrementCacheHits()
 {
     cacheHits++;
@@ -38,4 +42,61 @@ String createStatsJSON()
 
     return json;
 }
+
+int getTotalQueries()
+{
+    return totalQueries;
+}
+
+int getBlockedQueries()
+{
+    return blockedQueries;
+}
+
+int getForwardedQueries()
+{
+    return forwardedQueries;
+}
+
+
+String createQueryStatsJSON()
+{
+    String json = "{";
+
+    json += "\"total\":";
+    json += totalQueries;
+    json += ",";
+
+    json += "\"blocked\":";
+    json += blockedQueries;
+    json += ",";
+
+    json += "\"forwarded\":";
+    json += forwardedQueries;
+    json += ",";
+
+    json += "\"cacheHits\":";
+    json += cacheHits;
+
+    json +="}";
+
+    return json;
+}
+
+void incrementTotalQueries()
+{
+    totalQueries++;
+}
+
+void incrementBlockedQueries()
+{
+    blockedQueries++;
+}
+
+void incrementForwardedQueries()
+{
+    forwardedQueries++;
+}
+
+
 

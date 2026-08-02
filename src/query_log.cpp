@@ -1,14 +1,17 @@
 #include "query_log.h"
 #include "debug.h"
 #include "time_manager.h"
+#include "stats.h"
 
 
 
 QueryLogEntry logs[MAX_QUERY_LOGS];
 
 int logIndex = 0;
-
 int queryCount = 0;
+
+
+
 
 void initQueryLog()
 {
@@ -32,6 +35,23 @@ void logQuery(
      logs[logIndex].timestamp = getCurrentTime();
 
      logIndex++;
+     incrementTotalQueries();
+
+     switch(action)
+     {
+        case BLOCKED:
+            incrementBlockedQueries();
+            break;
+
+        case FORWARDED:
+            incrementForwardedQueries();
+            break;
+
+        case CACHE_HIT:
+            incrementCacheHits();
+            break;
+
+     }
 
      if(logIndex >= MAX_QUERY_LOGS)
      {
@@ -202,3 +222,7 @@ void clearLogs()
 
     DEBUG_PRINTLN("Query log cleared");
 }
+
+
+
+
