@@ -69,8 +69,10 @@
         <div class ="card">
             <h2>DNS Health</h2>
 
-            <p id="dns-status">
-                    Unknown
+            <p>
+                <span id="dns-dot" class="status-dot"></span>
+                <span id="dns-status">Unknown</span>
+
             </p>
 
             <span id="dns-latency">
@@ -95,12 +97,18 @@
             <h2>Query Rate</h2>
             <p>
                 <span id="query-rate">0</span>
-                req/min
+
+                <span id="query-trend">▬</span>
+                Queries/min
             </p>
+
+
+
             <span class="card-status" id="stats-updated">
                 Updating...
             </span>
         </div>
+        
 
     </div>
 

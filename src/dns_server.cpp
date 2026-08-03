@@ -10,18 +10,16 @@
 #include "blocked_stats.h"
 #include "settings.h"
 #include "api.h"
+#include "cache_stats.h"
+#include "dns_health_stats.h"
 
 WiFiUDP udp;
 WiFiUDP upstreamUdp;
 byte dnsPacket[MAX_DNS_PACKET_SIZE];
 unsigned long statsDelay = 0;
 int pos;
-bool upstreamOnline = false;
-bool upstreamChecked = false;
-unsigned long lastUpstreamSuccess = 0;
-unsigned long totalUpstreamLatency = 0;
-unsigned long upstreamRequests = 0;
-unsigned long upstreamFailures = 0;
+
+
 
 
 
@@ -191,11 +189,6 @@ void requestStatistics(){
   if (millis() - statsDelay > 20000){
     Serial.println("---- DNS Stats ----");
     Serial.print("Total: ");
-    Serial.println(totalRequests);
-    Serial.print("Blocked: ");
-    Serial.println(blockedRequests);
-    Serial.print("Forwarded: ");
-    Serial.println(forwardedRequests);
     statsDelay = millis();
   }
   
@@ -209,7 +202,7 @@ void handleDNS(){
 
 
   if(packetSize){
-    totalRequests++;
+    incrementTotalRequests();
     DEBUG_PRINTLN("PACKET!");
 
     int bytesRead = udp.read(dnsPacket, MAX_DNS_PACKET_SIZE);
@@ -305,7 +298,7 @@ void handleDNS(){
     if(getSettings().blockingEnabled && blocked){
     
       logQuery(domain, BLOCKED);
-      blockedRequests++;
+      incrementBlockedRequests();
       incrementBlockedDomain(domain);
       Settings currentSettings = getSettings();
 
@@ -378,8 +371,7 @@ void handleDNS(){
             return;
         }
         
-        forwardedRequests++;
-        logQuery(domain, FORWARDED);
+        
         byte upstreamResponse[MAX_DNS_PACKET_SIZE];
         int responseLength = 0;
 
@@ -389,6 +381,15 @@ void handleDNS(){
           upstreamResponse,
           responseLength
         );
+        if(success)
+        {
+          incrementForwardedRequests();
+
+          logQuery(
+            domain,
+            FORWARDED
+        );
+        }
 
         
 

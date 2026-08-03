@@ -2,36 +2,61 @@
 #include "dns_server.h"
 #include <ArduinoJson.h>
 #include <Arduino.h>
+#include "dns_health_stats.h"
 
 String createDNSHealthJSON()
 {
-    JsonDocument doc;
+    String json = "{";
 
-    doc["online"] =
-        upstreamOnline;
+    json += "\"checked\":";
+    json += upstreamChecked ? "true" : "false";
+    json += ",";
 
-    doc["checked"] =
-        upstreamChecked;
+    json += "\"online\":";
+    json += upstreamOnline ? "true" : "false";
+    json += ",";
 
-    doc["lastSuccess"] =
-        lastUpstreamSuccess;
+    json += "\"requests\":";
+    json += upstreamRequests;
+    json += ",";
+
+    json += "\"failures\":";
+    json += upstreamFailures;
+    json += ",";
+
+    float successRate = 0;
 
     if(upstreamRequests > 0)
     {
-        doc["averageLatency"] =
-            totalUpstreamLatency / upstreamRequests;
+        successRate =
+            ((float)(upstreamRequests - upstreamFailures)
+            / upstreamRequests)
+            *100.0;
     }
-    else
+
+    json += "\"successRate\":";
+    json += String(successRate,1);
+    json += ",";
+
+    float averageLatency = 0;
+
+    if(upstreamRequests > 0)
     {
-        doc["averageLatency"] = 0;
+        averageLatency =
+            (float)totalUpstreamLatency /
+            upstreamRequests;
     }
 
-    doc["failures"] =
-        upstreamFailures;
+    json += "\"averageLatency\":";
+    json += String(averageLatency,1);
+    json += ",";
 
-    String json;
-    
-    serializeJson(doc, json);
+    json += "\"lastSuccess\":";
+    json += lastUpstreamSuccess;
+
+    json += "}";
 
     return json;
+
+    float getUpstreamSuccessRate();
 }

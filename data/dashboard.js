@@ -1,7 +1,7 @@
-let previousQueries = 0;
-let previousTime = Date.now();
-let currentUptime = 0;
-let queryRates = [];
+let queryHistory = [];
+let previousRate = 0;
+let firstRateUpdate = true;
+
 function updateTimestamp(element)
 {
     document.getElementById(element).innerHTML =
@@ -150,6 +150,10 @@ setInterval(()=> {
         formatTime(currentUptime);
 }, 1000);
 
+function pad(n){
+    return String(n).padStart(2,"0");
+}
+
 function formatTime(seconds)
 {
     let hours = Math.floor(seconds / 3600);
@@ -182,18 +186,26 @@ function updateDNSHealth()
         {
             
             let status = 
-            document.getElementById("dns-status");
+                document.getElementById("dns-status");
+            let dot =
+                document.getElementById("dns-dot")
             if(!data.checked)
             {
-                status.innerHTML = "🟡 Checking"
+                status.innerHTML = "Checking"
+                dot.style.background =
+                    "var(--checking)";
             }
             else if(data.online)
             {
-                status.innerHTML = "🟢 Online";
+                status.innerHTML = "Online";
+                dot.style.background =
+                    "var(--success)";
             }
             else
             {
-                status.innerHTML = "🔴 Offline"
+                status.innerHTML = "Offline"
+                dot.style.background =
+                    "var(--danger)"
             }
 
             document.getElementById("dns-latency").innerHTML =
@@ -252,50 +264,93 @@ function updateQueryRate()
 {
     fetch("/api/stats")
         .then(response => response.json())
-        .then(data => {
+        .then (data=>{
 
-            let currentQueries =
-                Number(data.total);
+            const now = Date.now();
 
-            let currentTime =
-                Date.now();
+            queryHistory.push({
+                time: now,
+                total: Number(data.total)
+            });
 
-            let timeDifference =
-                (currentTime - previousTime) / 60000;
-            if(timeDifference > 0)
+            
+
+            while(
+                    queryHistory.length > 0 &&
+                    now - queryHistory[0].time > 60000
+            )
             {
-                let rate =
-                    (currentQueries - previousQueries) / timeDifference;
-
-
-                queryRates.push(rate);
-
-                //keep last 6 readings
-                if(queryRates.length > 6)
-                {
-                    queryRates.shift();
-                }
-
-                let average =
-                    Math.max(
-                        0,
-                        queryRates.reduce(
-                            (sum,value)=>sum+value,
-                            0
-                        ) / queryRates.length
-                    );
-
-
-                document.getElementById("query-rate").innerHTML =
-                    Math.round(average);
+                queryHistory.shift();
             }
 
+            let rate = 0;
 
-            previousQueries = currentQueries;
-            previousTime = currentTime;
-        });
+            if(queryHistory.length >= 2)
+            {
+                const oldest = queryHistory[0];
+                const newest = queryHistory[queryHistory.length - 1];
+
+                const queryDifference =
+                    newest.total - oldest.total;
+
+                const minuteDifference =
+                    (newest.time - oldest.time) / 60000;
+
+                if(minuteDifference > 0)
+                {
+                    rate = queryDifference / minuteDifference;
+                }
+            }
+
+  
+
+            const rateElement =
+                document.getElementById("query-rate");
+
+            const trend =
+                document.getElementById("query-trend");
+
+            const displayRate = Math.round(rate);
+
+            rateElement.innerHTML = displayRate;
+
+            if(rate >= 20)
+            {
+                rateElement.style.color =
+                    "var(--success)";
+            }
+            else if(rate >= 5)
+            {
+                rateElement.style.color =
+                    "var(--warning)";
+            }
+            else
+            {
+                rateElement.style.color = "var(--secondary-text)"
+            }
+            if(rate > previousRate + 1)
+            {
+                trend.innerHTML = "▲";
+                trend.style.color = "var(--success)";
+            }
+            else if(rate < previousRate - 1)
+            {
+                trend.innerHTML = "▼";
+                trend.style.color = "var(--danger)";
+            }
+            else
+            {
+                trend.innerHTML = "▬";
+                trend.style.color = "var(--secondary-text)";
+            }
+            previousRate = rate;
+    });
 }
 
 setInterval(updateQueryRate, 5000);
 
 updateQueryRate();
+
+
+
+

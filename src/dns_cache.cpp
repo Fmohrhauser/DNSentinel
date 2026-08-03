@@ -2,6 +2,7 @@
 #include "debug.h"
 #include "dns_parser.h"
 #include "stats.h"
+#include "cache_stats.h"
 
 
 CacheEntry cache[CACHE_SIZE];
@@ -69,6 +70,8 @@ bool cacheLookup(
     int& responseLength
 )
 {
+
+    unsigned long lookupTime = millis();
     for(int i=0; i< CACHE_SIZE; i++)
     {
         if(!cache[i].valid)
@@ -86,6 +89,7 @@ bool cacheLookup(
            cache[i].qType == qType 
         )
         {
+            recordCacheHit(lookupTime);
             memcpy(
                 response,
                 cache[i].response,
@@ -96,14 +100,14 @@ bool cacheLookup(
              incrementCacheHits();
             DEBUG_PRINT("Cache hit: ");
             DEBUG_PRINTLN(domain);
-
+             lookupTime = millis() - lookupTime;
             return true;
         }
     }
-
+    recordCacheMiss(lookupTime);
     DEBUG_PRINT("Cache miss: ");
     DEBUG_PRINTLN(domain);
-
+    lookupTime = millis() - lookupTime;
     return false;
 }
 

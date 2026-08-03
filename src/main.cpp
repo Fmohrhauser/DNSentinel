@@ -13,6 +13,7 @@
 #include "api.h"
 #include "settings.h"
 #include "time_manager.h"
+#include "cache_stats.h"
 
 
 //setup
@@ -30,15 +31,21 @@ else
   initQueryLog();
   connectWiFi();
   startDNSServer();
+  loadConfig();
   startDashboard();
   startAPI();
   initTime();
   initializeSettings();
+  initCacheStats();
   loadSettings();
 
   blockedDomains.begin();
   
   loadBlocklist();
+
+Serial.println(deviceConfig.deviceName);
+Serial.println(deviceConfig.upstreamDNS);
+Serial.println(deviceConfig.UPSTREAM_TIMEOUT);
   
 }
 
