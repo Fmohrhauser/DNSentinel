@@ -1,5 +1,3 @@
-#include "api.h"
-#include "stats.h"
 #include "dashboard.h"
 #include "query_log.h"
 #include "blocked_stats.h"
@@ -10,13 +8,100 @@
 #include "dns_health.h"
 #include "system.h"
 #include "dns_server.h"
+#include "dns_health_stats.h"
+#include "stats.h" 
+#include "auth.h"
 
 
 extern WebServer server;
+//test--function
+//void ServerOnGet(String path, int number, String type, String function)
+//{
+//    server.on(String path, HTTP_GET, []()
+//    {
+//        server.send(
+//            int number,
+//            String type,
+//            function
+//        );
+//    });
+//}
+
+
+
 
 void startAPI()
 {
+    server.on("/api/auth/setup", HTTP_POST, [](){
+        String body = server.arg("plain");
 
+        JsonDocument doc;
+
+        DeserializationError error =
+            deserializeJson(doc, body.c_str());
+
+        if (error)
+        {
+            server.send(
+                400,
+                "application/json",
+                "{\"error\":\"Invalid JSON\"}"
+            );
+
+            return;
+        }
+
+        if(!doc["username"].is<String>() ||
+        !doc["password"].is<String>())
+        {
+            server.send(
+                400,
+                "application/json",
+                "{\"error\":\"Missing username or password\"}"
+            );
+
+            return;
+        }
+
+        String username =
+            doc["username"].as<String>();
+
+        String password =
+            doc["password"].as<String>();
+
+        if(username.length() < 3 ||
+            password.length() < 8)
+        {
+            server.send(
+                400,
+                "application/json",
+                "{\"errpr\":\"Username or password too short\"}"
+            );
+
+            return;
+        }
+
+
+        Settings settings =
+            getSettings();
+
+        settings.username =
+            username;
+        settings.passwordHash =
+            hashPassword(password);
+
+            settings.authEnabled =
+                true;
+
+            updateSettings(settings);
+
+            server.send(
+                200,
+                "application/json",
+                "{\"status\":\"authentication enabled\"}"
+            );
+        
+    });
     server.on("/api/stats", HTTP_GET, []()
     {
         server.send(
@@ -27,7 +112,8 @@ void startAPI()
     });
 
     server.on("/api/logs", HTTP_GET, []()
-    {
+    {   
+
         int limit = 25;
 
         if(server.hasArg("limit"))
@@ -57,7 +143,8 @@ void startAPI()
     });
 
     server.on("/api/settings", HTTP_GET, [](){
-
+        if(!checkAuthentication(server))
+            return;
         server.send(
             200,
             "application/json",
@@ -74,7 +161,7 @@ void startAPI()
 
         JsonDocument doc;
 
-        DeserializationError error = deserializeJson(doc, body);
+        DeserializationError error = deserializeJson(doc, body.c_str());
 
         if(error)
         {
@@ -164,7 +251,8 @@ void startAPI()
     });
 
     server.on("/api/settings/reset", HTTP_POST,[](){
-
+        if(!checkAuthentication(server))
+            return;
         initializeSettings();
 
         saveSettings();
@@ -188,13 +276,14 @@ void startAPI()
     });
 
     server.on("/api/blocklist/add", HTTP_POST, [](){
-
+        if(!checkAuthentication(server))
+            return;
         String body = server.arg("plain");
 
         JsonDocument doc;
 
         DeserializationError error = 
-            deserializeJson(doc, body);
+            deserializeJson(doc, body.c_str());
 
             if(error)
             {
@@ -234,12 +323,13 @@ void startAPI()
     });
 
     server.on("/api/blocklist/remove", HTTP_POST, [](){
-
+        if(!checkAuthentication(server))
+            return;
         String body = server.arg("plain");
 
         JsonDocument doc;
 
-        deserializeJson(doc, body);
+        deserializeJson(doc, body.c_str());
 
 
         String domain=
@@ -268,7 +358,8 @@ void startAPI()
     });
 
     server.on("/api/blocklist/import", HTTP_POST,[](){
-
+        if(!checkAuthentication(server))
+            return;
         if(!server.hasArg("plain"))
         {
             server.send(400, "text/plain", "Missing data");
@@ -304,7 +395,8 @@ void startAPI()
     });
 
     server.on("/api/blocklist/count", HTTP_GET, [](){
-
+        if(!checkAuthentication(server))
+            return;
         JsonDocument doc;
 
         doc["count"] = getBlocklistSize();
@@ -341,7 +433,8 @@ void startAPI()
     });
 
     server.on("/api/logs/clear", HTTP_POST, [](){
-
+        if(!checkAuthentication(server))
+            return;
         clearLogs();
 
         server.send(

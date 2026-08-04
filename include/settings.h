@@ -20,6 +20,11 @@ struct Settings
     bool queryLoggingEnabled;
     BlockingMode blockingMode;
     String redirectIP;
+
+    //Authenication
+    bool authEnabled;
+    String username;
+    String passwordHash;
 };
 
 

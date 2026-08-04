@@ -16,6 +16,14 @@ void initializeSettings()
     settings.queryLoggingEnabled = true;
     settings.blockingMode = NULL_IP;
     settings.redirectIP = "0.0.0.0";
+
+    settings.authEnabled = true;
+    settings.username = "admin";
+
+    // temporary default password:
+    // password: admin
+    settings.passwordHash =
+        "8c6976e5b5410415bde908bd4dee15dfb167a2d4f6d7b6b5d5b4e5f4b9c4b4f";
 }
 
 Settings getSettings()
@@ -52,6 +60,12 @@ String createSettingsJSON()
     doc["redirectIP"] =
         settings.redirectIP;
 
+    doc["authEnabled"] =
+        settings.authEnabled;
+
+    doc["username"] =
+        settings.username;
+
     String json;
 
     serializeJson(doc, json);
@@ -87,6 +101,18 @@ void saveSettings()
         settings.blockingMode;
 
     doc["redirectIP"] = settings.redirectIP;
+
+
+    doc["authEnabled"] =
+        settings.authEnabled;
+
+    doc["username"] =
+        settings.username;
+
+    doc["passwordHash"] =
+        settings.passwordHash;
+
+
 
     serializeJson(doc,file);
 
@@ -150,6 +176,21 @@ void loadSettings()
     {
         settings.redirectIP =
             doc["redirectIP"].as<String>();
+    }
+    if(doc["authEnabled"].is<bool>())
+    {
+        settings.authEnabled =
+            doc["authEnabled"];
+    }
+    if(doc["username"].is<String>())
+    {
+        settings.username =
+            doc["username"].as<String>();
+    }
+    if(doc["passwordHash"].is<String>())
+    {
+        settings.passwordHash =
+            doc["passwordHash"].as<String>();
     }
     file.close();
 
