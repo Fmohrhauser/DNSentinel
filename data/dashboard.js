@@ -1,6 +1,7 @@
 let queryHistory = [];
 let previousRate = 0;
-let firstRateUpdate = true;
+let firstRateUpdate = true
+let currentUptime = 0;
 
 function updateTimestamp(element)
 {
@@ -10,7 +11,16 @@ function updateTimestamp(element)
 function updateStats()
 {
     fetch("/api/stats")
-        .then(response => response.json())
+        .then(response => {
+            
+            if(!response.ok)
+                {
+                    throw new Error(
+                        "Stats HTTP error: " + response.status
+                    );
+                }
+                return response.json()
+            })
         .then(data => {
 
             document.getElementById("total").innerHTML = data.total;
@@ -54,10 +64,19 @@ function updateStats()
 
             updateTimestamp("stats-updated");
 
+        })
+        .catch(error => {
+
+            console.error(
+                "Failed to update stats:",
+                error
+            );
+
+            document.getElementById("stats-updated").innerHTML = "Stats unavailable";
         });
 }
 
-setInterval(updateStats, 2000);
+setInterval(updateStats, 5000);
 
 updateStats();
 
@@ -118,28 +137,7 @@ function updateSystem()
             document.getElementById("memory").innerHTML = 
                 Math.round(data.memory / 1024) + " KB";
 
-            if(data.dnsStatus == 1)
-            {
-                document.getElementById("status-text").innerHTML =
-                    "Protection Active";
-
-                document.getElementById("status-dot").style.background = 
-                    "#00D084";
-            }
-            else if(data.dnsStatus == 2)
-            {
-                document.getElementById("status-text").innerHTML =
-                    "Upstream DNS Offline";
-                
-                document.getElementById("status-dot").style.background =
-                    "#FF4444";
-            }
-            else
-            {
-                document.getElementById("dns-status").innerHTML = 
-                    "Checking DNS...";
-
-            }
+            
         });
 }
 setInterval(()=> {
@@ -232,33 +230,6 @@ document.getElementById("hideIP").addEventListener("change", function(){
     }
 
 });
-
-function updateLastQuery()
-{
-    fetch("/api/logs?limit=1")
-        .then(response => response.json())
-        .then(logs =>{
-
-            if(logs.length > 0)
-            {
-                document.getElementById("last-query").innerHTML =
-                    logs[0].domain;
-
-                    updateTimestamp("query-updated");
-            }
-            else
-            {
-                document.getElementById("last-query").innerHTML =
-                    "None"
-                
-                    updateTimestamp("query-updated");
-            }
-        });
-}
-
-setInterval(updateLastQuery, 2000);
-
-updateLastQuery();
 
 function updateQueryRate()
 {

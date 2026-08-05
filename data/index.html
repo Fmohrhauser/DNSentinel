@@ -13,7 +13,7 @@
     <div class="sidebar">
         <h2>DNSentinel</h2>
 
-        <a href="/">
+        <a href="/" class="active">
             Dashboard
         </a>
 
@@ -30,149 +30,212 @@
         </a>
     </div>
     <div class="content">
-        <div class="header">
 
-        <div>
-            <h1>DNSentinel</h1>
+            <header class="topbar">
 
-            <p class="subtitle">
-                ESP32 DNS Sinkhole Dashboard
-            </p>
-        </div>
+                <div class="topbar-left">
+
+                    <h1>DNSentinel</h1>
+
+                    <p class="subtitle">
+                        ESP32 DNS Sinkhole Dashboard
+                    </p>
+                </div>
+
+                    <div class="system-chip">
+
+                        <span>
+                            ESP32-S3
+                        </span>
+                    </div>
+                
+
+                
+            </header>
+    
 
         
 
-    </div>
     
-    <div class="cards">
+    
+    <div class="stats-grid">
 
-        <div class="card">
-            <h2>Total Requests</h2>
-            <p id="total">0</p>
-        </div>
+        <div class="card stat-card">
 
-        <div class="card">
-            <h2>Blocked Requests</h2>
-            <p id="blocked">0</p>
-        </div>
-
-        <div class="card">
-            <h2>Forwarded Requests</h2>
-            <p id="forwarded">0</p>
-        </div>
-
-        <div class="card">
-            <h2>Cache Hits</h2>
-            <p id="cache_hits">0</p>
-        </div>
-
-        <div class ="card">
-            <h2>DNS Health</h2>
-
-            <p>
-                <span id="dns-dot" class="status-dot"></span>
-                <span id="dns-status">Unknown</span>
-
-            </p>
-
-            <span id="dns-latency">
-                Latency: --
+            <span class="stat-label">
+                Total Requests
             </span>
 
-            <br>
+            <h2 id="total">0</h2>
+        </div>
 
-            <span id="dns-failures">
-                Failures: --
+        <div class="card stat-card">
+
+            <span class="stat-label">
+                Blocked
             </span>
 
+            <h2 id="blocked">0</h2>
+
         </div>
-        <div class="card">
-            <h2>Last Query</h2>
-            <p id="last-query">None</p>
-            <span class="card-status" id="query-updated">
-                Updating...
+        
+        <div class="card stat-card">
+
+            <span class="stat-label">
+                Forwarded
             </span>
+
+            <h2 id="forwarded">0</h2>
+
+
         </div>
-        <div class="card">
-            <h2>Query Rate</h2>
-            <p>
-                <span id="query-rate">0</span>
+        <div class="card stat-card">
 
-                <span id="query-trend">▬</span>
-                Queries/min
-            </p>
+            <span class="stat-label">
+                Cache Hits
+            </span>
 
+            <h2 id="cache_hits">0</h2>
+        </div>
+    </div>
 
+    <section class="dashboard-row">
 
+        <div class="card wide-card">
+
+            <h2>
+                DNS Health
+            </h2>
+
+            <div class="health-grid">
+
+                <div>
+
+                    <span id="dns-dot" class="status-dot"></span>
+
+                    <span id="dns-status">
+                        Checking...
+                    </span>
+                </div>
+
+                <div id="dns-latency">
+                    Latency: --
+                </div>
+
+                <div id="dns-failures">
+                    Failures: --
+                </div>
+            </div>
+        </div>
+        <div class="card wide-card">
+
+            <h2>
+                Query Rate
+            </h2>
+
+            <div class="query-rate-display">
+
+                <span id="query-rate">
+                    0
+                </span>
+
+                <span id="query-trend">
+                    ▬
+                </span>
+            </div>
             <span class="card-status" id="stats-updated">
                 Updating...
             </span>
         </div>
-        
+    </section>
 
-    </div>
+    <section class="dashboard-row">
+        <div class="card wide-card">
 
-   
+            <h2>
+                Request Breakdown
+            </h2>
 
-    <h2>Request Breakdown</h2>
+            <div class="breakdown">
 
-    <div class="breakdown">
+                <div class="bar-group">
 
-        <div class="bar-group">
-            <label>Forwarded</label>
+                    <label>Forwarded</label>
 
-            <div class="bar-background">
-                <div id="forwarded-bar" class="bar forwarded-bar"></div>
+                    <div class="bar-background">
+
+                        <div
+                            id="forwarded-bar"
+                            class="bar forwarded-bar">
+                        </div>
+                    </div>
+
+                    <span id="forwarded-percent">
+                        0%
+                    </span>
+                </div>
+
+                <div class="bar-group">
+
+                    <label>Blocked</label>
+
+                    <div class="bar-background">
+
+                        <div 
+                            id="blocked-bar"
+                            class="bar blocked-bar">
+                        </div>
+                    </div>
+
+                    <span id="blocked-percent">
+                        0%
+                    </span>
+                </div>
+
+                <div class="bar-group">
+
+                    <label>Cache Hits</label>
+
+                    <div class="bar-background">
+
+                        <div
+                            id="cache-bar"
+                            class="bar cache-bar">
+                        </div>
+                    </div>
+
+                    <span id="cache-percent">
+                        0%
+                    </span>
+                </div>
             </div>
-
-            <span id="forwarded-percent">0%</span>
         </div>
 
-        <div class="bar-group">
+        <div class="card wide-card">
 
-            <label>Blocked</label>
+            <h2>
+                Top Blocked Domains
+            </h2>
 
-            <div class="bar-background">
-                <div id="blocked-bar" class="bar blocked-bar"></div>
-            </div>
+            <table class="compact-table">
 
-            <span id="blocked-percent">0%</span>
+                <thead>
 
+                    <tr>
+
+                        <th>#</th>
+                        <th>Domain</th>
+                        <th>Hits</th>
+                    </tr>
+                </thead>
+
+                <tbody id="top-blocked">
+
+                </tbody>
+            </table>
         </div>
+    </section>
 
-        <div class="bar-group">
-
-            <label>Cache Hits</label>
-
-            <div class="bar-background">
-                <div id="cache-bar" class="bar cache-bar"></div>
-            </div>
-
-            <span id="cache-percent">0%</span>
-
-        </div>
-
-    </div>
-
-    <h2>Top Blocked Domains</h2>
-
-    <table>
-
-        <thead>
-
-            <tr>
-                <th>#</th>
-                <th>Domain</th>
-                <th>Blocks</th>
-            </tr>
-
-        </thead>
-
-        <tbody id="top-blocked">
-
-        </tbody>
-
-    </table>
 
 
     <footer>
@@ -204,6 +267,7 @@
         </p>
 
     </footer>
+</div>
 
         <script src="/dashboard.js"></script>
     </div>
