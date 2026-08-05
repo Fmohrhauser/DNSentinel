@@ -28,7 +28,7 @@
 
 ---
 
-# DNS Features
+## DNS Features
 
 - DNS cache
 - Configurable upstream DNS server
@@ -36,18 +36,18 @@
 - AAAA record support
 - Query logging
 - Cache hit tracking
-
-☐ Import larger blocklists
-☐ Wildcard blocklist support
+- Import larger blocklists
 - Web blocklist management
+- Upstream DNS health monitoring
+- Measure upstream latency
+- DNS server status API
+
+☐ Wildcard blocklist support
 ☐ Local whitelist
-☐ Upstream DNS health monitoring
-☐ Measure upstream latency
-☐ DNS server status API
 
 ---
 
-# Dashboard
+## Dashboard
 
 - Basic web server
 - LittleFS webpage hosting
@@ -61,7 +61,6 @@
 - Hide IP privacy toggle
 
 / Dashboard UI improvements
-- settings popup panel
 - Web configuration controls
 - Persistent settings storage
 - Configuration API
@@ -69,17 +68,28 @@
 - Restore defaults button
 
 
-☐ Blocklist management interface
-☐ Dashboard CSS redesign
-☐ mobile responsive layout
+- Blocklist management interface
+- Dashboard CSS redesign
+- Queries page redesign
+- Query search controls
+- Query action filtering
+- Query sorting controls
+- Configurable query display limit
+- Clear query log control
+- Active-page sidebar highlighting
+- Responsive query table
+- Query action badges
+/ mobile responsive layout
+/Dashboard UI improvements
+/Redesign Blocklist page
+/Redesign Settings page
 ☐ Dashboard Charts
-☐ Tabs
-☐ Configurable "Home Screen"
 
+- Tabs
 
 ---
 
-# Performance
+## Performance
 
 ☐ Memory profiling
 ☐ PSRAM cache optimization
@@ -89,7 +99,23 @@
 
 ---
 
-# Future Hardware
+## Security
+
+/ Authentication backend
+
+☐ Create a security threat model
+☐ Review network-device security practices
+☐ Validate DNS packet lengths
+☐ Validate API input
+☐ Add request-size limits
+☐ Add blocklist import-size limits
+☐ Add protection against request flooding
+☐ Review memory and buffer limits
+☐ Secure all write API endpoints
+☐ Test behavior with malformed requests
+☐ Review storage of WiFi credentials and secrets
+
+## Future Hardware
 
 ☐ Port project to ESP32-P4
 ☐ Port project to ESP32-S31
@@ -99,14 +125,14 @@
 
 ---
 
-# Known Bugs
+## Known Bugs
 
 ☐ IPv4 + IPv6 requests create duplicate statistics entries
     (Technically correct DNS behavior, but may confuse users)
 
 ---
 
-# Ideas
+## Ideas
 
 ☐ DNS-over-HTTPS support
 ☐ DNS-over-TLS
@@ -117,7 +143,7 @@
 
 ---
 
-# DNS Record Types
+## DNS Record Types
 
 - A
 - AAAA
@@ -129,8 +155,6 @@
 
 ---
 
-# Debug Type Settings
+## Debug Type Settings
 
 - Overall debug serial print
-
-☐ Specific debug serial prints

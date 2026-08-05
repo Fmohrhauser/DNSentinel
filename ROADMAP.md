@@ -40,8 +40,8 @@
 - Query logging
 - A record support
 - AAAA record support
-
-☐ Larger blocklists
+- Larger blocklists
+  
 ☐ Wildcard blocklist support
 ☐ Local whitelist
 
@@ -63,9 +63,20 @@
 - Configuration API
 - Blocklist management
 
-☐ DNS health monitoring
-☐ Dashboard redesign
-☐ Larger blocklist importing
+- DNS health monitoring
+- Dashboard redesign
+- Larger blocklist importing
+- Queries page redesign
+- Mobile responsive layout
+- Active-page sidebar highlighting
+- Query search and filtering controls
+- Query sorting controls
+- Configurable query display limit
+- Clear query log control
+- Responsive query table
+  
+/ Blocklist page redesign
+/Settings page redesign
 ☐ Wildcard support
 ☐ Whitelist management
 
@@ -83,6 +94,12 @@
 ☐ complete blocklist management
 ☐ DNS health monitoring
 ☐ Improve dashboard UX
+☐ Crate a security threat model
+☐ Review network-device security
+☐ Validate DNS and API inputs
+☐ Add request and import size limits
+☐ Secure all write API endpoints
+☐ Test malformed requests and request flooding
 
 ---
 
