@@ -3,124 +3,188 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
     <title>DNSentinel - Blocklist</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div class="sidebar">
+    <aside class="navbar">
         <h2>DNSentinel</h2>
+        <nav>
+            <a href="/">Dashboard</a>
+            <a href="/queries.html">Queries</a>
+            <a href="/blocklist.html" class="active">Blocklist</a>
+            <a href="/settings.html">Settings</a>
+        </nav>
+        <div class="navbar-ftr">
+            <small>v0.4.0</small>
+        </div>
 
-        <a href="/">
-            Dashboard
-        </a>
+    </aside>
 
-        <a href="/queries.html">
-            Queries
-        </a>
+    <main class="content">
+        
+        <header class="topbar">
 
-        <a href="/blocklist.html" class="active">
-            Blocklist
-        </a>
 
-        <a href="/settings.html">
-            Settings
-        </a>
-    </div>
-
-    <div class="content">
-        <div class="header">
-            <div>
+            <div class="topbar-left">
                 <h1>Blocklist</h1>
 
                 <p class="subtitle">
                     Manage blocked domains
                 </p>
             </div>
-        </div>
-    
 
-        <div class="card blocklist-card">
+            <div class="topbar-right">
 
-            <h2>Blocked Domains
-                <span id="blocklist-count">(0)</span>
-            </h2>
-            <input
-                id="blocklist-search"
-                type="text"
-                placeholder="Search domains...">
-            <p id="blocklist-results">
-                Loading...
-            </p>
-            <div id="blocklist">
-                Loading...
+                <div class="system-chip">
+
+                    <span id="blocklist-count">
+                        0
+                    </span>
+                </div>
             </div>
-
-            <input
-                id="new-domain"
-                type="text"
-                placeholder="example.com"
-            >
-
-            <button id="add-domain">
-                Add Domain
-            </button>
-
-            <h2> Import Blocklist</h2>
-
-            <p>
-                Paste one domain per line.
-            </p>
-
-            <textarea
-                id="import-list"
-                placeholder="doubleclick.net
-            ads.google.com
-            tracker.com">
-        </textarea>
-
-        <br>
-        <button id="reset-blocklist">
-            Reset Blocklist
-        </button>
-        <button id="import-button">
-            Import Blocklist
-        </button>
-        <p id="import-progress" class="hidden">
-            Importing blocklist. Please wait...
-        </p>
-
-        <div id="import-summary" class="summary-card hidden">
-
-            <h3>
-                Import Complete
-            </h3>
+        </header>
 
 
-        <p>
-            Added:
-            <span id="import-added"></span>
-        </p>
 
-        <p>
-            Duplicates:
-            <span id="import-duplicates">0</span>
-        </p>
+        <div class="blocklist-layout">
 
-        <p>
-            Ignored:
-            <span id="import-ignored">0</span>
-        </p>
+            <section class="card blocklist-browser-card">
+                <h2>
+                    Blocked Domains
+                </h2>
 
-        <button id="close-summary">
-            Close
-        </button>
+                <p class="card-description">
+                    Search through or remove domains from the blocklist.
+                </p>
 
-        
+
+                <div class="blocklist-input-control">
+
+                    <label for="blocklist-search">
+                        Search Domains
+                    </label>
+
+                    <input
+                        id="blocklist-search"
+                        type="text"
+                        placeholder="Search domains..."
+                        autocomplete="off">
+                </div>
+
+
+
+                <p id="blocklist-results">
+                    Loading...
+                </p>
+
+                <div id="blocklist" class="blocklist-domain-list">
+
+                    Loading...
+                </div>
+            </section>
+            <div class="blocklist-management">
+                <!--Single domain import-->
+                <section class="card blocklist-add-card">
+
+                    <h2>
+                        Add Domain
+                    </h2>
+
+                    <p class="card-description">
+                        Add one domain to the current blocklist.
+                    </p>
+
+                    <div class="blocklist-input-control">
+
+                        <label for="new-domain">
+                            Domain
+                        </label>
+
+                        <input
+                            id="new-domain"
+                            type="text"
+                            placeholder="example.com"
+                            autocomplete="off">
+                    </div>
+
+                    <button id="add-domain" class="primary-button">
+
+                        Add domain
+
+                    </button>
+                </section>
+                    <!-- Multiple domain import-->
+                <section class="card blocklist-import-card">
+
+                    <h2>
+                        Import Blocklist
+                    </h2>
+                    <p class="card-description">
+                        Paste one domain per line.
+                    </p>
+
+                    <div class="blocklist-input-control">
+                        <label for="import-list">
+                            Domain list
+                        </label>
+
+
+
+                        <textarea id="import-list"
+                            placeholder="doubleclick.net&#10;ads.google.com&#10;tracker.com">
+                        </textarea>    
+                    </div>
+                    <button 
+                        id="import-button"
+                        class="primary-button">
+                        Import Blocklist
+                    </button>
+                    <p
+                        id="import-progress"
+                        class="hidden">
+                        Importing blocklist. Please wait...
+                    </p>
+                    <div id="import-summary" class="summary-card hidden">
+                        <h3>
+                            Import Complete
+                        </h3>
+                        <p>
+                            Added:
+                            <span id="import-added">0</span>
+                        </p>
+                        <p>
+                            Duplicates:
+                            <span id="import-duplicates">0</span>
+                        </p>
+                        <p>
+                            Ignored:
+                            <span id="import-ignored">0</span>
+                        </p>
+                        <button id="close-summary">
+                            Close
+                        </button>
+                    </div>
+                </section>
+
+                <section class="card blocklist-danger-card">
+                    <h2>Reset Blocklist</h2>
+                    <p class="card-description">
+                        Remove all domains currently stored in the blocklist.
+                    </p>
+                    <button id="reset-blocklist"
+                    class="danger-button">
+                    Reset Blocklist
+                    </button>
+                </section>
+            </div>
         </div>
-    </div>
-    </div>
+    </main>
 
     <script src="/blocklist.js"></script>
 </body>

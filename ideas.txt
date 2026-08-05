@@ -18,3 +18,5 @@ list sizes??------
 -100
 -1000
 -10000-1000000??
+
+code simplification and revision to make it easier to read and sort through
