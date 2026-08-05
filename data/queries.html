@@ -3,14 +3,23 @@
 
 <head>
     <meta charset="UTF-8">
+
+    <meta 
+        name="viewport"
+        content="=width=device-width, initial-scale=1.0">
+
     <title>DNSentinel - Queries</title>
 
     <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
-    <div class="sidebar">
+
+    <div class ="sidebar">
+
         <h2>DNSentinel</h2>
+
         <a href="/">
             Dashboard
         </a>
@@ -19,7 +28,7 @@
             Queries
         </a>
 
-        <a href="/blocklist.html">
+        <a href ="/blocklist.html">
             Blocklist
         </a>
 
@@ -28,62 +37,188 @@
         </a>
     </div>
 
-    <div class="content">
-        
-        <div class="header">
+    <main class="content">
 
-            <div>
+        <header class="topbar">
+            <div class="topbar-left">
+
                 <h1>Queries</h1>
 
                 <p class="subtitle">
-                    Recent DNS requests
+                    Monitor recent DNS requests and filtering actions
                 </p>
             </div>
-        </div>
-        <input
-            type="text"
-            id="querySearch"
-            placeholder="Search domains...">
-        <select id="queryFilter">
-            <option value="all">All</option>
-            <option value="blocked">Blocked</option>
-            <option value="forwarded">Forwarded</option>
-            <option value="cache">Cache Hit</option>
-        </select>
-        <select id="querySort">
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="az">Domain A-Z</option>
-            <option value="za">Domain Z-A</option>
-        </select>
-        <select id="queryLimit">
-            <option value="25">25 Queries</option>
-            <option value="50">50 Queries</option>
-            <option value="100">100 Queries</option>
-        </select>
-        <button id="clearQueries">
-            Clear Log
-        </button>
-        <p id="queryStatus"></p>
-        <h2>Recent Queries</h2>
 
-        <table>
+            <div class="topbar-right">
+                <div class="system-chip">
+                    <span class="live-dot"></span>
 
-            <thead>
+                    <span>
+                        Live updates
+                    </span>
+                </div>
+            </div>
+        </header>
 
-                <tr>
-                    <th>Time</th>
-                    <th>Domain</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
 
-            <tbody id="logs">
 
-            </tbody>
-        </table>
-        </div>
+        <section class="card query-toolbar-card">
 
-        <script src="/queries.js"></script>
+            <div class="query-toolbar">
+
+                <div class="query-control query-search-control">
+
+                    <label for="querySearch">
+                        Search domains
+                    </label>
+
+                    <input
+                        type="text"
+                        id="querySearch"
+                        placeholder="example.com"
+                        autocomplete="off">
+                </div>
+
+                <div class="query-control">
+
+                    <label for="queryFilter">
+                        Action
+                    </label>
+
+                    <select id="queryFilter">
+                        <option value="all">
+                            All actions
+                        </option>
+                        
+                        <option value="blocked">
+                            Blocked
+                        </option>
+
+                        <option value="forwarded">
+                            Forwarded
+                        </option>
+
+                        <option value="cache">
+                            Cache hit
+                        </option>
+                    </select>
+                </div>
+
+                <div class="query-control">
+
+                    <label for="querySort">
+                        Sort by
+                    </label>
+
+                    <select id="querySort">
+                        <option value="newest">
+                            Newest First
+                        </option>
+
+                        <option value="oldest">
+                            Oldest First
+                        </option>
+
+                        <option value="az">
+                            Domain A-Z
+                        </option>
+
+                        <option value="za">
+                            Domain Z-A
+                        </option>
+                    </select>
+                </div>
+
+                <div class="query-control">
+
+                    <label for="queryLimit">
+                        Display
+                    </label>
+
+                    <select id="queryLimit">
+
+                        <option value="25">
+                            25 Queries
+                        </option>
+
+                        <option value="50">
+                            50 Queries
+                        </option>
+
+                        <option value="100">
+                            100 Queries
+                        </option>
+                    </select>
+                </div>
+
+                <div class="query-control query-clear-control">
+
+                    <span class="control=label">
+                        Log controls
+                    </span>
+
+                    <button 
+                        type="button"
+                        id="clearQueries"
+                        class="danger-button">
+
+                        Clear Log
+                    </button>
+                </div>
+            </div>
+            <p 
+                id="queryStatus"
+                class="query-status"
+                aria-live="polite">
+            </p>
+        </section>
+
+        <section class="card query-table-card">
+
+            <div class="query-table-header">
+
+                <div>
+
+                    <h2>
+                        Recent Queries
+                    </h2>
+                    <p class="table-subtitle">
+                        Requests automatically refresh every two seconds
+                    </p>
+                </div>
+            </div>
+
+            <div class="table-scroll">
+
+                <table class="query-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th scope ="col">
+                                Time
+                            </th>
+                            <th scope="col">
+                                Domain
+                            </th>
+                            <th scope="col">
+                                Action
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="logs">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+    <script src="/queries.js"></script>
 </body>
 </html>
