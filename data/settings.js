@@ -72,26 +72,14 @@ function sendSettings()
 
         return data;
     })
-    .then(data => {
+    .then(() => {
         settingsChanged = false;
 
-        document.getElementById("settingStatus").innerHTML =
-            "Settings saved ✓";
-
-            document.getElementById("settingStatus").style.color =
-                "var(--success)";
-
-                setTimeout(() => {
-                    document.getElementById("settingStatus").innerHTML = "";
-                }, 3000);
+        showStatus( "Settings saved", "var(--success)", 3000)
     })
     .catch(error => {
 
-        document.getElementById("settingStatus").innerHTML =
-            error.message;
-
-            document.getElementById("settingStatus").style.color =
-                "var(--danger)";
+        showStatus(error.message, "var(--danger)");
     });
 }
 
@@ -111,14 +99,7 @@ function restoreSettings()
         updateSettings();
         settingsChanged = false;
 
-        document.getElementById("settingStatus").innerHTML =
-        "Defaults restored ✓";
-        document.getElementById("settingStatus").style.color =
-            "var(--warning)";
-
-        setTimeout(() => {
-            document.getElementById("settingStatus").innerHTML = "";
-        }, 3000);
+        showStatus("Defaults restored", "var(--warning)", 3000);
     });
 }
 
@@ -129,15 +110,17 @@ document
 
 function markSettingsChanged()
 {
-    if(!settingsChanged)
+    if(settingsChanged)
     {
+        return;
+    }
         settingsChanged = true;
 
-        document.getElementById("settingStatus").innerHTML =
-            "Unsaved changes";
-        document.getElementById("settingStatus").style.color =
-            "#FF4444";
-    }
+        showStatus(
+            "Unsaved changes",
+            "var(--warning)"
+        );
+    
 }
 
 function updateRedirectVisibility()
@@ -145,15 +128,13 @@ function updateRedirectVisibility()
     const mode = document.getElementById("blockingMode").value;
     const container = document.getElementById("redirectIPContainer");
 
-    console.log("Blocking mode:", mode);
-
-    if(mode == "2")
+    if(mode === "2")
     {
-        container.style.display = "block";
+        container.classList.remove("hidden");
     }
     else
     {
-        container.style.display = "none";
+        container.classList.add("hidden");
     }
 }
 
@@ -185,4 +166,17 @@ document
 .getElementById("redirectIP")
 .addEventListener("input", markSettingsChanged);
 
+function showStatus(message, color, clearAfter = 0){
+    const status = document.getElementById("settingStatus");
 
+    status.textContent = message;
+    status.style.color = color;
+
+    if(clearAfter > 0){
+        setTimeout(() => {
+            status.textContent = "";
+        }, clearAfter);
+    }
+}
+
+updateSettings();
