@@ -1,109 +1,145 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" 
+          content="width=device-width, initial-scale=1.0">
+        
     <title>DNSentinel - Settings</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <div class="navbar">
-
+    <aside class="navbar">
         <h2>DNSentinel</h2>
 
-        <a href="/">
-            Dashboard
-        </a>
+        <nav>
+            <a href="/">Dashboard</a>
+            <a href="/queries.html">Queries</a>
+            <a href="/blocklist.html">Blocklist</a>
+            <a href="/settings.html" class="active">Settings</a>
+        </nav>
 
-        <a href="/queries.html">
-            Queries
-        </a>
+        <footer class="navbar-ftr">
+            <small>v0.4.0</small>
+        </footer>
 
-        <a href="/blocklist.html" class="active">
-            Blocklist
-        </a>
+    </aside>
 
-        <a href="/settings.html">
-            Settings
-        </a>
-    </div>
-
-    <div class="content">
-
-        <div class="header">
+    <main class="content">
+        <header class="topbar">
 
             <div>
-
                 <h1>Settings</h1>
 
-                <p class="subtitle">
-                    Configure DNSentinel behavior
+                <p class="subtitle">Configure DNSentinel behavior</p>
+            </div>
+        </header>
+
+
+        
+        <form class="settings-grid">
+            
+            <section class="card">
+                <h2>Features</h2>
+                <p class="card-description">
+                    Control DNS filtering, caching, and query history.
                 </p>
 
-            </div>
+                <div class="stack">
+                    <label class="check-row">
 
-        </div>
+                        <input type="checkbox"
+                               id="blockingEnabled">
 
-        <div class="card">
+                        <span>Enable Blocking</span>
+                    </label>
+                    <label class="check-row">
+                        <input type="checkbox" id="cacheEnabled">
+                        <span>Enable Cache</span>
+                    </label>
 
-            <label>
-                <input type="checkbox" id="blockingEnabled">
-                Enable Blocking
-            </label>
+                    <label class="check-row">
+                        <input type="checkbox" id="queryLoggingEnabled">
 
-            <label>
-                <input type="checkbox" id="cacheEnabled">
-                Enable Cache
-            </label>
+                        <span>Enable Query Logging</span>
+                    </label>
+                </div>
+            </section>
 
-            <label>
-                <input type="checkbox" id="queryLoggingEnabled">
-                Enable Query Logging
-            </label>
+            <section class="card">
+                <h2>DNS Configuration</h2>
+                <p class="card-description">
+                    Configure the upstream resolver and blocked-domain response.
+                </p>
 
-            <label>
-                Upstream DNS
-                <input
-                    type="text"
-                    id="upstreamDNS"
-                    placeholder="1.1.1.1">
-            </label>
+                <div class="stack">
 
-            <label>
-                Blocking Mode
-                <select id="blockingMode">
-                    <option value="0">Null IP</option>
-                    <option value="1">NXDOMAIN</option>
-                    <option value="2">Redirect</option>
-                </select>
-            </label>
+                    <div class="form-group">
+                        <label for="upstreamDNS">
+                            Upstream DNS
+                        </label>
+                        <input type="text" id="upstreamDNS"
+                                placeholder="1.1.1.1"
+                                autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="blockingMode">Blocking mode</label>
+                        <select id="blockingMode">
+                            <option value="0">Null IP</option>
+                            <option value="1">NXDOMAIN</option>
+                            <option value="2">Redirect</option>
+                        </select>
+                    </div>
 
-            <label id="redirectIPContainer" style="display:none">
-                Redirect IP
-                <input
-                    type="text"
-                    id="redirectIP"
-                    placeholder="192.168.1.10">
-            </label>
+                    <div id="redirectIPContainer"
+                         class="form-group hidden">
+                        <label for="redirectIP">Redirect IP</label>
 
-            <button id="save-settings">
-                Save
-            </button>
+                        <input 
+                            type="text"
+                            id="redirectIP"
+                            placeholder="192.168.1.10"
+                            autocomplete="off">
 
-            <button id="restore-settings">
-                Restore Defaults
-            </button>
+                    </div>
 
-            <p id="settingStatus"></p>
+                </div>
+            </section>
+            <section class="card settings-actions">
+                <h2>Apply Settings</h2>
+                <p class="card-description">
+                    Save your changes or restore the default configuration.
+                </p>
 
-        </div>
+                <div class="button-row">
+                    <button type="button"
+                            id="save-settings"
+                            class="primary-btn">
+                        Save Settings
+                    </button>
 
-    </div>
+                    <button type="button"
+                            id="restore-settings"
+                            class="secondary-btn">
+                        Restore Defaults    
+                    </button>
+                </div>
+
+                <p id="settingStatus"
+                    class="form-status"
+                    aria-live="polite">
+                </p>
+            </section>
+        </form>
+    </main>
+
+
 
     <script src="/settings.js"></script>
 
-</body>
 
+
+</body>
 </html>
