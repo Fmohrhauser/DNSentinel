@@ -6,7 +6,7 @@
 
     <meta 
         name="viewport"
-        content="=width=device-width, initial-scale=1.0">
+        content="width=device-width, initial-scale=1.0">
 
     <title>DNSentinel - Queries</title>
 
@@ -16,31 +16,24 @@
 
 <body>
 
-    <div class ="navbar">
+    <aside class ="navbar">
 
         <h2>DNSentinel</h2>
-
-        <a href="/">
-            Dashboard
-        </a>
-
-        <a href="/queries.html" class="active">
-            Queries
-        </a>
-
-        <a href ="/blocklist.html">
-            Blocklist
-        </a>
-
-        <a href="/settings.html">
-            Settings
-        </a>
-    </div>
+        <nav>
+        <a href="/">Dashboard</a>
+        <a href="/queries.html" class="active">Queries</a>
+        <a href ="/blocklist.html">Blocklist</a>
+        <a href="/settings.html">Settings</a>
+    </nav>
+    <footer class="navbar-ftr">
+            <small>v0.4.0</small>
+        </footer>
+    </aside>
 
     <main class="content">
 
         <header class="topbar">
-            <div class="topbar-left">
+            <div>
 
                 <h1>Queries</h1>
 
@@ -50,7 +43,7 @@
             </div>
 
             <div class="topbar-right">
-                <div class="system-chip">
+                <div class="status-chip">
                     <span class="live-dot"></span>
 
                     <span>
@@ -62,11 +55,11 @@
 
 
 
-        <section class="card query-toolbar-card">
+        <section class="card static-card">
 
-            <div class="query-toolbar">
+            <div class="toolbar">
 
-                <div class="query-control query-search-control">
+                <div class="form-group wide-control">
 
                     <label for="querySearch">
                         Search domains
@@ -79,7 +72,7 @@
                         autocomplete="off">
                 </div>
 
-                <div class="query-control">
+                <div class="form-group">
 
                     <label for="queryFilter">
                         Action
@@ -104,7 +97,7 @@
                     </select>
                 </div>
 
-                <div class="query-control">
+                <div class="form-group">
 
                     <label for="querySort">
                         Sort by
@@ -129,8 +122,7 @@
                     </select>
                 </div>
 
-                <div class="query-control">
-
+                <div class="form-group">
                     <label for="queryLimit">
                         Display
                     </label>
@@ -151,16 +143,16 @@
                     </select>
                 </div>
 
-                <div class="query-control query-clear-control">
+                <div class="form-group form-action">
 
-                    <span class="control=label">
+                    <span class="form-label">
                         Log controls
                     </span>
 
                     <button 
                         type="button"
                         id="clearQueries"
-                        class="danger-button">
+                        class="danger-btn">
 
                         Clear Log
                     </button>
@@ -168,14 +160,14 @@
             </div>
             <p 
                 id="queryStatus"
-                class="query-status"
+                class="form-status"
                 aria-live="polite">
             </p>
         </section>
 
-        <section class="card query-table-card">
+        <section class="card static-card">
 
-            <div class="query-table-header">
+            <header class="card-header">
 
                 <div>
 
@@ -186,7 +178,7 @@
                         Requests automatically refresh every two seconds
                     </p>
                 </div>
-            </div>
+            </header>
 
             <div class="table-scroll">
 

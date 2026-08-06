@@ -100,6 +100,7 @@
 ☐ Add request and import size limits
 ☐ Secure all write API endpoints
 ☐ Test malformed requests and request flooding
+☐ Update navbar footer
 
 ---
 

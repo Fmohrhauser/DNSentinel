@@ -20,9 +20,9 @@
             <a href="/blocklist.html" class="active">Blocklist</a>
             <a href="/settings.html">Settings</a>
         </nav>
-        <div class="navbar-ftr">
+        <footer class="navbar-ftr">
             <small>v0.4.0</small>
-        </div>
+        </footer>
 
     </aside>
 
@@ -31,7 +31,7 @@
         <header class="topbar">
 
 
-            <div class="topbar-left">
+            <div>
                 <h1>Blocklist</h1>
 
                 <p class="subtitle">
@@ -41,7 +41,7 @@
 
             <div class="topbar-right">
 
-                <div class="system-chip">
+                <div class="status-chip">
 
                     <span id="blocklist-count">
                         0
@@ -103,7 +103,7 @@
                     <div class="blocklist-input-control">
 
                         <label for="new-domain">
-                            Domain
+                            Domain:
                         </label>
 
                         <input
@@ -113,7 +113,7 @@
                             autocomplete="off">
                     </div>
 
-                    <button id="add-domain" class="primary-button">
+                    <button id="add-domain" class="primary-btn">
 
                         Add domain
 
@@ -141,8 +141,8 @@
                         </textarea>    
                     </div>
                     <button 
-                        id="import-button"
-                        class="primary-button">
+                        id="import-btn"
+                        class="primary-btn">
                         Import Blocklist
                     </button>
                     <p
@@ -178,7 +178,7 @@
                         Remove all domains currently stored in the blocklist.
                     </p>
                     <button id="reset-blocklist"
-                    class="danger-button">
+                    class="danger-btn">
                     Reset Blocklist
                     </button>
                 </section>

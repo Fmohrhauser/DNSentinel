@@ -89,7 +89,7 @@ function importBlocklist()
         .getElementById("import-list")
         .value;
     const button = 
-        document.getElementById("import-button");
+        document.getElementById("import-btn");
 
     const progress =
         document.getElementById("import-progress");
@@ -165,7 +165,7 @@ function importBlocklist()
 }
 
 document
-.getElementById("import-button")
+.getElementById("import-btn")
 .addEventListener(
     "click",
     importBlocklist

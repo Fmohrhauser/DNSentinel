@@ -8,33 +8,22 @@
 </head>
 
 <body>
-
-    
-    <div class="navbar">
+    <aside class="navbar">
         <h2>DNSentinel</h2>
-
-        <a href="/" class="active">
-            Dashboard
-        </a>
-
-        <a href="/queries.html">
-            Queries
-        </a>
-
-        <a href="/blocklist.html">
-            Blocklist
-        </a>
-
-        <a href="/settings.html">
-            Settings
-        </a>
-    </div>
-    <div class="content">
+        <nav>
+        <a href="/" class="active">Dashboard</a>
+        <a href="/queries.html">Queries</a>
+        <a href="/blocklist.html">Blocklist</a>
+        <a href="/settings.html">Settings</a>
+    </nav>
+        <footer class="navbar-ftr">
+            <small>v0.4.0</small>
+        </footer>
+    </aside>
+    <main class="content">
 
             <header class="topbar">
-
-                <div class="topbar-left">
-
+                <div>
                     <h1>DNSentinel</h1>
 
                     <p class="subtitle">
@@ -42,12 +31,12 @@
                     </p>
                 </div>
 
-                    <div class="system-chip">
+                <div class="status-chip">
 
                         <span>
                             ESP32-S3
                         </span>
-                    </div>
+                </div>
                 
 
                 
@@ -58,18 +47,15 @@
 
     
     
-    <div class="stats-grid">
+    <section class="stats-grid">
 
-        <div class="card stat-card">
+        <div class="card stat-card interactive-card">
 
             <span class="stat-label">
                 Total Requests
             </span>
 
             <h2 id="total">0</h2>
-        </div>
-
-        <div class="card stat-card">
 
             <span class="stat-label">
                 Blocked
@@ -77,19 +63,12 @@
 
             <h2 id="blocked">0</h2>
 
-        </div>
-        
-        <div class="card stat-card">
-
             <span class="stat-label">
                 Forwarded
             </span>
 
             <h2 id="forwarded">0</h2>
-
-
-        </div>
-        <div class="card stat-card">
+        
 
             <span class="stat-label">
                 Cache Hits
@@ -97,11 +76,11 @@
 
             <h2 id="cache_hits">0</h2>
         </div>
-    </div>
+    </section>
 
     <section class="dashboard-row">
 
-        <div class="card wide-card">
+        <div class="card">
 
             <h2>
                 DNS Health
@@ -127,7 +106,7 @@
                 </div>
             </div>
         </div>
-        <div class="card wide-card">
+        <div class="card">
 
             <h2>
                 Query Rate
@@ -150,7 +129,7 @@
     </section>
 
     <section class="dashboard-row">
-        <div class="card wide-card">
+        <div class="card">
 
             <h2>
                 Request Breakdown
@@ -166,7 +145,7 @@
 
                         <div
                             id="forwarded-bar"
-                            class="bar forwarded-bar">
+                            class="bar progress-forwarded">
                         </div>
                     </div>
 
@@ -183,7 +162,7 @@
 
                         <div 
                             id="blocked-bar"
-                            class="bar blocked-bar">
+                            class="bar progress-blocked">
                         </div>
                     </div>
 
@@ -200,7 +179,7 @@
 
                         <div
                             id="cache-bar"
-                            class="bar cache-bar">
+                            class="bar progress-cache">
                         </div>
                     </div>
 
@@ -211,7 +190,7 @@
             </div>
         </div>
 
-        <div class="card wide-card">
+        <div class="card">
 
             <h2>
                 Top Blocked Domains
@@ -238,7 +217,7 @@
 
 
 
-    <footer>
+    <footer class="page-ftr">
 
         <h3>DNSentinel</h3>
 
@@ -267,10 +246,9 @@
         </p>
 
     </footer>
-</div>
+</main>
 
         <script src="/dashboard.js"></script>
-    </div>
 </body>
 
 </html>
