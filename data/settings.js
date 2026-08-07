@@ -25,8 +25,6 @@ function updateSettings()
     });
 }
 
-updateSettings();
-
 function sendSettings()
 {
     
@@ -75,7 +73,7 @@ function sendSettings()
     .then(() => {
         settingsChanged = false;
 
-        showStatus( "Settings saved", "var(--success)", 3000)
+        showStatus( "Settings saved", "var(--success)", 3000);
     })
     .catch(error => {
 
@@ -94,7 +92,7 @@ function restoreSettings()
         method:"POST"
     })
     .then(response => response.json())
-    .then(data=> {
+    .then(()=> {
 
         updateSettings();
         settingsChanged = false;
@@ -114,12 +112,12 @@ function markSettingsChanged()
     {
         return;
     }
-        settingsChanged = true;
+    settingsChanged = true;
 
-        showStatus(
-            "Unsaved changes",
-            "var(--warning)"
-        );
+    showStatus(
+        "Unsaved changes",
+        "var(--warning)"
+    );
     
 }
 
