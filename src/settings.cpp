@@ -4,6 +4,12 @@
 
 Settings settings;
 
+void initializeAuthentication(){
+    settings.authEnabled = false;
+    settings.username = "";
+    settings.passwordHash ="";
+}
+
 
 void initializeSettings()
 {
@@ -16,14 +22,6 @@ void initializeSettings()
     settings.queryLoggingEnabled = true;
     settings.blockingMode = NULL_IP;
     settings.redirectIP = "0.0.0.0";
-
-    settings.authEnabled = true;
-    settings.username = "admin";
-
-    // temporary default password:
-    // password: admin
-    settings.passwordHash =
-        "8c6976e5b5410415bde908bd4dee15dfb167a2d4f6d7b6b5d5b4e5f4b9c4b4f";
 }
 
 Settings getSettings()

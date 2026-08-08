@@ -50,8 +50,12 @@ void startAPI()
 
             return;
         }
-
-        if(!doc["username"].is<String>() ||
+        Settings settings = getSettings();
+        if(settings.authEnabled){
+            server.send(403, "application/json", "{\"error\":\"Authentication already configured\"}");
+            return;
+        }
+        else if(!doc["username"].is<String>() ||
         !doc["password"].is<String>())
         {
             server.send(
@@ -75,15 +79,11 @@ void startAPI()
             server.send(
                 400,
                 "application/json",
-                "{\"errpr\":\"Username or password too short\"}"
+                "{\"error\":\"Username or password too short\"}"
             );
 
             return;
         }
-
-
-        Settings settings =
-            getSettings();
 
         settings.username =
             username;
@@ -113,7 +113,8 @@ void startAPI()
 
     server.on("/api/logs", HTTP_GET, []()
     {   
-
+        if(!checkAuthentication(server))
+            return;
         int limit = 25;
 
         if(server.hasArg("limit"))
@@ -134,7 +135,9 @@ void startAPI()
     });
 
     server.on("/api/topblocked", HTTP_GET, [](){
-        
+        if(!checkAuthentication(server))
+            return;
+
         server.send(
             200,
             "application/json",
@@ -153,6 +156,10 @@ void startAPI()
     });
 
     server.on("/api/settings", HTTP_POST, [](){
+
+        if(!checkAuthentication(server)){
+            return;
+        }
 
         String body = server.arg("plain");
 
@@ -299,7 +306,7 @@ void startAPI()
             if(!doc["domain"].is<String>())
             {
                 server.send(
-                    300,
+                    400,
                     "application/json",
                     "{\"error\":\"Missing domain\"}"
                 );
@@ -395,8 +402,7 @@ void startAPI()
     });
 
     server.on("/api/blocklist/count", HTTP_GET, [](){
-        if(!checkAuthentication(server))
-            return;
+        
         JsonDocument doc;
 
         doc["count"] = getBlocklistSize();
@@ -413,7 +419,9 @@ void startAPI()
     });
 
     server.on("/api/blocklist/reset", HTTP_POST, [](){
-
+        if(!checkAuthentication(server)){
+            return;
+        }
         clearBlocklist();
 
         server.send(
@@ -424,6 +432,8 @@ void startAPI()
     });
 
     server.on("/api/system", HTTP_GET, [](){
+        if (!checkAuthentication(server))
+            return;
         
         server.send(
             200,

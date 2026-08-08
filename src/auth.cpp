@@ -1,6 +1,5 @@
 #include "auth.h"
 #include "settings.h"
-
 #include "mbedtls/sha256.h"
 
 String hashPassword(String password)
@@ -38,7 +37,7 @@ String decodeBase64(String input)
     String output = "";
 
     int val = 0;
-    int valb = -0;
+    int valb = -8;
 
     for(char c : input)
     {
@@ -61,12 +60,23 @@ String decodeBase64(String input)
                 (val >> valb) & 0xFF
             );
 
-            valb -+ 8;
+            valb -= 8;
         }
     }
 
 
     return output;
+}
+
+void sendAuthRequired(WebServer &server)
+{
+    server.sendHeader(
+        "WWW-Authenticate",
+        "Basic realm=\"DNSentinel\""
+    );
+
+    server.send(401, "application/json",
+    "{\"error\":\"Authentication required\"}");
 }
 
 
@@ -85,7 +95,7 @@ bool checkAuthentication(WebServer &server)
     {
         server.sendHeader(
             "WWW-Authenticate",
-            "Basic realm=\"DNSentinelt\""
+            "Basic realm=\"DNSentinel\""
         );
 
         server.send(
@@ -93,7 +103,7 @@ bool checkAuthentication(WebServer &server)
             "application/json",
             "{\"error\":\"Authentication required\"}"
         );
-
+        sendAuthRequired(server);
         return false;
     }
 
@@ -101,7 +111,8 @@ bool checkAuthentication(WebServer &server)
         server.header("Authorization");
 
     if(!header.startsWith("Basic "))
-    {
+    {   
+        sendAuthRequired(server);
         return false;
     }
 
@@ -116,6 +127,7 @@ bool checkAuthentication(WebServer &server)
 
     if(separator < 0)
     {
+        sendAuthRequired(server);
         return false;
     }
 
@@ -132,6 +144,7 @@ bool checkAuthentication(WebServer &server)
 
     if(username != settings.username)
     {
+        sendAuthRequired(server);
         return false;
     }
 
@@ -141,6 +154,7 @@ bool checkAuthentication(WebServer &server)
     
     if(passwordHash != settings.passwordHash)
     {
+        sendAuthRequired(server);
         return false;
     }
 

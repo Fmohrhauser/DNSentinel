@@ -27,6 +27,7 @@ struct Settings
     String passwordHash;
 };
 
+void initializeAuthentication();
 
 void initializeSettings();
 

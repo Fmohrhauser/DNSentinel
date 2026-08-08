@@ -28,6 +28,7 @@ void setup() {
   startDNSServer();
   loadConfig();
   initializeSettings();
+  initializeAuthentication();
   loadSettings();
     const char* headerKeys[] = {"Authorization"};
 
