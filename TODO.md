@@ -33,12 +33,14 @@ Complete the remaining Version 0.2, 0.3, and 0.4 work so DNSentinel can official
 
 ## 2. Finish Version 0.3 - DNS Features
 
-### Wildcard Blocking Backend
+### Parent / Wildcard Blocking Backend
 
-- [] Decide wildcard syntax
-- [] decide how wildcard domains will be stored
-- [] Determine how wildcard matching fits with `DomainHashTable`
-- [] Implement wildcard domain matching
+- [x] Block parent domains and their subdomains
+- [x] Integrate parent-domain matching with `DomainHashTable`
+- [] Test parent-domain blocking behavior
+- [] Test deeply nested subdomains
+- [] Document parent-domain blocking behavior
+- [] Decide whether explicit `*.domain.com` syntax is actually needed
 - [] Make wildcard matching work with normal blocklist lookups
 - [] Test exact-domain vs wildcard behavior
 - [] Test subdomains
@@ -187,4 +189,4 @@ Major upcoming areas include:
 - Request-flooding protection
 - DNS parser hardeing
 - Performance testing
-- ESP32-p4 migration
+- ESP32-P4 migration
