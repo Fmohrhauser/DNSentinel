@@ -1,160 +1,190 @@
 # DNSentinel TODO
 
-☐ = TODO
-/ = In progress
-- = Complete
+This file tracks what I should work on next.
+
+For long-term versions and project direction, see `ROADMAP.md`.
 
 ---
 
-# Core
+# Current Goal - Finish version 0.4
 
-- Migrate to PlatformIO
-- Configure ESP32-S3 N16R8
-- Verify PSRAM
-- Move project to GitHub
-- DNS request parsing
-- DNS blocking
-- DNS forwarding
-- Statistics tracking
-- Modularize parser
-- Modularize blocklist
-- Modularize WiFi
-- Compile-time debug logging
-- Finished dns_server cleanup
-- Reduce unnecessary Serial output
-
-☐ Add project comments/documentation
-☐ Create README with setup instructions
+Complete the remaining Version 0.2, 0.3, and 0.4 work so DNSentinel can officially move into Version 0.5.
 
 ---
 
-## DNS Features
+## 1. Finish Version 0.2 - Project Structure
 
-- DNS cache
-- Configurable upstream DNS server
-- A record support
-- AAAA record support
-- Query logging
-- Cache hit tracking
-- Import larger blocklists
-- Web blocklist management
-- Upstream DNS health monitoring
-- Measure upstream latency
-- DNS server status API
+### Documentation
 
-☐ Wildcard blocklist support
-☐ Local whitelist
+- [] Add useful comments to major modules
+- [] Document important public functions in header files
+- [] Document module responsibilities
+- [] Document initialization order
+- [] Document important dependencies between modules
+- [] Clean up outdated comments
+
+### Version 0.2 Complete When
+
+- [] Core project structure is documented well enough to understand after returning to the project later
+- [] README accurately describes the project
+- [] Major modules and APIs are understandable without reading every implementation file
+  
+---
+
+## 2. Finish Version 0.3 - DNS Features
+
+### Wildcard Blocking Backend
+
+- [] Decide wildcard syntax
+- [] decide how wildcard domains will be stored
+- [] Determine how wildcard matching fits with `DomainHashTable`
+- [] Implement wildcard domain matching
+- [] Make wildcard matching work with normal blocklist lookups
+- [] Test exact-domain vs wildcard behavior
+- [] Test subdomains
+- [] Test malformed wildcard entries
+- [] Test wildcard performance with larger blocklists
+
+### Local Whitelist Backend
+
+- [] Decide whitelist data structure
+- [] Add whitelist module or extend blocklist architecture cleanly
+- [] Add domain to whitelist
+- [] Remove domain from whitelist
+- [] Check whitelist before blocklist
+- [] Decide how whitelist interacts with wildcard blocking
+- [] Persist whitelist data
+- [] Load whitelist on boot
+- [] Test whitelist overide behavior
+- [] Test exact and wildcard whitelist behavior if wildcard whitelisting is supported
+
+### Version 0.3 Complete When
+
+- [] Wildcard blocking works reliably
+- [] Local whitelist works reliably
+- [] Whitelist correctly overrides blocked domains
+- [] Both features survive reboot
+- [] Existing DNS behavior still works
+  
+---
+
+## 3. Finish Version 0.4 - Web Dashboard
+
+### Wildcard Management
+- [] Allow wildcard entries to be added through the Blocklist page
+- [] Display wildcard entries clearly
+- [] Allow wildcard entries to be removed
+- [] Validate wildcard input in the API
+- [] Display useful errors for invalid wildcard entries
+
+### Whitelist Management
+
+- [] Add whitelist API endpoints
+- [] Add whitelist section/page to the frontend
+- [] Display whitelist entries
+- [] Add domains to whitelist
+- [] Remove domains from whitelist
+- [] Add input validation
+- [] Add frontend success/error feedback
+- [] Test mobile layout
+
+### Frontend Final Testing
+
+- [] Test Dashboard on device
+- [] Test Queries page on device
+- [] Test Blocklist page on device
+- [] Test settings page on device
+- [] Test movile layout
+- [] Test navigation
+- [] Test settings changes
+- [] Test blocklist changes
+- [] Test query controls
+- [] Test authentication with frontend requests
+- [] Fix any remaining frontend bugs
+
+### Version 0.4 Complete When
+
+- [] Dashboard features work on the actual ESP32
+- [] Blocklist management is complete
+- [] Wildcards can be managed from the dashboard
+- [] Whitelist can be manaed from the dashboard
+- [] All major frontend pages work on desktop and mobile
+- [] No known major frontend bugs remain
 
 ---
 
-## Dashboard
+# Then - Version 0.5 API and Authentication
 
-- Basic web server
-- LittleFS webpage hosting
-- Live statistics API
-- Recent query log API
-- System information API
-- Live statistics page
-- Recent queries display
-- Request breakdown visualization
-- Top blocked domains analytics
-- Hide IP privacy toggle
+Some Version 0.5 work has already been completed early.
 
-/ Dashboard UI improvements
-- Web configuration controls
-- Persistent settings storage
-- Configuration API
-- Save settings button
-- Restore defaults button
+## Already Completed
 
+- [x] Authentication backend
+- [x] First-time authentication setup
+- [x] Password hashing
+- [x] Persistant authentication configuration
+- [x] Protect sensitive API endpoints
+- [x] Separate authentication from normal settings reset
+- [x] Validate API JSON input
+- [x] Validate blocking mode
+- [x] Validate upstream DNS
+- [x] Validate redirect IP
+- [x] Validate query limits
+- [x] Improve HTTP status codes
+- [x] Standardize simple JSON error responses
+- [x] Standardize simple JSON status responses
+- [x] Remove obsolete API debugging output
+- [x] Add reusable GET route registration
+- [x] Refactor repeated API response handling
 
-- Blocklist management interface
-- Dashboard CSS redesign
-- Queries page redesign
-- Query search controls
-- Query action filtering
-- Query sorting controls
-- Configurable query display limit
-- Clear query log control
-- Active-page sidebar highlighting
-- Responsive query table
-- Query action badges
-/ mobile responsive layout
-/Dashboard UI improvements
-/Redesign Blocklist page
-/Redesign Settings page
-☐ Dashboard Charts
+## Remaining Version 0.5 Work
 
-- Tabs
+### ESP-IDF HTTP Server Migration
 
----
+- [] Learn basic `esp_http_server` architecture
+- [] Create an ESP-IDF HTTP server prototype
+- [] Port `/api/stats`
+- [] Port reusable Get endpoints/system
+- [] Port POST request parsing
+- [] Port JSON response helpers
+- [] Port authentication
+- [] Port LittleFS static file hosting
+- [] Test every API endpoint
+- [] Test every frontend page
+- [] Remove Arduino `WebServer`
 
-## Performance
+### Version 0.5 Cleanup
 
-☐ Memory profiling
-☐ PSRAM cache optimization
-☐ Stress test with many DNS requests
-☐ Measure response latency
-☐ Optimize memory usage
+- [] Document API endpoints
+- [] Document which endpoints require authentication
+- [] Regression test authentication
+- [] Regression test settings persistence
+- [] Regression test blocklist persistence
+- [] Check RAM usage after IDF migration
 
----
+### Version 0.5 Complete When
 
-## Security
-
-/ Authentication backend
-
-☐ Create a security threat model
-☐ Review network-device security practices
-☐ Validate DNS packet lengths
-☐ Validate API input
-☐ Add request-size limits
-☐ Add blocklist import-size limits
-☐ Add protection against request flooding
-☐ Review memory and buffer limits
-☐ Secure all write API endpoints
-☐ Test behavior with malformed requests
-☐ Review storage of WiFi credentials and secrets
-
-## Future Hardware
-
-☐ Port project to ESP32-P4
-☐ Port project to ESP32-S31
-☐ Design custom PCB
-☐ Add Ethernet support
-☐ Add OLED status display
+- [] Arduino `WebServer` is no longer used
+- [] ESP-IDF HTTP server runs all dashboard/API traffic
+- [] Authentication still works
+- [] All exisiting API behavior still works
+- [] Frontend works without changes in behavior
+- [] API is documented
+- [] No major regressions remain
 
 ---
 
-## Known Bugs
+# After Version 0.5
 
-☐ IPv4 + IPv6 requests create duplicate statistics entries
-    (Technically correct DNS behavior, but may confuse users)
+Version 0.6+ work should follow `ROADMAP.md`.
 
----
+Major upcoming areas include:
 
-## Ideas
-
-☐ DNS-over-HTTPS support
-☐ DNS-over-TLS
-☐ OTA updates
-☐ Multiple user profiles
-☐ Pi-hole compatible blocklists
-☐ Web configuration wizard
-
----
-
-## DNS Record Types
-
-- A
-- AAAA
-
-☐ CNAME
-☐ MX
-☐ TXT
-☐ SRV
-
----
-
-## Debug Type Settings
-
-- Overall debug serial print
+- Security threat modeling
+- HTTPS/TLS
+- Authentication hardening
+- Request-size limits
+- Request-flooding protection
+- DNS parser hardeing
+- Performance testing
+- ESP32-p4 migration
