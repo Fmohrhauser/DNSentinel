@@ -122,6 +122,10 @@ void startAPI()
             limit = server.arg("limit").toInt();
         }
 
+        if(limit < 1){
+            limit = 1;
+        }
+
         if(limit > MAX_QUERY_LOGS)
         {
             limit = MAX_QUERY_LOGS;
@@ -163,8 +167,6 @@ void startAPI()
 
         String body = server.arg("plain");
 
-        Serial.println("Received settings:");
-        Serial.println(body);
 
         JsonDocument doc;
 
@@ -206,26 +208,38 @@ void startAPI()
             String dns =
                 doc["upstreamDNS"].as<String>();
             
-            if(dns.length() > 0)
+            if(!validIP(dns))
             {
-                newSettings.upstreamDNS = dns;
+                server.send(400,
+                "application/json",
+            "{\"error\":\"Invalid upstreamDNS\"}"
+            );
+            return;
             }
+            newSettings.upstreamDNS = dns;
         }
 
         if(doc["blockingMode"].is<int>())
         {
+            int mode = 
+                doc["blockingMode"].as<int>();
+
+            if(mode < 0 || mode > 2){
+                server.send(400,
+                "application/json",
+                "{\"error\":\"Invaild blocking mode\"}"
+            );
+            return;
+            }
+
             newSettings.blockingMode =
-                static_cast<BlockingMode>(
-                    doc["blockingMode"].as<int>()
-                );
+                static_cast<BlockingMode>(mode);
         }
 
         if(doc["redirectIP"].is<String>())
         {
             String ip =
                 doc["redirectIP"].as<String>();
-            Serial.print("Testing redirect IP: ");
-            Serial.println(ip);
             if(validIP(ip))
             {
                 newSettings.redirectIP = ip;
@@ -243,9 +257,6 @@ void startAPI()
             }
         }
 
-
-            Serial.print("New upstream DNS: ");
-            Serial.println(newSettings.upstreamDNS);
         updateSettings(newSettings);
         Serial.println(getSettings().blockingEnabled);
 
@@ -264,7 +275,7 @@ void startAPI()
 
         saveSettings();
 
-        Serial.println("Serttings restored to defaults");
+        Serial.println("Settings restored to defaults");
 
         server.send(
             200,
@@ -320,13 +331,20 @@ void startAPI()
                 bool success = 
                     addBlockedDomain(domain);
 
-                    server.send(
-                        200,
+                    if(success){
+                        server.send(201,
                         "application/json",
-                        success ?
-                        "{\"status\":\"added\"}" :
-                        "{\"status\":\"already exists\"}"
-                    );
+                        "{\"status\":\"added\"}"
+                        );
+                    }
+                    else
+                    {
+                        server.send(
+                            409,
+                            "application/json",
+                            "{\error\":\"Domain already exists\"}"
+                        );
+                    }
     });
 
     server.on("/api/blocklist/remove", HTTP_POST, [](){
@@ -336,8 +354,28 @@ void startAPI()
 
         JsonDocument doc;
 
-        deserializeJson(doc, body.c_str());
+        DeserializationError error =
+            deserializeJson(doc, body.c_str());
 
+        if(error){
+            server.send(
+                400, "application/json",
+                "{\"error\":\"Invalid JSON}"
+            );
+
+            return;
+        }
+
+        if(!doc["domain"].is<String>())
+        {
+            server.send(
+                400,
+                "application/json",
+                "{\error\":\"Missing domain\"}"
+            );
+
+            return;
+        }
 
         String domain=
             doc["domain"].as<String>();
@@ -345,13 +383,18 @@ void startAPI()
 
         bool success =
             removeBlockedDomain(domain);
-
-        server.send(
-            200,"application/json",
-            success ?
-            "{\"status\":\"removed\"}" :
-            "{\"status\":\"not found\"}"
-        );
+        if(success){
+            server.send(
+                200,"application/json",
+                "{\"status\":\"removed\"}"
+            );
+        }
+        else{
+            server.send(
+                404, "application/json",
+                "{\"error\":\"Domain not found\"}"
+            );
+        }
     });
 
 
@@ -374,13 +417,31 @@ void startAPI()
         }
 
         JsonDocument doc;
+        DeserializationError error =
+            deserializeJson(
+                doc,
+                server.arg("plain")
+            );
 
-        deserializeJson(
-            doc,
-            server.arg("plain")
-        );
+        if(error){
+            server.send(
+                400,
+                "application/json",
+                "{\"error\":\"Invalid JSON\"}"
+            );
+            return;
+        }
 
-        String text = doc["domains"];
+        if(!doc["domains"].is<String>()){
+            server.send(400,
+            "application/json",
+            "{\"error\":\"Missing domains\"}"
+            );
+
+            return;
+        }
+
+        String text = doc["domains"].as<String>();
 
         ImportResult result = importBlocklist(text);
 
