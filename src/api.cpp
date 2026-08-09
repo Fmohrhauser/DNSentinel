@@ -14,18 +14,58 @@
 
 
 extern WebServer server;
-//test--function
-//void ServerOnGet(String path, int number, String type, String function)
-//{
-//    server.on(String path, HTTP_GET, []()
-//    {
-//        server.send(
-//            int number,
-//            String type,
-//            function
-//        );
-//    });
-//}
+
+
+void sendError(int code, const String &message)
+{
+    JsonDocument doc;
+    doc["error"] = message;
+    
+
+    String output;
+    serializeJson(doc, output);
+
+    server.send(
+        code,
+        "application/json",
+        output
+    );
+}
+
+void sendStatus(int code, const String &status){
+    JsonDocument doc;
+    doc["status"] = status;
+
+    String output;
+    serializeJson(doc, output);
+
+    server.send(
+        code,
+        "application/json",
+        output
+    );
+}
+
+void registerGetRoute(
+    const char *path,
+    String (*jsonFunction)(),
+    bool requiresAuth
+)
+{
+    server.on(path, HTTP_GET, [jsonFunction, requiresAuth](){
+
+        if(requiresAuth && !checkAuthentication(server))
+        {
+            return;
+        }
+
+        server.send(
+            200,
+            "application/json",
+            jsonFunction()
+        );
+    });
+}
 
 
 
@@ -42,26 +82,23 @@ void startAPI()
 
         if (error)
         {
-            server.send(
+            sendError(
                 400,
-                "application/json",
-                "{\"error\":\"Invalid JSON\"}"
+                "Invalid JSON"
             );
 
             return;
         }
         Settings settings = getSettings();
         if(settings.authEnabled){
-            server.send(403, "application/json", "{\"error\":\"Authentication already configured\"}");
-            return;
+            sendError(403, "Authentication already configured");
         }
         else if(!doc["username"].is<String>() ||
         !doc["password"].is<String>())
         {
-            server.send(
+            sendError(
                 400,
-                "application/json",
-                "{\"error\":\"Missing username or password\"}"
+                "Missing username or password"
             );
 
             return;
@@ -76,10 +113,9 @@ void startAPI()
         if(username.length() < 3 ||
             password.length() < 8)
         {
-            server.send(
+            sendError(
                 400,
-                "application/json",
-                "{\"error\":\"Username or password too short\"}"
+                "Username or password too short"
             );
 
             return;
@@ -95,21 +131,17 @@ void startAPI()
 
             updateSettings(settings);
 
-            server.send(
+            sendStatus(
                 200,
-                "application/json",
-                "{\"status\":\"authentication enabled\"}"
+                "Authentication enabled"
             );
         
     });
-    server.on("/api/stats", HTTP_GET, []()
-    {
-        server.send(
-            200,
-            "application/json",
-            createStatsJSON()
-        );
-    });
+    registerGetRoute(
+        "/api/stats",
+        createStatsJSON,
+        false
+    );
 
     server.on("/api/logs", HTTP_GET, []()
     {   
@@ -138,26 +170,17 @@ void startAPI()
         );
     });
 
-    server.on("/api/topblocked", HTTP_GET, [](){
-        if(!checkAuthentication(server))
-            return;
+    registerGetRoute(
+        "/api/topblocked",
+        createTopBlockedJSON,
+        true
+    );
 
-        server.send(
-            200,
-            "application/json",
-            createTopBlockedJSON()
-        );
-    });
-
-    server.on("/api/settings", HTTP_GET, [](){
-        if(!checkAuthentication(server))
-            return;
-        server.send(
-            200,
-            "application/json",
-            createSettingsJSON()
-        );
-    });
+    registerGetRoute(
+        "/api/settings",
+        createSettingsJSON,
+        true
+    );
 
     server.on("/api/settings", HTTP_POST, [](){
 
@@ -174,10 +197,9 @@ void startAPI()
 
         if(error)
         {
-            server.send(
+            sendError(
                 400,
-                "application/json",
-                "{\"error\":\"Invalid JSON\"}"
+                "Invalid JSON"
             );
 
             return;
@@ -210,10 +232,10 @@ void startAPI()
             
             if(!validIP(dns))
             {
-                server.send(400,
-                "application/json",
-            "{\"error\":\"Invalid upstreamDNS\"}"
-            );
+                sendError(
+                    400,
+                    "Invalid upstream DNS"
+                );
             return;
             }
             newSettings.upstreamDNS = dns;
@@ -225,10 +247,10 @@ void startAPI()
                 doc["blockingMode"].as<int>();
 
             if(mode < 0 || mode > 2){
-                server.send(400,
-                "application/json",
-                "{\"error\":\"Invaild blocking mode\"}"
-            );
+                sendError(
+                    400,
+                    "Invalid blocking mode"
+                );
             return;
             }
 
@@ -246,25 +268,21 @@ void startAPI()
             }
             else
             {
-                Serial.println("Invalid redirect IP");
-                server.send(
-                    400,
-                    "application/json",
-                    "{\"error\":\"Invalid redirect IP\"}"
-                );
+               sendError(
+                400,
+                "Invalid redirect IP"
+               );
 
                 return;
             }
         }
 
         updateSettings(newSettings);
-        Serial.println(getSettings().blockingEnabled);
 
 
-        server.send(
+        sendStatus(
             200,
-            "application/json",
-            "{\"status\":\"updated\"}"
+            "updated"
         );
     });
 
@@ -275,23 +293,17 @@ void startAPI()
 
         saveSettings();
 
-        Serial.println("Settings restored to defaults");
-
-        server.send(
+        sendStatus(
             200,
-            "application/json",
-            "{\"status\":\"defaults restored\"}"
+            "defaults restored"
         );
     });
 
-    server.on("/api/blocklist", HTTP_GET, [](){
-
-        server.send(
-            200,
-            "application/json",
-            createBlocklistJSON()
-        );
-    });
+    registerGetRoute(
+        "/api/blocklist",
+        createBlocklistJSON,
+        false
+    );
 
     server.on("/api/blocklist/add", HTTP_POST, [](){
         if(!checkAuthentication(server))
@@ -305,10 +317,9 @@ void startAPI()
 
             if(error)
             {
-                server.send(
+                sendError(
                     400,
-                    "application/json",
-                    "{\"error\":\"Invalid JSON\"}"
+                    "Invalid JSON"
                 );
 
                 return;
@@ -316,10 +327,9 @@ void startAPI()
 
             if(!doc["domain"].is<String>())
             {
-                server.send(
+                sendError(
                     400,
-                    "application/json",
-                    "{\"error\":\"Missing domain\"}"
+                    "Missing domains"
                 );
 
                 return;
@@ -332,17 +342,16 @@ void startAPI()
                     addBlockedDomain(domain);
 
                     if(success){
-                        server.send(201,
-                        "application/json",
-                        "{\"status\":\"added\"}"
+                        sendStatus(
+                            201,
+                            "added"
                         );
                     }
                     else
                     {
-                        server.send(
+                        sendError(
                             409,
-                            "application/json",
-                            "{\error\":\"Domain already exists\"}"
+                            "Domain already exists"
                         );
                     }
     });
@@ -358,9 +367,9 @@ void startAPI()
             deserializeJson(doc, body.c_str());
 
         if(error){
-            server.send(
-                400, "application/json",
-                "{\"error\":\"Invalid JSON}"
+            sendError(
+                400,
+                "Invalid JSON"
             );
 
             return;
@@ -368,10 +377,9 @@ void startAPI()
 
         if(!doc["domain"].is<String>())
         {
-            server.send(
+            sendError(
                 400,
-                "application/json",
-                "{\error\":\"Missing domain\"}"
+                "Missing domain"
             );
 
             return;
@@ -384,35 +392,35 @@ void startAPI()
         bool success =
             removeBlockedDomain(domain);
         if(success){
-            server.send(
-                200,"application/json",
-                "{\"status\":\"removed\"}"
+            sendStatus(
+                200,
+                "removed"
             );
         }
         else{
-            server.send(
-                404, "application/json",
-                "{\"error\":\"Domain not found\"}"
+            sendError(
+                404,
+                "Domain not found"
             );
         }
     });
 
 
-    server.on("/api/dnshealth", HTTP_GET, [](){
-
-        server.send(
-            200,
-            "application/json",
-            createDNSHealthJSON()
-        );
-    });
+    registerGetRoute(
+        "/api/dnshealth",
+        createDNSHealthJSON,
+        false
+    );
 
     server.on("/api/blocklist/import", HTTP_POST,[](){
         if(!checkAuthentication(server))
             return;
         if(!server.hasArg("plain"))
         {
-            server.send(400, "text/plain", "Missing data");
+            sendError(
+                400,
+                "Missing data"
+            );
             return;
         }
 
@@ -424,18 +432,17 @@ void startAPI()
             );
 
         if(error){
-            server.send(
+            sendError(
                 400,
-                "application/json",
-                "{\"error\":\"Invalid JSON\"}"
+                "Invalid JSON"
             );
             return;
         }
 
         if(!doc["domains"].is<String>()){
-            server.send(400,
-            "application/json",
-            "{\"error\":\"Missing domains\"}"
+            sendError(
+                400,
+                "Missing domains"
             );
 
             return;
@@ -492,26 +499,20 @@ void startAPI()
         );
     });
 
-    server.on("/api/system", HTTP_GET, [](){
-        if (!checkAuthentication(server))
-            return;
-        
-        server.send(
-            200,
-            "application/json",
-            createSystemJSON()
-        );
-    });
+    registerGetRoute(
+        "/api/system",
+        createSystemJSON,
+        true
+    );
 
     server.on("/api/logs/clear", HTTP_POST, [](){
         if(!checkAuthentication(server))
             return;
         clearLogs();
 
-        server.send(
+        sendStatus(
             200,
-            "application/json",
-            "{\"status\":\"cleared\"}"
+            "cleared"
         );
     });
 
