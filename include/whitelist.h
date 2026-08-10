@@ -12,6 +12,10 @@ void saveWhiteList();
 bool addWhitelistedDomain();
 bool removeWhitelistedDomain();
 
+String createWhitelistJSON();
+
 bool isWhitelisted(String domain);
+int getWhitelistSize();
+void clearWhitelist();
 
 #endif

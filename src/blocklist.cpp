@@ -122,7 +122,7 @@ String createBlocklistJSON()
 
   String json;
 
-  serializeJson(doc,json);
+  serializeJson(doc, json);
 
   return json;
 }

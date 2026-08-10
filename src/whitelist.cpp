@@ -1,6 +1,7 @@
 #include "whitelist.h"
 #include <LittleFS.h>
 #include "domain_utils.h"
+#include <ArduinoJson.h>
 
 DomainHashTable whitelistedDomains;
 
@@ -18,8 +19,7 @@ void loadWhitelist()
     {
         String domain = file.readStringUntil('\n');
 
-        domain.trim();
-        domain.toLowerCase();
+        domain = normalizeDomain(domain);
         if(domain.length() > 0)
         {
             whitelistedDomains.add(domain);
@@ -54,8 +54,7 @@ void saveWhitelist()
 
 bool addWhitelistedDomain(String domain)
 {   
-    domain.trim();
-    domain.toLowerCase();
+    domain = normalizeDomain(domain);
 
     if(domain.length() == 0)
     {
@@ -74,8 +73,7 @@ bool addWhitelistedDomain(String domain)
 
 bool removeWhitelistedDomain(String domain)
 {   
-    domain.trim();
-    domain.toLowerCase();
+    domain = normalizeDomain(domain);
 
     auto result = whitelistedDomains.remove(domain);
 
@@ -89,11 +87,41 @@ bool removeWhitelistedDomain(String domain)
 }
 
 
+String createWhitelistJSON()
+{
+    JsonDocument doc;
+
+    JsonArray array = doc.to<JsonArray>();
+
+    for(int i = 0; i < whitelistedDomains.size(); i++)
+    {
+        array.add(whitelistedDomains.get(i));
+    }
+
+    String json;
+
+    serializeJson(doc, json);
+
+    return json;
+}
+
+
 
 bool isWhitelisted(String domain)
 {
-    domain.trim();
-    domain.toLowerCase();
+    domain = normalizeDomain(domain);
 
     return whitelistedDomains.contains(domain);
+}
+
+int getWhitelistSize()
+{
+    return whitelistedDomains.size();
+}
+
+void clearWhitelist()
+{
+    whitelistedDomains.clear();
+
+    saveWhitelist();
 }
