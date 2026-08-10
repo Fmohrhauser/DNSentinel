@@ -8,15 +8,15 @@ DomainHashTable whitelistedDomains;
 void loadWhitelist()
 {
     File file = LittleFS.open("/whitelist.txt", "r");
-
+        Serial.println("attempted to open file");
     if(!file)
     {
-        Serial.println("Couldn't open whitelist.");
+        Serial.println("Couldn't open whitelist");
         return;
     }
 
     while(file.available())
-    {
+    {   
         String domain = file.readStringUntil('\n');
 
         domain = normalizeDomain(domain);

@@ -12,6 +12,7 @@
 #include "api.h"
 #include "cache_stats.h"
 #include "dns_health_stats.h"
+#include "whitelist.h"
 
 WiFiUDP udp;
 WiFiUDP upstreamUdp;
@@ -283,7 +284,7 @@ void handleDNS(){
 
     createHeader(response, idHigh, idLow, true);
 
-    bool blocked =isBlocked(domain);
+    bool blocked = !isWhitelisted(domain) && isBlocked(domain);
 
 
     DEBUG_PRINT("Blocked? ");

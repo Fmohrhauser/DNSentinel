@@ -6,8 +6,8 @@
 
 extern DomainHashTable whitelistedDomains;
 
-void loadWhiteList();
-void saveWhiteList();
+void loadWhitelist();
+void saveWhitelist();
 
 bool addWhitelistedDomain();
 bool removeWhitelistedDomain();

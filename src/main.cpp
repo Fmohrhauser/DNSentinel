@@ -16,6 +16,7 @@
 #include "time_manager.h"
 #include "cache_stats.h"
 #include "auth.h"
+#include "whitelist.h"
 
 extern WebServer server;
 //setup
@@ -44,8 +45,10 @@ void setup() {
 
 
   blockedDomains.begin();
+  whitelistedDomains.begin();
   
   loadBlocklist();
+  loadWhitelist();
 
 Serial.println(deviceConfig.deviceName);
 Serial.println(deviceConfig.upstreamDNS);
