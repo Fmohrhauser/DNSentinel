@@ -27,6 +27,5 @@ bool isBlocked(String domain);
 ImportResult importBlocklist(String data);
 int getBlocklistSize();
 void clearBlocklist();
-String normalizeDomain(String line);
 
 #endif

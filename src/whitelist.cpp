@@ -1,9 +1,10 @@
 #include "whitelist.h"
 #include <LittleFS.h>
+#include "domain_utils.h"
 
 DomainHashTable whitelistedDomains;
 
-void loadWhiteList()
+void loadWhitelist()
 {
     File file = LittleFS.open("/whitelist.txt", "r");
 
@@ -32,7 +33,7 @@ void loadWhiteList()
     Serial.println(" whitelisted domains.");
 }
 
-void saveWhiteList()
+void saveWhitelist()
 {
     File file = LittleFS.open("/whitelist.txt", "w");
 
@@ -52,7 +53,8 @@ void saveWhiteList()
 }
 
 bool addWhitelistedDomain(String domain)
-{
+{   
+    domain.trim();
     domain.toLowerCase();
 
     if(domain.length() == 0)
@@ -65,20 +67,21 @@ bool addWhitelistedDomain(String domain)
         return false;
     }
 
-    saveWhiteList();
+    saveWhitelist();
 
     return true;
 }
 
 bool removeWhitelistedDomain(String domain)
-{
+{   
+    domain.trim();
     domain.toLowerCase();
 
     auto result = whitelistedDomains.remove(domain);
 
     if(result)
     {
-        saveWhiteList();
+        saveWhitelist();
         return true;
     }
 
