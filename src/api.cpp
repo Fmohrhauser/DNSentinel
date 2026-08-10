@@ -11,6 +11,7 @@
 #include "dns_health_stats.h"
 #include "stats.h" 
 #include "auth.h"
+#include "whitelist.h"
 
 
 extern WebServer server;
@@ -513,6 +514,122 @@ void startAPI()
         sendStatus(
             200,
             "cleared"
+        );
+    });
+
+    registerGetRoute(
+        "/api/whitelist",
+        createWhitelistJSON,
+        false
+    );
+    server.on("/api/whitelist/add", HTTP_POST, [](){
+        if(!checkAuthentication(server))
+            return;
+        String body = server.arg("plain");
+        JsonDocument doc;
+        DeserializationError error =
+            deserializeJson(doc, body.c_str());
+
+        if(error)
+        {
+            sendError(
+                400,
+                "invalid JSON"
+            );
+
+            return;
+        }
+
+        if(!doc["domain"].is<String>())
+        {
+            sendError(
+                400,
+                "Missing domain"
+            );
+
+            return;
+        }
+
+        String domain =
+            doc["domain"].as<String>();
+
+            bool success = 
+                addWhitelistedDomain(domain);
+            
+            if(success){
+                sendStatus(
+                    201,
+                    "added"
+                );
+            }
+            else
+            {
+                sendError(
+                    409,
+                    "Domain already exists"
+                );
+            }
+    });
+
+    server.on("/api/whitelist/remove", HTTP_POST, [](){
+        if(!checkAuthentication(server))
+            return;
+
+        String body = server.arg("plain");
+
+        JsonDocument doc;
+
+        DeserializationError error =
+            deserializeJson(doc, body.c_str());
+
+        if(error)
+        {
+            sendError(
+                400,
+                "Invalid JSON"
+            );
+
+            return;
+        }
+
+        if(!doc["domain"].is<String>())
+        {
+            sendError(
+                400,
+                "Missing domain"
+            );
+
+            return;
+        }
+
+        String domain =
+            doc["domain"].as<String>();
+
+        bool success =
+            removeWhitelistedDomain(domain);
+        if(success){
+            sendStatus(
+                200,
+                "removed"
+            );
+        }
+        else{
+            sendError(
+                404,
+                "Domain not found"
+            );
+        }
+    });
+
+    server.on("/api/whitelist/reset", HTTP_POST, [](){
+        if(!checkAuthentication(server))
+            return;
+        clearWhitelist();
+
+        server.send(
+            200,
+            "application/json",
+            "{\"success\":true}"
         );
     });
 

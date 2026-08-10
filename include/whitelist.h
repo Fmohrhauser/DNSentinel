@@ -9,8 +9,8 @@ extern DomainHashTable whitelistedDomains;
 void loadWhitelist();
 void saveWhitelist();
 
-bool addWhitelistedDomain();
-bool removeWhitelistedDomain();
+bool addWhitelistedDomain(String domain);
+bool removeWhitelistedDomain(String domain);
 
 String createWhitelistJSON();
 
