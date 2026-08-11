@@ -152,7 +152,7 @@ document
 .getElementById("import-btn")
 .addEventListener(
     "click",
-    importWhitelist()
+    importWhitelist
 );
 
 document
