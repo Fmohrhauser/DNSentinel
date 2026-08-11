@@ -7,7 +7,7 @@
 
 
 extern DomainHashTable blockedDomains;
-struct ImportResult
+struct ImportResultBlocklist
 {
     int added = 0;
     int duplicates = 0;
@@ -24,7 +24,7 @@ String createBlocklistJSON();
 
 bool isBlocked(String domain);
 
-ImportResult importBlocklist(String data);
+ImportResultBlocklist importBlocklist(String data);
 int getBlocklistSize();
 void clearBlocklist();
 

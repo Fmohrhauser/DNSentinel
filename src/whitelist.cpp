@@ -105,6 +105,51 @@ String createWhitelistJSON()
     return json;
 }
 
+ImportResultWhitelist importWhitelist(String data)
+{
+
+    ImportResultWhitelist result;
+
+    int start = 0;
+
+    while(start < data.length())
+    {
+        int end = data.indexOf('\n', start);
+
+        if(end == -1)
+        {
+            end = data.length();
+        }
+
+        String domain = data.substring(start, end);
+
+        start = end + 1;
+
+        domain = normalizeDomain(domain);
+
+        if(domain.length() == 0)
+        {
+            result.ignored++;
+        }
+        else
+        {
+            if(whitelistedDomains.add(domain))
+            {
+                result.added ++;
+            }
+            else
+            {
+                result.duplicates++;
+            }
+        }
+    }
+
+    saveWhitelist();
+
+    return result;
+
+}
+
 
 
 bool isWhitelisted(String domain)

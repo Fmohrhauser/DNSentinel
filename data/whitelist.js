@@ -37,7 +37,7 @@ function addDomain()
         document.getElementById("new-domain").value="";
 
         updateWhitelist();
-        /*updateWhitelistCount();*/
+        updateWhitelistCount();
     });
 }
 
@@ -60,7 +60,7 @@ function removeDomain(domain)
     .then(() => {
 
         updateWhitelist();
-        /*updateWhitelistCount();*/
+        updateWhitelistCount();
 
     });
 }
@@ -71,7 +71,6 @@ document
     "click",
     addDomain
 );
-/* I still actually have to make the main backend function for this to work*/
 function importWhitelist()
 {
 
@@ -145,16 +144,16 @@ function importWhitelist()
 
         progress.classList.add("hidden");
 
-        /*updateWhitelistCount();*/
+        updateWhitelistCount();
     })
 }
 
-/*document
+document
 .getElementById("import-btn")
 .addEventListener(
     "click",
     importWhitelist()
-);*/
+);
 
 document
 .getElementById("close-summary")
@@ -261,7 +260,7 @@ function resetWhitelist()
         })
         .then(() => {
             updateWhitelist();
-            /*updateWhitelistCount();*/
+            updateWhitelistCount();
         });
 }
 
@@ -278,4 +277,4 @@ document
     filterWhitelist
 );
 updateWhitelist();
-/*updateWhitelistCount();*/
+updateWhitelistCount();

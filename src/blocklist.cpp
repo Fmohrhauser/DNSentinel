@@ -168,10 +168,10 @@ bool isBlocked(String domain)
 }
 
 
-ImportResult importBlocklist(String data)
+ImportResultBlocklist importBlocklist(String data)
 {
 
-  ImportResult result;
+  ImportResultBlocklist result;
 
   int start = 0;
 

@@ -451,7 +451,7 @@ void startAPI()
 
         String text = doc["domains"].as<String>();
 
-        ImportResult result = importBlocklist(text);
+        ImportResultBlocklist result = importBlocklist(text);
 
         JsonDocument response;
 
@@ -630,6 +630,80 @@ void startAPI()
             200,
             "application/json",
             "{\"success\":true}"
+        );
+    });
+
+    server.on("/api/whitelist/import", HTTP_POST, [](){
+        if(!checkAuthentication(server))
+            return;
+        if(!server.hasArg("plain"))
+        {
+            sendError(
+                400,
+                "Missing data"
+            );
+            return;
+        }
+
+        JsonDocument doc;
+        DeserializationError error =
+            deserializeJson(
+                doc,
+                server.arg("plain")
+            );
+
+        if(error){
+            sendError(
+                400,
+                "Invalid JSON"
+            );
+
+            return;
+        }
+
+        if(!doc["domains"].is<String>()){
+            sendError(
+                400,
+                "Missing domains"
+            );
+
+            return;
+        }
+
+        String text = doc["domains"].as<String>();
+
+        ImportResultWhitelist result = importWhitelist(text);
+
+        JsonDocument response;
+
+        response["added"] = result.added;
+        response["duplicates"] = result.duplicates;
+        response["ignored"] = result.ignored;
+
+        String output;
+
+        serializeJson(response, output);
+
+        server.send(
+            200,
+            "application/json",
+            output
+        );
+    });
+
+    server.on("/api/whitelist/count", HTTP_GET, [](){
+
+        JsonDocument doc;
+
+        doc["count"] = getWhitelistSize();
+
+        String json;
+        serializeJson(doc, json);
+
+        server.send(
+            200,
+            "application/json",
+            json
         );
     });
 
