@@ -301,11 +301,11 @@ tr:hover {
     cursor: pointer;
 }
 
-#blocklist {
+#filterlist {
     margin: 15px 0;
 }
 
-.blocklist-entry {
+.filterlist-entry {
 
     display: flex;
 

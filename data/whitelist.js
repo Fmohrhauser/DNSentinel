@@ -1,27 +1,24 @@
-let currentBlocklist = [];
-function updateBlocklist()
+let currentWhitelist = [];
+function updateWhitelist()
 {
-    fetch("/api/blocklist", {
+    fetch("/api/whitelist", {
         cache: "no-store"
     })
-
     .then(response => response.json())
     .then(domains => {
 
-        currentBlocklist = domains;
+        currentWhitelist = domains;
 
-        renderBlocklist(currentBlocklist);
-    
+        renderWhitelist(currentWhitelist);
     });
 }
-
 
 function addDomain()
 {
     let domain =
         document.getElementById("new-domain").value;
 
-    fetch("/api/blocklist/add",
+    fetch("/api/whitelist/add", 
     {
         method:"POST",
 
@@ -30,8 +27,7 @@ function addDomain()
             "content-Type":"application/json"
         },
 
-        body:JSON.stringify(
-        {
+        body:JSON.stringify({
             domain:domain
         })
 
@@ -40,16 +36,15 @@ function addDomain()
 
         document.getElementById("new-domain").value="";
 
-        updateBlocklist();
-        updateBlocklistCount();
+        updateWhitelist();
+        /*updateWhitelistCount();*/
     });
-}  
-
+}
 
 function removeDomain(domain)
 {
 
-    fetch("/api/blocklist/remove",{
+    fetch("/api/whitelist/remove",{
         method:"POST",
 
         headers:
@@ -64,11 +59,10 @@ function removeDomain(domain)
     })
     .then(() => {
 
-        updateBlocklist();
-        updateBlocklistCount();
+        updateWhitelist();
+        /*updateWhitelistCount();*/
 
     });
-
 }
 
 document
@@ -77,49 +71,41 @@ document
     "click",
     addDomain
 );
-
-
-
-
-function importBlocklist()
+/* I still actually have to make the main backend function for this to work*/
+function importWhitelist()
 {
 
     let domains =
         document
         .getElementById("import-list")
         .value;
-    const button = 
+    const button =
         document.getElementById("import-btn");
 
     const progress =
         document.getElementById("import-progress");
-    
+
     button.disabled = true;
     button.innerText = "Importing ...";
     progress.classList.remove("hidden");
-    fetch("/api/blocklist/import", {
+    fetch("/api/whitelist/import", {
         method: "POST",
 
         headers: {
-
             "Content-Type":"application/json"
-
         },
 
         body: JSON.stringify({
 
             domains: domains
         })
-
     })
     .then(response => response.json())
     .catch(error => {
-
         console.error(error);
 
         button.disabled = false;
-        button.innerText = "Import Blocklist";
-
+        button.innerText = "Import Whitelist";
         progress.classList.add("hidden");
     })
     .then(result => {
@@ -149,27 +135,26 @@ function importBlocklist()
         .getElementById("import-ignored")
         .innerHTML =
         result.ignored;
-        
-        updateBlocklist();
+
+        updateWhitelist();
         document
         .getElementById("import-list")
         .value = "";
         button.disabled = false;
-        button.innerText = "Import Blocklist";
+        button.innerText = "Import Whitelist";
 
         progress.classList.add("hidden");
 
-        updateBlocklistCount();
-        
+        /*updateWhitelistCount();*/
     })
 }
 
-document
+/*document
 .getElementById("import-btn")
 .addEventListener(
     "click",
-    importBlocklist
-);
+    importWhitelist()
+);*/
 
 document
 .getElementById("close-summary")
@@ -184,27 +169,27 @@ document
     }
 )
 
-function updateBlocklistCount()
+function updateWhitelistCount()
 {
-    fetch("/api/blocklist/count")
+    fetch("/api/whitelist/count")
     .then(response => response.json())
     .then(data => {
 
         document
-        .getElementById("blocklist-count")
+        .getElementById("whitelist-count")
         .innerText = "(" + data.count + ")";
     });
 }
 
-function renderBlocklist(domains)
+function renderWhitelist(domains)
 {
-    let container = 
-        document.getElementById("blocklist");
+    let container =
+        document.getElementById("whitelist");
 
     document
-    .getElementById("blocklist-results")
+    .getElementById("whitelist-results")
     .innerText =
-    `Showing ${domains.length} of ${currentBlocklist.length} domains`;
+    `Showing ${domains.length} of ${currentWhitelist.length} domains`;
 
     container.innerHTML = "";
 
@@ -238,59 +223,59 @@ function renderBlocklist(domains)
         item.appendChild(span);
         item.appendChild(button);
 
-        container.appendChild(item);
+        container.appendChild(item); 
     });
 }
 
-function filterBlocklist()
+function filterWhitelist()
 {
     let search =
         document
-        .getElementById("blocklist-search")
+        .getElementById("whitelist-search")
         .value
         .toLowerCase();
 
     let filtered =
-        currentBlocklist.filter(domain =>
+        currentWhitelist.filter(domain =>
             domain
             .toLowerCase()
             .includes(search)
         );
 
-        renderBlocklist(filtered);
+        renderWhitelist(filtered);
 }
 
-function resetBlocklist()
+function resetWhitelist()
 {
     let confirmReset =
         confirm(
-            "Are you sure you want to remove all blocked domains?"
+            "Are you sure you want to remove all whitelisted domains?"
         );
 
     if(!confirmReset)
         return;
 
-    fetch("/api/blocklist/reset",
+    fetch("/api/whitelist/reset",
         {
             method:"POST"
         })
-        .then(() =>{
-            updateBlocklist();
-            updateBlocklistCount();
+        .then(() => {
+            updateWhitelist();
+            /*updateWhitelistCount();*/
         });
-    
 }
+
 document
-.getElementById("reset-blocklist")
+.getElementById("reset-whitelist")
 .addEventListener(
     "click",
-    resetBlocklist
+    resetWhitelist
 );
 document
-.getElementById("blocklist-search")
+.getElementById("whitelist-search")
 .addEventListener(
     "input",
-    filterBlocklist
+    filterWhitelist
 );
-updateBlocklist();
-updateBlocklistCount();
+updateWhitelist();
+/*updateWhitelistCount();*/

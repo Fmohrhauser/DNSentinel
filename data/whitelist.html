@@ -6,7 +6,7 @@
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0">
-    <title>DNSentinel - Blocklist</title>
+    <title>DNSentinel - Whitelist</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -17,8 +17,8 @@
         <nav>
             <a href="/">Dashboard</a>
             <a href="/queries.html">Queries</a>
-            <a href="/blocklist.html" class="active">Blocklist</a>
-            <a href="/whitelist.html">Whitelist</a>
+            <a href="/blocklist.html">Blocklist</a>
+            <a href="/whitelist.html" class="active">Whitelist</a>
             <a href="/settings.html">Settings</a>
         </nav>
         <footer class="navbar-ftr">
@@ -28,77 +28,61 @@
     </aside>
 
     <main class="content">
-        
+
         <header class="topbar">
-
-
             <div>
-                <h1>Blocklist</h1>
+                <h1>Whitelist</h1>
 
                 <p class="subtitle">
-                    Manage blocked domains
+                    Manage whitelisted domains
                 </p>
             </div>
 
-            <div class="topbar-right">
-
-                <div class="status-chip">
-
-                    <span id="blocklist-count">
-                        0
-                    </span>
-                </div>
-            </div>
+            <!--Need to add whitelist count function before putting topbar right count doohickey-->
         </header>
-
-
-
+<!--simplify css here???-->
         <div>
 
-            <section>
+            <section class="card">
                 <h2>
-                    Blocked Domains
+                    Whitelisted Domains
                 </h2>
 
                 <p class="card-description">
-                    Search through or remove domains from the blocklist.
+                    Search through or remove domains from the whitelist.
                 </p>
-
 
                 <div>
 
-                    <label for="blocklist-search">
+                    <label for="whitelist-search">
                         Search Domains
                     </label>
 
                     <input
-                        id="blocklist-search"
+                        id="whitelist-search"
                         type="text"
                         placeholder="Search domains..."
                         autocomplete="off">
                 </div>
 
-
-
-                <p id="blocklist-results">
+                <p id="whitelist-results">
                     Loading...
                 </p>
-
-                <div id="blocklist">
+                
+                <div id="whitelist" class="filterlist-domain-list">
 
                     Loading...
                 </div>
             </section>
             <div>
-                <!--Single domain import-->
                 <section class="card">
 
                     <h2>
-                        Add Domain
+                        Add domain
                     </h2>
 
                     <p class="card-description">
-                        Add one domain to the current blocklist.
+                        Add one domain to the current whitelist.
                     </p>
 
                     <div>
@@ -115,16 +99,14 @@
                     </div>
 
                     <button id="add-domain" class="primary-btn">
-
                         Add domain
-
                     </button>
                 </section>
-                    <!-- Multiple domain import-->
+                <!--Most of this is copied from the blocklist, although i dont think many people will have large copy/paste whitelists.
+                I did think it would be better than adding a single domain and clicking add domain Every Single Time-->
                 <section class="card">
-
                     <h2>
-                        Import Blocklist
+                        Import Whitelist
                     </h2>
                     <p class="card-description">
                         Paste one domain per line.
@@ -135,21 +117,18 @@
                             Domain list
                         </label>
 
-
-
                         <textarea id="import-list"
-                            placeholder="doubleclick.net&#10;ads.google.com&#10;tracker.com">
-                        </textarea>    
+                            placeholder="google.com&#10;yahoo.com&#10;youtube.com">
+                        </textarea>
                     </div>
-                    <button 
+                    <button
                         id="import-btn"
                         class="primary-btn">
-                        Import Blocklist
+                        Import Whitelist
                     </button>
-                    <p
-                        id="import-progress"
+                    <p id="import-progress"
                         class="hidden">
-                        Importing blocklist. Please wait...
+                        Importing whitelist. Please wait...
                     </p>
                     <div id="import-summary" class="summary-card hidden">
                         <h3>
@@ -174,19 +153,21 @@
                 </section>
 
                 <section class="card">
-                    <h2>Reset Blocklist</h2>
+                    <h2>
+                        Reset Whitelist
+                    </h2>
                     <p class="card-description">
-                        Remove all domains currently stored in the blocklist.
+                        Remove all domains currently stored in the whitelist.
                     </p>
-                    <button id="reset-blocklist"
-                    class="danger-btn">
-                    Reset Blocklist
+                    <button id="reset-whitelist"
+                            class="danger-btn">
+                        Reset Whitelist
                     </button>
                 </section>
             </div>
         </div>
     </main>
 
-    <script src="/blocklist.js"></script>
+    <script src="/whitelist.js"></script>
 </body>
 </html>

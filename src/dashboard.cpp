@@ -10,7 +10,7 @@ WebServer server(80);
 
 void startDashboard()
 {
-    server.on("/",HTTP_GET, [](){
+    server.on("/", HTTP_GET, [](){
         
         File file = LittleFS.open("/index.html","r");
 
@@ -31,7 +31,7 @@ void startDashboard()
         file.close();
     });
 
-    server.on("/blocklist.html",HTTP_GET, [](){
+    server.on("/blocklist.html", HTTP_GET, [](){
         
         File file = LittleFS.open("/blocklist.html","r");
 
@@ -52,7 +52,7 @@ void startDashboard()
         file.close();
     });
 
-    server.on("/queries.html",HTTP_GET, [](){
+    server.on("/queries.html", HTTP_GET, [](){
         
         File file = LittleFS.open("/queries.html","r");
 
@@ -73,7 +73,7 @@ void startDashboard()
         file.close();
     });
 
-    server.on("/settings.html",HTTP_GET, [](){
+    server.on("/settings.html", HTTP_GET, [](){
         
         File file = LittleFS.open("/settings.html","r");
 
@@ -94,7 +94,29 @@ void startDashboard()
         file.close();
     });
 
-    server.on("/dashboard.js", HTTP_GET,[](){
+    server.on("/whitelist.html", HTTP_GET, [](){
+
+        File file = LittleFS.open("/whitelist.html", "r");
+
+        if(!file)
+        {
+            server.send(
+                404,
+                "text/plain",
+                "File not found"
+            );
+
+            return;
+        }
+
+        server.streamFile(
+            file,
+            "text/html"
+        );
+        file.close();
+    });
+
+    server.on("/dashboard.js", HTTP_GET, [](){
         File file = LittleFS.open("/dashboard.js", "r");
 
         if(!file)
@@ -109,7 +131,7 @@ void startDashboard()
         file.close();
     });
 
-    server.on("/blocklist.js", HTTP_GET,[](){
+    server.on("/blocklist.js", HTTP_GET, [](){
         File file = LittleFS.open("/blocklist.js", "r");
 
         if(!file)
@@ -124,7 +146,7 @@ void startDashboard()
         file.close();
     });
 
-    server.on("/queries.js", HTTP_GET,[](){
+    server.on("/queries.js", HTTP_GET, [](){
         File file = LittleFS.open("/queries.js", "r");
 
         if(!file)
@@ -139,7 +161,7 @@ void startDashboard()
         file.close();
     });
 
-    server.on("/settings.js", HTTP_GET,[](){
+    server.on("/settings.js", HTTP_GET, [](){
         File file = LittleFS.open("/settings.js", "r");
 
         if(!file)
@@ -152,6 +174,26 @@ void startDashboard()
         server.streamFile(file, "application/javascript");
 
         file.close();
+    });
+
+    server.on("/whitelist.js", HTTP_GET, [](){
+        File file = LittleFS.open("/whitelist.js", "r");
+
+        if(!file)
+        {
+            server.send(
+                404,
+                "text/plain", 
+                "File not found"
+            );
+
+            return;
+        }
+
+        server.streamFile(file, "application/javascript");
+
+        file.close();
+
     });
 
     server.on("/style.css", HTTP_GET, [](){
