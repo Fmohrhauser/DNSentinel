@@ -1,6 +1,7 @@
 #include "hash_table.h"
 #include <esp_heap_caps.h>
 #include <cstring>
+#include "debug.h"
 
 DomainHashTable::DomainHashTable()
 {
@@ -10,8 +11,8 @@ DomainHashTable::DomainHashTable()
 
 void DomainHashTable::begin()
 {
-    Serial.println(sizeof(Entry));
-    Serial.println(sizeof(Entry) * TABLE_SIZE);
+    DEBUG_PRINTLN(sizeof(Entry));
+    DEBUG_PRINTLN(sizeof(Entry) * TABLE_SIZE);
 
     table = (Entry*)heap_caps_calloc(
         TABLE_SIZE,
@@ -21,7 +22,7 @@ void DomainHashTable::begin()
 
     if(table == nullptr)
     {
-        Serial.println("HASH TABLE PSRAM ALLOCATION FAILED");
+        DEBUG_PRINTLN("HASH TABLE PSRAM ALLOCATION FAILED");
         return;
     }
 
@@ -36,7 +37,7 @@ void DomainHashTable::clear()
 
     if(table == nullptr)
     {
-        Serial.println("Cannot clear null hash table");
+        DEBUG_PRINTLN("Cannot clear null hash table");
         return;
     }
 

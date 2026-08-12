@@ -14,7 +14,7 @@ void loadBlocklist()
 
   if(!file)
   {
-    Serial.println("Couldn't open blocklist.");
+    DEBUG_PRINTLN("Couldn't open blocklist.");
 
     return;
   }
@@ -35,20 +35,20 @@ void loadBlocklist()
       }
       else
       {
-        Serial.println("Hash table full or duplicate");
+        DEBUG_PRINTLN("Hash table full or duplicate");
       }
     }
   }
 
   file.close();
 
-  Serial.print("Loaded ");
-  Serial.print(blockedDomains.size());
-  Serial.println(" blocked domains.");
-  Serial.print("Free heap: ");
-  Serial.println(ESP.getFreeHeap());
-  Serial.print("Free PSRAM: ");
-  Serial.println(ESP.getFreePsram());
+  DEBUG_PRINT("Loaded ");
+  DEBUG_PRINT(blockedDomains.size());
+  DEBUG_PRINTLN(" blocked domains.");
+  DEBUG_PRINT("Free heap: ");
+  DEBUG_PRINTLN(ESP.getFreeHeap());
+  DEBUG_PRINT("Free PSRAM: ");
+  DEBUG_PRINTLN(ESP.getFreePsram());
 }
 
 
@@ -58,7 +58,7 @@ void saveBlocklist()
 
   if(!file)
   {
-    Serial.println("Couldn't save blocklist.");
+    DEBUG_PRINTLN("Couldn't save blocklist.");
     return;
   }
 
@@ -68,7 +68,7 @@ void saveBlocklist()
 }
 
   file.close();
-  Serial.println("Blocklist saved.");
+  DEBUG_PRINTLN("Blocklist saved.");
 }
 
 
@@ -159,8 +159,7 @@ bool checkDomainAndParents(String domain)
 
 bool isBlocked(String domain)
 {
-  DEBUG_PRINT("Checking: ");
-  DEBUG_PRINTLN(domain);
+
 
   domain.toLowerCase();
 

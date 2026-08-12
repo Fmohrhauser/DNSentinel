@@ -15,18 +15,18 @@ void initTime()
         ntpServer
     );
 
-    DEBUG_PRINTLN("waiting for NTP time...");
+    Serial.println("waiting for NTP time...");
 
     struct tm timeinfo;
 
     while(!getLocalTime(&timeinfo))
     {
         delay(500);
-        DEBUG_PRINT(".");
+        Serial.print(".");
     }
 
-    DEBUG_PRINTLN();
-    DEBUG_PRINTLN("Time synchronized");
+    Serial.println();
+    Serial.println("Time synchronized");
 }
 
 String getCurrentTime()

@@ -47,14 +47,10 @@ void cacheInsert(
 
             if(ttl == 0)
             {
-                DEBUG_PRINT("Not caching (TTL 0): ");
-                DEBUG_PRINTLN(domain);
 
                 return;
             }
             cache[i].expiresAt = millis() + (ttl * 1000);
-            DEBUG_PRINT("Cached: ");
-            DEBUG_PRINTLN(domain);
 
             return;
         }
@@ -98,15 +94,11 @@ bool cacheLookup(
 
             responseLength = cache[i].responseLength;
              incrementCacheHits();
-            DEBUG_PRINT("Cache hit: ");
-            DEBUG_PRINTLN(domain);
              lookupTime = millis() - lookupTime;
             return true;
         }
     }
     recordCacheMiss(lookupTime);
-    DEBUG_PRINT("Cache miss: ");
-    DEBUG_PRINTLN(domain);
     lookupTime = millis() - lookupTime;
     return false;
 }
@@ -120,8 +112,6 @@ void cacheCleanup()
             {
                 cache[i].valid = false;
 
-                DEBUG_PRINT("Removed expired cache entry: ");
-                DEBUG_PRINTLN(cache[i].domain);
 
                 cache[i].domain = "";
             }

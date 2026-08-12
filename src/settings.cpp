@@ -1,6 +1,7 @@
 #include "settings.h"
 #include <LittleFS.h>
 #include <ArduinoJson.h>
+#include "debug.h"
 
 Settings settings;
 
@@ -77,7 +78,7 @@ void saveSettings()
 
     if(!file)
     {
-        Serial.println("failed to open settings file");
+        DEBUG_PRINTLN("failed to open settings file");
         return;
     }
 
@@ -123,7 +124,7 @@ void loadSettings()
 {
     if(!LittleFS.exists("/settings.json"))
     {
-        Serial.println("No settings file found");
+        DEBUG_PRINTLN("No settings file found");
 
         saveSettings();
 
@@ -139,7 +140,7 @@ void loadSettings()
 
     if(error)
     {
-        Serial.println("Failed loading settings");
+        DEBUG_PRINTLN("Failed loading settings");
 
         return;
     }
@@ -220,10 +221,6 @@ bool validIP(String ip)
 
         int value = part.toInt();
 
-        Serial.print("IP part: ");
-        Serial.print(part);
-        Serial.print(" value: ");
-        Serial.println(value);
 
         if(value < 0 || value > 255)
         {

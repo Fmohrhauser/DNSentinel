@@ -127,15 +127,12 @@ void sendNXDOMAIN(
 
   udp.endPacket();
 
-  DEBUG_PRINTLN("Sent NXDOMAIN");
 }
 
 
 bool forwardDNS(byte packet[], int length, byte response[], int &responseLength) {
 
   Settings currentSettings = getSettings();
-  Serial.print("Forwarding DNS to: ");
-  Serial.println(currentSettings.upstreamDNS);
 
   unsigned long start = millis();
 
@@ -186,14 +183,6 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
   return false;
 }
 
-void requestStatistics(){
-  if (millis() - statsDelay > 20000){
-    Serial.println("---- DNS Stats ----");
-    Serial.print("Total: ");
-    statsDelay = millis();
-  }
-  
-}
 
 
 void handleDNS(){
@@ -204,29 +193,16 @@ void handleDNS(){
 
   if(packetSize){
     incrementTotalRequests();
-    DEBUG_PRINTLN("PACKET!");
+
 
     int bytesRead = udp.read(dnsPacket, MAX_DNS_PACKET_SIZE);
 
-    DEBUG_PRINT("RAW PACKET:");
+
     for (int i = 0; i < bytesRead; i++) {
-      DEBUG_PRINTF("%02x ", dnsPacket[i]);
+
     } 
-      DEBUG_PRINTLN();
+
     
-
-    DEBUG_PRINT("Bytes copied: ");
-    DEBUG_PRINTLN(bytesRead);
-
-    DEBUG_PRINT("Size: ");
-    DEBUG_PRINTLN(packetSize);
-
-    DEBUG_PRINT("From: ");
-    DEBUG_PRINTLN(udp.remoteIP());
-
-    DEBUG_PRINT("Port: ");
-    DEBUG_PRINTLN(udp.remotePort());
-  
     //save transaction id
     byte idHigh = dnsPacket[0];
     byte idLow = dnsPacket[1];
@@ -255,25 +231,12 @@ void handleDNS(){
 
     int qType = (qTypeHigh << 8) | qTypeLow;
     int qClass = (qClassHigh << 8) | qClassLow;
-    DEBUG_PRINT("QTYPE: ");
-    DEBUG_PRINTLN(qType);
-    DEBUG_PRINT("QCLASS: ");
-    DEBUG_PRINTLN(qClass);
-    
-    
 
-    
-
-
-    DEBUG_PRINTLN("Parser finished");
 
 
 
     domain.toLowerCase();
 
-
-    DEBUG_PRINT("DNS request: ");
-    DEBUG_PRINTLN(domain);
 
    
 
@@ -285,11 +248,6 @@ void handleDNS(){
     createHeader(response, idHigh, idLow, true);
 
     bool blocked = !isWhitelisted(domain) && isBlocked(domain);
-
-
-    DEBUG_PRINT("Blocked? ");
-    DEBUG_PRINTLN(blocked);
-
     byte ipv41;
     byte ipv42;
     byte ipv43;
@@ -367,7 +325,7 @@ void handleDNS(){
 
             udp.endPacket();
 
-            DEBUG_PRINTLN("Sent cached response");
+
 
             return;
         }
@@ -414,12 +372,6 @@ void handleDNS(){
         );
         udp.endPacket();
 
-        DEBUG_PRINTLN("Forwarded DNS response");
-        DEBUG_PRINT("TTL: ");
-        DEBUG_PRINTLN(getDNSResponseTTL(
-          upstreamResponse,
-          responseLength
-        ));
 
       }
       else{
@@ -497,16 +449,12 @@ void handleDNS(){
     if (qType == 1)
     {
       udp.write(answerv4,sizeof(answerv4));
-      DEBUG_PRINTLN("Sending DNS response");
-      DEBUG_PRINT("Response size: ");
-      DEBUG_PRINTLN(sizeof(response) + questionLength +sizeof(answerv4));
+
     }
     else if(qType == 28)
     {
        udp.write(answerv6,sizeof(answerv6));
-       DEBUG_PRINTLN("Sending DNS response");
-       DEBUG_PRINT("Response size: ");
-       DEBUG_PRINTLN(sizeof(response) + questionLength +sizeof(answerv6));
+
     }
 
     
@@ -516,5 +464,4 @@ void handleDNS(){
     }
   }
 
-    requestStatistics();
 }

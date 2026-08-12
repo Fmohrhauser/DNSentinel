@@ -2,16 +2,16 @@
 #include <LittleFS.h>
 #include "domain_utils.h"
 #include <ArduinoJson.h>
+#include "debug.h"
 
 DomainHashTable whitelistedDomains;
 
 void loadWhitelist()
 {
     File file = LittleFS.open("/whitelist.txt", "r");
-        Serial.println("attempted to open file");
     if(!file)
     {
-        Serial.println("Couldn't open whitelist");
+        DEBUG_PRINTLN("Couldn't open whitelist");
         return;
     }
 
@@ -39,7 +39,7 @@ void saveWhitelist()
 
     if(!file)
     {
-        Serial.println("couldn't save whitelist.");
+        DEBUG_PRINTLN("couldn't save whitelist.");
         return;
     }
 

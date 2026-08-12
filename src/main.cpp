@@ -55,16 +55,6 @@ void setup() {
 void loop() {
   handleDashboard();
   handleDNS();
-  //debug stuff
-  if(Serial.available())
-  {
-    char command = Serial.read();
-
-    if(command == 'l')
-    {
-      testLatest();
-    }
-  }
 }
 
 

@@ -24,8 +24,7 @@ void logQuery(
     QueryAction action
 )
 {
-    DEBUG_PRINT(millis());
-    DEBUG_PRINT("ms | ");
+
 
 
     
@@ -64,35 +63,6 @@ QueryLogEntry getQuery(
 )
 {
     return logs[index];
-}
-//debug stuff
-void printLogs()
-{
-    DEBUG_PRINTLN("---- Query Logs ----");
-
-    for(int i = 0; i < getQueryCount(); i++)
-    {
-        DEBUG_PRINT(logs[i].timestamp);
-        DEBUG_PRINT("ms | ");
-
-        DEBUG_PRINT(logs[i].domain);
-        DEBUG_PRINT(" | ");
-
-        switch(logs[i].action)
-        {
-            case BLOCKED:
-                DEBUG_PRINTLN("BLOCKED");
-                break;
-            case CACHE_HIT:
-                DEBUG_PRINTLN("CACHE HIT");
-                break;
-            case FORWARDED:
-                DEBUG_PRINTLN("FORWARDED");
-                break;
-        }
-
-
-    }
 }
 
 void getLatestQueries(
