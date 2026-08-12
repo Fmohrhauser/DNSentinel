@@ -17,7 +17,8 @@
 #include "cache_stats.h"
 #include "auth.h"
 #include "whitelist.h"
-
+#include "idf_webserver.h"
+//variables
 extern WebServer server;
 //setup
 void setup() {
@@ -26,6 +27,7 @@ void setup() {
   initCache();
   initQueryLog();
   connectWiFi();
+  startIDFWebServer();
   startDNSServer();
   initializeSettings();
   initializeAuthentication();
