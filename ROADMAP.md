@@ -28,8 +28,7 @@
 - Compile-time debug logging
 - Finished dns_server cleanup
 - Reduce unnecessary Serial output
-
-☐ Documentation
+- Documentation
 
 ---
 
@@ -42,9 +41,7 @@
 - AAAA record support
 - Larger blocklists
 - Upstream DNS health monitoring
-  
-☐ Wildcard blocklist support
-☐ Local whitelist
+- Local whitelist
 
 ---
 
@@ -78,9 +75,7 @@
 - Blocklist page redesign
 - Settings page redesign
 - Shared frontend styling structure
-
-☐ Wildcard support
-☐ Whitelist management
+- Whitelist management
 
 ---
 

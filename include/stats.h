@@ -70,10 +70,4 @@ float getAverageQueriesPerSecond();
 
 float getSuccessRate();
 
-float getCacheEfficiency();
-
-float getBlockedRatio();
-
-float getForwardedRatio();
-
 #endif

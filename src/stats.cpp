@@ -6,10 +6,6 @@ unsigned long blockedRequests = 0;
 unsigned long forwardedRequests = 0;
 int cacheHits = 0;
 
-int totalQueries = 0;
-int blockedQueries = 0;
-int forwardedQueries = 0;
-
 unsigned long minuteStart = 0;
 unsigned long requestsThisMinute = 0;
 
@@ -24,10 +20,6 @@ void initStats()
     forwardedRequests = 0;
 
     cacheHits = 0;
-
-    totalQueries = 0;
-    blockedQueries = 0;
-    forwardedQueries = 0;
 
     minuteStart = millis();
 
@@ -56,20 +48,19 @@ int getCacheHits()
 
 void incrementTotalRequests()
 {
-    totalQueries++;
+  
     totalRequests++;
     requestsThisMinute++;
 }
 
 void incrementBlockedRequests()
 {
-    blockedQueries++;
+
     blockedRequests++;
 }
 
 void incrementForwardedRequests()
 {
-    forwardedQueries++;
     forwardedRequests++;
 }
 
@@ -151,26 +142,7 @@ float getSuccessRate()
         totalRequests;
 }
 
-float getCacheEfficiency()
-{
-    if(totalRequests == 0)
-        return 0;
 
-    return
-        (cacheHits * 100.0f) /
-            totalRequests;
-}
-
-float getForwardedRatio()
-{
-    if(totalRequests == 0)
-    {
-        return 0;
-    }
-    return 
-        (forwardedRequests * 100.0f) /
-        totalRequests;
-}
 
 unsigned long getPeakQueriesPerMinute()
 {
@@ -226,20 +198,7 @@ String createStatsJSON()
     return json;
 }
 
-int getTotalQueries()
-{
-    return totalQueries;
-}
 
-int getBlockedQueries()
-{
-    return blockedQueries;
-}
-
-int getForwardedQueries()
-{
-    return forwardedQueries;
-}
 
 
 

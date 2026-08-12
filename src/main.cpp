@@ -27,7 +27,6 @@ void setup() {
   initQueryLog();
   connectWiFi();
   startDNSServer();
-  loadConfig();
   initializeSettings();
   initializeAuthentication();
   loadSettings();
@@ -49,10 +48,6 @@ void setup() {
   
   loadBlocklist();
   loadWhitelist();
-
-Serial.println(deviceConfig.deviceName);
-Serial.println(deviceConfig.upstreamDNS);
-Serial.println(deviceConfig.UPSTREAM_TIMEOUT);
   
 }
 

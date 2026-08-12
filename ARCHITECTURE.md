@@ -128,13 +128,9 @@ Main Public Functions
   - `main.cpp`
 
 `config.h`
-`config.cpp`
 
-    The config module stores and loads device configuration using ESP32 Preferences/NVS. it currently stores the device name, upstream DNS, timeout, and cache setting.
+    The config module stores  device configuration using ESP32 Preferences/NVS. it currently stores upstream DNS, timeout, and cache setting.
 
-  `Main Public Functions`
-  - `loadConfig()` - Loads saved device configuration from ESP32 Preferences/NVS
-  - `saveConfig()` - Saves the current device configuration to Preferences/NVS
 
   **Depends On**
   - ESP32 Preferences
