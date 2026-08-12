@@ -259,6 +259,18 @@ void handleDNS(){
       logQuery(domain, BLOCKED);
       incrementBlockedRequests();
       incrementBlockedDomain(domain);
+
+            if(qType != 1 && qType !=28){ //use NXDOMAIN for DNS record types without a premade blocking response/modes
+
+        sendNXDOMAIN(
+          idHigh,
+          idLow,
+          question,
+          questionLength
+        );
+        return;
+      }
+
       Settings currentSettings = getSettings();
 
       if(currentSettings.blockingMode == NULL_IP)
@@ -412,35 +424,6 @@ void handleDNS(){
 
 
     //Send Response
-    if(qType != 1 && qType != 28){//excludes unsupported DNS formats
-      DEBUG_PRINT("Unsupported DNS type: ");
-      DEBUG_PRINTLN(qType);
-
-
-      byte response[12];
-
-      createHeader(response, idHigh, idLow, false);
-
-
-      udp.beginPacket(udp.remoteIP(),udp.remotePort());
-
-
-      udp.write(response, sizeof(response));
-      udp.write(question,questionLength);
-
-      //Include qtype and qclass
-      udp.write(question[pos]);
-      udp.write(question[pos+1]);
-      udp.write(question[pos+2]);
-      udp.write(question[pos+3]);
-
-
-
-      udp.endPacket();
-      
-      return;
-    }
-    else{
       udp.beginPacket(udp.remoteIP(),udp.remotePort());
 
 
@@ -464,4 +447,4 @@ void handleDNS(){
     }
   }
 
-}
+
