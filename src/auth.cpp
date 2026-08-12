@@ -2,6 +2,7 @@
 #include "settings.h"
 #include "mbedtls/sha256.h"
 
+
 String hashPassword(String password)
 {
     byte hash[32];
@@ -44,8 +45,12 @@ String decodeBase64(String input)
         if(c == '=')
             break;
 
-        int index =
-            strchr(chars, c) - chars;
+        const char *found = strchr(chars, c);
+
+        if(found == nullptr)
+            continue;
+
+        int index = found - chars;
 
         if(index < 0)
             continue;
@@ -93,16 +98,6 @@ bool checkAuthentication(WebServer &server)
 
     if(!server.hasHeader("Authorization"))
     {
-        server.sendHeader(
-            "WWW-Authenticate",
-            "Basic realm=\"DNSentinel\""
-        );
-
-        server.send(
-            401,
-            "application/json",
-            "{\"error\":\"Authentication required\"}"
-        );
         sendAuthRequired(server);
         return false;
     }
@@ -155,6 +150,120 @@ bool checkAuthentication(WebServer &server)
     if(passwordHash != settings.passwordHash)
     {
         sendAuthRequired(server);
+        return false;
+    }
+
+    return true;
+}
+
+void sendAuthRequiredIDF(httpd_req_t *req)
+{
+    httpd_resp_set_hdr(
+        req,
+        "WWW-Authenticate",
+        "Basic realm= \"DNSentinel\""
+    );
+
+    httpd_resp_set_status(
+        req,
+        "401 Unauthorized"
+    );
+
+    httpd_resp_set_type(
+        req,
+        "application/json"
+    );
+
+    httpd_resp_send(
+        req,
+        "{\"error\":\"Authentication required\"}",
+        HTTPD_RESP_USE_STRLEN
+    );
+}
+
+bool checkAuthenticationIDF(httpd_req_t *req)
+{
+    Settings settings =
+        getSettings();
+
+    if(!settings.authEnabled)
+    {
+        return true;
+    }
+
+    size_t authLength = httpd_req_get_hdr_value_len(
+        req,
+        "Authorization"
+    );
+
+    if(authLength == 0)
+    {
+        sendAuthRequiredIDF(req);
+        return false;
+    }
+
+    char authHeader[authLength + 1];
+
+    esp_err_t headerResult =
+        httpd_req_get_hdr_value_str(
+            req,
+            "Authorization",
+            authHeader,
+            authLength + 1
+        );
+
+    if(headerResult != ESP_OK)
+    {
+        sendAuthRequiredIDF(req);
+        return false;
+    }
+
+    String header = authHeader;
+
+    if(!header.startsWith("Basic "))
+    {
+        sendAuthRequiredIDF(req);
+        return false;
+    }
+
+    String encoded =
+        header.substring(6);
+
+    String decoded = 
+        decodeBase64(encoded);
+
+    int separator =
+        decoded.indexOf(':');
+
+    if(separator < 0)
+    {
+        sendAuthRequiredIDF(req);
+        return false;
+    }
+
+    String username =
+        decoded.substring(
+            0,
+            separator
+        );
+
+    String password =
+        decoded.substring(
+            separator + 1
+        );
+
+    if(username != settings.username)
+    {
+        sendAuthRequiredIDF(req);
+        return false;
+    }
+
+    String passwordHash =
+        hashPassword(password);
+
+    if(passwordHash != settings.passwordHash)
+    {
+        sendAuthRequiredIDF(req);
         return false;
     }
 

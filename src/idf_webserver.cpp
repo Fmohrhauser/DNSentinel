@@ -7,6 +7,8 @@
 #include "blocklist.h"
 #include "dns_health.h"
 #include "whitelist.h"
+#include "auth.h"
+
 
 httpd_handle_t idfServer = NULL;
 
@@ -14,6 +16,9 @@ httpd_handle_t idfServer = NULL;
 
 esp_err_t systemAPIHandler(httpd_req_t *req)
 {
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+
     String response = createSystemJSON();
 
     httpd_resp_set_type(
@@ -48,6 +53,8 @@ esp_err_t statsAPIHandler(httpd_req_t *req)
 
 esp_err_t topblockedAPIHandler(httpd_req_t *req)
 {
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
     String response = createTopBlockedJSON();
 
     httpd_resp_set_type(
@@ -65,6 +72,9 @@ esp_err_t topblockedAPIHandler(httpd_req_t *req)
 
 esp_err_t settingsAPIHandler(httpd_req_t *req)
 {
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+        
     String response = createSettingsJSON();
 
     httpd_resp_set_type(
