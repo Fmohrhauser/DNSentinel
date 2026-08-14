@@ -173,6 +173,7 @@ esp_err_t dashboardFileHandler(httpd_req_t *req)
         "text/html"
     );
 }
+
 esp_err_t dashboardJSHandler(httpd_req_t *req)
 {
     return sendFileIDF(
@@ -181,6 +182,7 @@ esp_err_t dashboardJSHandler(httpd_req_t *req)
         "application/javascript"
     );
 }
+
 esp_err_t styleCSSHandler(httpd_req_t *req)
 {
     return sendFileIDF(
@@ -189,6 +191,79 @@ esp_err_t styleCSSHandler(httpd_req_t *req)
         "text/css"
     );
 }
+
+esp_err_t queriesFileHandler(httpd_req_t *req)
+{
+    return sendFileIDF(
+        req,
+        "/queries.html",
+        "text/html"
+    );
+}
+
+esp_err_t queriesJSHandler(httpd_req_t *req)
+{
+    return sendFileIDF(
+        req,
+        "/queries.js",
+        "application/js"
+    );
+}
+
+esp_err_t blocklistFileHandler(httpd_req_t *req)
+{
+    return sendFileIDF(
+        req,
+        "/blocklist.html",
+        "text/html"
+    );
+}
+
+esp_err_t blocklistJSHandler(httpd_req_t *req)
+{
+    return sendFileIDF(
+        req,
+        "/blocklist.js",
+        "application/js"
+    );
+}
+
+esp_err_t whitelistFileHandler(httpd_req_t *req)
+{
+    return sendFileIDF(
+        req,
+        "/whitelist.html",
+        "text/html"
+    );
+}
+
+esp_err_t whitelistJSHandler(httpd_req_t *req)
+{
+    return sendFileIDF(
+        req,
+        "/whitelist.js",
+        "application/json"
+    );
+}
+
+esp_err_t settingsFileHandler(httpd_req_t *req)
+{
+    return sendFileIDF(
+        req,
+        "/settings.html",
+        "text/html"
+    );
+}
+
+esp_err_t settingsJSHandler(httpd_req_t *req)
+{
+    return sendFileIDF(
+        req,
+        "/settings.js",
+        "application/json"
+    );
+}
+
 //GET Handlers
 esp_err_t systemAPIHandler(httpd_req_t *req)
 {
@@ -1082,6 +1157,62 @@ httpd_uri_t styleCSSRoute = {
     .handler = styleCSSHandler,
     .user_ctx = NULL
 };
+
+httpd_uri_t queriesFileRoute = {
+    .uri = "/queries.html",
+    .method = HTTP_GET,
+    .handler = queriesFileHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t queriesJSRoute = {
+    .uri = "/queries.js",
+    .method = HTTP_GET,
+    .handler = queriesJSHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t blocklistFileRoute = {
+    .uri = "/blocklist.html",
+    .method = HTTP_GET,
+    .handler = blocklistFileHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t blocklistJSRoute = {
+    .uri = "/blocklist.js",
+    .method = HTTP_GET,
+    .handler = blocklistJSHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t whitelistFileRoute = {
+    .uri = "/whitelist.html",
+    .method = HTTP_GET,
+    .handler = whitelistFileHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t whitelistJSRoute = {
+    .uri = "/whitelist.js",
+    .method = HTTP_GET,
+    .handler = whitelistJSHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t settingsFileRoute = {
+    .uri = "/settings.html",
+    .method = HTTP_GET,
+    .handler = settingsFileHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t settingsJSRoute = {
+    .uri = "/settings.js",
+    .method = HTTP_GET,
+    .handler = settingsJSHandler,
+    .user_ctx = NULL
+};
 //GET ROUTES
 httpd_uri_t systemAPIRoute = {
     .uri = "/api/system",
@@ -1333,5 +1464,29 @@ void startIDFWebServer()
     );
     httpd_register_uri_handler(
         idfServer, &styleCSSRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &queriesFileRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &queriesJSRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &blocklistFileRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &blocklistJSRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &whitelistFileRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &whitelistJSRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &settingsFileRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &settingsJSRoute
     );
 }
