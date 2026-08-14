@@ -105,10 +105,10 @@
 
 / Research ESP-IDF HTTP server architecture
 
-☐ Migrate from Arduino `WebServer` to ESP-IDF `esp_http_server`
-☐ Port basic GET route registration
-☐ Port authenticated GET routes'
-☐ Port POST request body handling
+/ Migrate from Arduino `WebServer` to ESP-IDF `esp_http_server`
+- Port basic GET route registration
+- Port authenticated GET routes'
+- Port POST request body handling
 ☐ Port LittleFS static file hosting
 ☐ Verify dashboard compatibility
 ☐ Remove Arduino `WebServer` dependency

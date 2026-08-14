@@ -10,6 +10,7 @@
 #include "auth.h"
 #include <ArduinoJson.h>
 #include "query_log.h"
+#include <LittleFS.h>
 
 
 httpd_handle_t idfServer = NULL;
@@ -93,7 +94,101 @@ String readRequestBody(httpd_req_t *req){
     return String(body);
 }
 
+esp_err_t sendFileIDF(
+    httpd_req_t *req,
+    const char *path,
+    const char *contentType
+)
+{
+    File file = LittleFS.open(path , "r");
 
+    if(!file)
+    {
+        httpd_resp_set_status(
+            req,
+            "404 Not Found"
+        );
+
+        httpd_resp_set_type(
+            req,
+            "text/plain"
+        );
+        httpd_resp_send(
+            req,
+            "File not found",
+            HTTPD_RESP_USE_STRLEN
+        );
+
+        return ESP_OK;
+    }
+
+    httpd_resp_set_type(
+        req,
+        contentType
+    );
+
+    char buffer[1024];
+
+    while(file.available())
+    {
+        size_t bytesRead =
+            file.readBytes(
+                buffer,
+                sizeof(buffer)
+            );
+        if(bytesRead > 0)
+        {
+            esp_err_t result =
+                httpd_resp_send_chunk(
+                    req,
+                    buffer,
+                    bytesRead
+                );
+
+            if(result != ESP_OK)
+            {
+                file.close();
+                return result;
+            }
+        }
+    }
+
+    file.close();
+
+    httpd_resp_send_chunk(
+        req,
+        NULL,
+        0
+    );
+
+    return ESP_OK;
+}
+
+//File hosting
+esp_err_t dashboardFileHandler(httpd_req_t *req)
+{
+    return sendFileIDF(
+        req,
+        "/index.html",
+        "text/html"
+    );
+}
+esp_err_t dashboardJSHandler(httpd_req_t *req)
+{
+    return sendFileIDF(
+        req,
+        "/dashboard.js",
+        "application/javascript"
+    );
+}
+esp_err_t styleCSSHandler(httpd_req_t *req)
+{
+    return sendFileIDF(
+        req,
+        "/style.css",
+        "text/css"
+    );
+}
 //GET Handlers
 esp_err_t systemAPIHandler(httpd_req_t *req)
 {
@@ -965,6 +1060,28 @@ esp_err_t whitelistImportAPIHandler(httpd_req_t *req)
     );
     return ESP_OK;
 }
+
+//Static file routes
+httpd_uri_t dashboardFileRoute = {
+    .uri = "/",
+    .method = HTTP_GET,
+    .handler = dashboardFileHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t dashboardJSRoute = {
+    .uri = "/dashboard.js",
+    .method = HTTP_GET,
+    .handler = dashboardJSHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t styleCSSRoute = {
+    .uri = "/style.css",
+    .method = HTTP_GET,
+    .handler = styleCSSHandler,
+    .user_ctx = NULL
+};
 //GET ROUTES
 httpd_uri_t systemAPIRoute = {
     .uri = "/api/system",
@@ -1126,7 +1243,7 @@ void startIDFWebServer()
 {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     config.server_port = 8080;
-    config.max_uri_handlers = 25;
+    config.max_uri_handlers = 35;
     config.stack_size = 8192;
 
     esp_err_t result = httpd_start(
@@ -1207,5 +1324,14 @@ void startIDFWebServer()
     );
     httpd_register_uri_handler(
         idfServer, &whitelistImportAPIRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &dashboardFileRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &dashboardJSRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &styleCSSRoute
     );
 }

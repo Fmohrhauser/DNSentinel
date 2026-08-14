@@ -123,9 +123,14 @@ function updateSystem()
         .then(data => {
 
             currentIP = data.ip;
-
-            document.getElementById("ip").innerHTML = currentIP;
-
+            if(document.getElementById("hideIP").checked)
+            {
+                document.getElementById("ip").innerHTML = "Hidden";
+            }
+            else{
+                document.getElementById("ip").innerHTML = currentIP;
+            }
+            
             document.getElementById("chip").innerHTML =
                 data.chip;
 
