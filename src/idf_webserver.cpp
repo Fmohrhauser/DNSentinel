@@ -66,6 +66,32 @@ void sendStatusIDF(
         HTTPD_RESP_USE_STRLEN
     );
 }
+String readRequestBody(httpd_req_t *req){
+    int bodyLength = req->content_len;
+
+    if(bodyLength <= 0)
+        return "";
+
+    char body[bodyLength + 1];
+
+    int totalReceived = 0;
+    while(totalReceived < bodyLength)
+    {
+        int received = httpd_req_recv(
+            req,
+            body + totalReceived,
+            bodyLength - totalReceived
+        );
+
+        if(received <=0)
+            return "";
+
+        totalReceived += received;
+    }
+    
+    body[totalReceived] = '\0';
+    return String(body);
+}
 
 
 //GET Handlers
@@ -196,7 +222,7 @@ esp_err_t whitelistAPIHandler(httpd_req_t *req)
     return ESP_OK;
 }
 
-esp_err_t blocklistcountAPIHandler(httpd_req_t *req)
+esp_err_t blocklistCountAPIHandler(httpd_req_t *req)
 {
     JsonDocument doc;
     doc["count"] = getBlocklistSize();
@@ -217,7 +243,7 @@ esp_err_t blocklistcountAPIHandler(httpd_req_t *req)
 
 }
 
-esp_err_t whitelistcountAPIHandler(httpd_req_t *req)
+esp_err_t whitelistCountAPIHandler(httpd_req_t *req)
 {
     JsonDocument doc;
     doc["count"] = getWhitelistSize();
@@ -236,7 +262,7 @@ esp_err_t whitelistcountAPIHandler(httpd_req_t *req)
     return ESP_OK;
 }
 
-esp_err_t querylogsAPIHandler(httpd_req_t *req)
+esp_err_t queryLogsAPIHandler(httpd_req_t *req)
 {
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
@@ -296,7 +322,7 @@ esp_err_t querylogsAPIHandler(httpd_req_t *req)
 }
 //POST HANDLERS
 
-esp_err_t authsetupAPIHandler(httpd_req_t *req)
+esp_err_t authSetupAPIHandler(httpd_req_t *req)
 {
     int bodyLength = req->content_len;
 
@@ -390,7 +416,7 @@ esp_err_t authsetupAPIHandler(httpd_req_t *req)
     return ESP_OK;
 }
 
-esp_err_t clearlogsAPIHandler(httpd_req_t *req)
+esp_err_t clearLogsAPIHandler(httpd_req_t *req)
 {
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
@@ -406,7 +432,112 @@ esp_err_t clearlogsAPIHandler(httpd_req_t *req)
     return ESP_OK;
 }
 
-esp_err_t settingsresetAPIHandler(httpd_req_t *req)
+esp_err_t settingsPOSTAPIHandler(httpd_req_t *req)
+{
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+
+    String body = readRequestBody(req);
+
+    if(body.length() == 0)
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+
+        return ESP_OK;
+    }
+
+    JsonDocument doc;
+    DeserializationError error = deserializeJson(doc, body);
+    if(error){
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+
+        return ESP_OK;
+    }
+
+    Settings newSettings = getSettings();
+
+    if(doc["blockingEnabled"].is<bool>())
+    {
+        newSettings.blockingEnabled = doc["blockingEnabled"];
+    }
+    if(doc["cacheEnabled"].is<bool>())
+    {
+        newSettings.cacheEnabled = doc["cacheEnabled"];
+    }
+    if(doc["queryLoggingEnabled"].is<bool>())
+    {
+        newSettings.queryLoggingEnabled = doc["queryLoggingEnabled"];
+    }
+    if(doc["upstreamDNS"].is<String>())
+    {
+        String dns = doc["upstreamDNS"].as<String>();
+
+        if(!validIP(dns))
+        {
+            sendErrorIDF(
+                req,
+                "400 Bad Request",
+                "Invalid upstream DNS"
+            );
+
+            return ESP_OK;
+        }
+        newSettings.upstreamDNS = dns;
+    }
+
+    if(doc["blockingMode"].is<int>())
+    {
+        int mode = doc["blockingMode"].as<int>();
+
+        if(mode < 0 || mode > 2){
+            sendErrorIDF(
+                req,
+                "400 Bad Request",
+                "Invalid blocking mode"
+            );
+            return ESP_OK;
+        }
+        newSettings.blockingMode =
+            static_cast<BlockingMode>(mode);
+    }
+    if(doc["redirectIP"].is<String>())
+    {
+        String ip = doc["redirectIP"].as<String>();
+        if(validIP(ip))
+        {
+            newSettings.redirectIP = ip;
+        }
+        else
+        {
+            sendErrorIDF(
+                req,
+                "400 Bad Request",
+                "Invalid redirect IP"
+            );
+
+            return ESP_OK;
+        }
+    }
+
+    updateSettings(newSettings);
+
+    sendStatusIDF(
+        req,
+        "200 OK",
+        "updated"
+    );
+    return ESP_OK;
+}
+
+esp_err_t settingsResetAPIHandler(httpd_req_t *req)
 {
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
@@ -421,7 +552,7 @@ esp_err_t settingsresetAPIHandler(httpd_req_t *req)
     return ESP_OK;
 }
 
-esp_err_t blocklistresetAPIHandler(httpd_req_t *req)
+esp_err_t blocklistResetAPIHandler(httpd_req_t *req)
 {
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
@@ -446,7 +577,7 @@ esp_err_t blocklistresetAPIHandler(httpd_req_t *req)
 
     return ESP_OK;
 };
-esp_err_t whitelistresetAPIHandler(httpd_req_t *req)
+esp_err_t whitelistResetAPIHandler(httpd_req_t *req)
 {
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
@@ -469,6 +600,369 @@ esp_err_t whitelistresetAPIHandler(httpd_req_t *req)
         HTTPD_RESP_USE_STRLEN
     );
 
+    return ESP_OK;
+}
+
+esp_err_t blocklistAddAPIHandler(httpd_req_t *req)
+{
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+
+    String body = readRequestBody(req);
+
+    if(body.length() == 0)
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+        return ESP_OK;
+    }
+
+    JsonDocument doc;
+    DeserializationError error =
+        deserializeJson(doc, body);
+    if(error)
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+
+        return ESP_OK;
+    }
+    if(!doc["domain"].is<String>())
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Missing domain"
+        );
+        return ESP_OK;
+    }
+
+    String domain = doc["domain"].as<String>();
+
+    bool success = addBlockedDomain(domain);
+    if(success){
+        sendStatusIDF(
+            req,
+            "201 Created",
+            "added"
+        );
+    }
+    else{
+        sendErrorIDF(
+            req,
+            "409 Conflict",
+            "Domain already exists"
+        );
+    }
+
+    return ESP_OK;
+}
+
+esp_err_t whitelistAddAPIHandler(httpd_req_t *req)
+{
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+
+    String body = readRequestBody(req);
+
+    if(body.length() == 0)
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+        return ESP_OK;
+    }
+
+    JsonDocument doc;
+
+    DeserializationError error =
+        deserializeJson(doc, body);
+    if(error){
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+
+        return ESP_OK;
+    }
+    if(!doc["domain"].is<String>())
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Missing domain"
+        );
+        return ESP_OK;
+    }
+
+    String domain = doc["domain"].as<String>();
+
+    bool success = addWhitelistedDomain(domain);
+    if(success){
+        sendStatusIDF(
+            req,
+            "201 Created",
+            "added"
+        );
+    }
+    else{
+        sendErrorIDF(
+            req,
+            "409 Conflict",
+            "Domain already exists"
+        );
+    }
+
+    return ESP_OK;
+}
+
+esp_err_t blocklistRemoveAPIHandler(httpd_req_t *req)
+{
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+    String body = readRequestBody(req);
+
+    if(body.length() == 0)
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+        return ESP_OK;
+    }
+
+    JsonDocument doc;
+    DeserializationError error =
+        deserializeJson(doc, body);
+    if(error){
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+
+        return ESP_OK;
+    }
+
+    if(!doc["domain"].is<String>())
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Missing domain"
+        );
+        return ESP_OK;
+    }
+
+    String domain = doc["domain"].as<String>();
+
+    bool success = removeBlockedDomain(domain);
+    if(success){
+        sendStatusIDF(
+            req,
+            "200 OK",
+            "removed"
+        );
+    }
+    else{
+        sendErrorIDF(
+            req,
+            "404 Not Found",
+            "Domain not found"
+        );
+    }
+    return ESP_OK;
+
+}
+
+esp_err_t whitelistRemoveAPIHandler(httpd_req_t *req)
+{
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+    String body = readRequestBody(req);
+
+    if(body.length() == 0)
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+        return ESP_OK;
+    }
+
+    JsonDocument doc;
+    DeserializationError error =
+        deserializeJson(doc, body);
+    if(error){
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+
+        return ESP_OK;
+    }
+
+    if(!doc["domain"].is<String>())
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Missing domain"
+        );
+        return ESP_OK;
+    }
+
+    String domain = doc["domain"].as<String>();
+
+    bool success = removeWhitelistedDomain(domain);
+    if(success){
+        sendStatusIDF(
+            req,
+            "200 OK",
+            "removed"
+        );
+    }
+    else{
+        sendErrorIDF(
+            req,
+            "404 Not Found",
+            "Domain not found"
+        );
+    }
+    return ESP_OK;
+}
+
+esp_err_t blocklistImportAPIHandler(httpd_req_t *req)
+{
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+    String body = readRequestBody(req);
+
+    if(body.length() == 0)
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+        return ESP_OK;
+    }
+
+    JsonDocument doc;
+    DeserializationError error =
+        deserializeJson(doc, body);
+    if(error){
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+        return ESP_OK;
+    }
+
+    if(!doc["domains"].is<String>()){
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Missing domains"
+        );
+
+        return ESP_OK;
+    }
+
+    String text = doc["domains"].as<String>();
+
+    ImportResultBlocklist result = importBlocklist(text);
+
+    JsonDocument response;
+
+    response["added"] = result.added;
+    response["duplicates"] = result.duplicates;
+    response["ignored"] = result.ignored;
+
+    String output;
+
+    serializeJson(response, output);
+
+    httpd_resp_set_status(req, "200 OK");
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(
+        req,
+        output.c_str(),
+        HTTPD_RESP_USE_STRLEN
+    );
+    return ESP_OK;
+}
+
+esp_err_t whitelistImportAPIHandler(httpd_req_t *req)
+{
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+    String body = readRequestBody(req);
+
+    if(body.length() == 0)
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+        return ESP_OK;
+    }
+
+    JsonDocument doc;
+    DeserializationError error =
+        deserializeJson(doc, body);
+    if(error){
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+        return ESP_OK;
+    }
+
+    if(!doc["domains"].is<String>()){
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Missing domains"
+        );
+        return ESP_OK;
+    }
+    String text = doc["domains"].as<String>();
+
+    ImportResultWhitelist result = importWhitelist(text);
+
+    JsonDocument response;
+
+    response["added"] = result.added;
+    response["duplicates"] = result.duplicates;
+    response["ignored"] = result.ignored;
+
+    String output;
+
+    serializeJson(response, output);
+
+    httpd_resp_set_status(req, "200 OK");
+    httpd_resp_set_type(req, "application/json");
+    httpd_resp_send(
+        req,
+        output.c_str(),
+        HTTPD_RESP_USE_STRLEN
+    );
     return ESP_OK;
 }
 //GET ROUTES
@@ -521,60 +1015,109 @@ httpd_uri_t whitelistAPIRoute = {
     .user_ctx = NULL
 };
 
-httpd_uri_t blocklistcountAPIRoute = {
+httpd_uri_t blocklistCountAPIRoute = {
     .uri ="/api/blocklist/count",
     .method = HTTP_GET,
-    .handler = blocklistcountAPIHandler,
+    .handler = blocklistCountAPIHandler,
     .user_ctx = NULL
 };
 
-httpd_uri_t whitelistcountAPIRoute = {
+httpd_uri_t whitelistCountAPIRoute = {
     .uri ="/api/whitelist/count",
     .method = HTTP_GET,
-    .handler = whitelistcountAPIHandler,
+    .handler = whitelistCountAPIHandler,
     .user_ctx = NULL
 };
 
-httpd_uri_t querylogsAPIRoute = {
+httpd_uri_t queryLogsAPIRoute = {
     .uri = "/api/logs",
     .method = HTTP_GET,
-    .handler = querylogsAPIHandler,
+    .handler = queryLogsAPIHandler,
     .user_ctx = NULL
 };
 //POST ROUTES
 
-httpd_uri_t authsetupAPIRoute = {
+httpd_uri_t authSetupAPIRoute = {
     .uri = "/api/auth/setup",
     .method = HTTP_POST,
-    .handler = authsetupAPIHandler,
+    .handler = authSetupAPIHandler,
     .user_ctx = NULL
 };
 
-httpd_uri_t clearlogsAPIRoute = {
+httpd_uri_t clearLogsAPIRoute = {
     .uri = "/api/logs/clear",
     .method = HTTP_POST,
-    .handler = clearlogsAPIHandler,
+    .handler = clearLogsAPIHandler,
     .user_ctx = NULL
 };
 
-httpd_uri_t settingsresetAPIRoute = {
+httpd_uri_t settingsPOSTAPIRoute = {
+    .uri = "/api/settings",
+    .method = HTTP_POST,
+    .handler = settingsPOSTAPIHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t settingsResetAPIRoute = {
     .uri = "/api/settings/reset",
     .method = HTTP_POST,
-    .handler = settingsresetAPIHandler,
+    .handler = settingsResetAPIHandler,
     .user_ctx = NULL
 };
 
-httpd_uri_t blocklistresetAPIRoute = {
+httpd_uri_t blocklistResetAPIRoute = {
     .uri = "/api/blocklist/reset",
     .method = HTTP_POST,
-    .handler = blocklistresetAPIHandler,
+    .handler = blocklistResetAPIHandler,
     .user_ctx = NULL
 };
 
-httpd_uri_t whitelistresetAPIRoute = {
+httpd_uri_t whitelistResetAPIRoute = {
     .uri = "/api/whitelist/reset",
     .method = HTTP_POST,
-    .handler = whitelistresetAPIHandler,
+    .handler = whitelistResetAPIHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t blocklistAddAPIRoute = {
+    .uri = "/api/blocklist/add",
+    .method = HTTP_POST,
+    .handler = blocklistAddAPIHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t whitelistAddAPIRoute = {
+    .uri = "/api/whitelist/add",
+    .method = HTTP_POST,
+    .handler = whitelistAddAPIHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t blocklistRemoveAPIRoute = {
+    .uri = "/api/blocklist/remove",
+    .method = HTTP_POST,
+    .handler = blocklistRemoveAPIHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t whitelistRemoveAPIRoute = {
+    .uri = "/api/whitelist/remove",
+    .method = HTTP_POST,
+    .handler = whitelistRemoveAPIHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t blocklistImportAPIRoute = {
+    .uri = "/api/blocklist/import",
+    .method = HTTP_POST,
+    .handler = blocklistImportAPIHandler,
+    .user_ctx = NULL
+};
+
+httpd_uri_t whitelistImportAPIRoute = {
+    .uri = "/api/whitelist/import",
+    .method = HTTP_POST,
+    .handler = whitelistImportAPIHandler,
     .user_ctx = NULL
 };
 
@@ -583,7 +1126,7 @@ void startIDFWebServer()
 {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     config.server_port = 8080;
-    config.max_uri_handlers = 20;
+    config.max_uri_handlers = 25;
     config.stack_size = 8192;
 
     esp_err_t result = httpd_start(
@@ -621,27 +1164,48 @@ void startIDFWebServer()
         idfServer, &whitelistAPIRoute
     );
     httpd_register_uri_handler(
-        idfServer, &blocklistcountAPIRoute
+        idfServer, &blocklistCountAPIRoute
     );
     httpd_register_uri_handler(
-        idfServer, &whitelistcountAPIRoute
+        idfServer, &whitelistCountAPIRoute
     );
     httpd_register_uri_handler(
-        idfServer, &querylogsAPIRoute
+        idfServer, &queryLogsAPIRoute
     );
     httpd_register_uri_handler(
-        idfServer, &authsetupAPIRoute
+        idfServer, &authSetupAPIRoute
     );
     httpd_register_uri_handler(
-        idfServer, &clearlogsAPIRoute
+        idfServer, &clearLogsAPIRoute
     );
     httpd_register_uri_handler(
-        idfServer, &settingsresetAPIRoute
+        idfServer, &settingsPOSTAPIRoute
     );
     httpd_register_uri_handler(
-        idfServer, &blocklistresetAPIRoute
+        idfServer, &settingsResetAPIRoute
     );
     httpd_register_uri_handler(
-        idfServer, &whitelistAPIRoute
+        idfServer, &blocklistResetAPIRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &whitelistResetAPIRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &blocklistAddAPIRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &whitelistAddAPIRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &blocklistRemoveAPIRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &whitelistRemoveAPIRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &blocklistImportAPIRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &whitelistImportAPIRoute
     );
 }
