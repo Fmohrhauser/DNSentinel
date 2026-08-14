@@ -100,6 +100,8 @@ esp_err_t sendFileIDF(
     const char *contentType
 )
 {
+        if(!checkAuthenticationIDF(req))
+        return ESP_OK;
     File file = LittleFS.open(path , "r");
 
     if(!file)
@@ -242,7 +244,7 @@ esp_err_t whitelistJSHandler(httpd_req_t *req)
     return sendFileIDF(
         req,
         "/whitelist.js",
-        "application/json"
+        "application/javascript"
     );
 }
 
@@ -260,7 +262,7 @@ esp_err_t settingsJSHandler(httpd_req_t *req)
     return sendFileIDF(
         req,
         "/settings.js",
-        "application/json"
+        "application/javascript"
     );
 }
 
