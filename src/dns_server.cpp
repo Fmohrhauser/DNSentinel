@@ -9,7 +9,6 @@
 #include "stats.h"
 #include "blocked_stats.h"
 #include "settings.h"
-#include "api.h"
 #include "cache_stats.h"
 #include "dns_health_stats.h"
 #include "whitelist.h"

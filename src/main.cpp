@@ -9,9 +9,7 @@
 #include "wifi_manager.h"
 #include "dns_cache.h"
 #include "query_log.h"
-#include "dashboard.h"
 #include <LittleFS.h>
-#include "api.h"
 #include "settings.h"
 #include "time_manager.h"
 #include "cache_stats.h"
@@ -19,7 +17,7 @@
 #include "whitelist.h"
 #include "idf_webserver.h"
 //variables
-extern WebServer server;
+
 //setup
 void setup() {
   Serial.begin(115200);
@@ -32,14 +30,6 @@ void setup() {
   initializeSettings();
   initializeAuthentication();
   loadSettings();
-    const char* headerKeys[] = {"Authorization"};
-
-  server.collectHeaders(
-      headerKeys,
-      1
-  );
-  startDashboard();
-  startAPI();
   initTime();
 
   initCacheStats();
@@ -55,7 +45,6 @@ void setup() {
 
 //main program
 void loop() {
-  handleDashboard();
   handleDNS();
 }
 

@@ -1375,7 +1375,7 @@ httpd_uri_t whitelistImportAPIRoute = {
 void startIDFWebServer()
 {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
-    config.server_port = 8080;
+    config.server_port = 80;
     config.max_uri_handlers = 35;
     config.stack_size = 8192;
 
