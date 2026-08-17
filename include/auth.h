@@ -6,5 +6,6 @@
 
 bool checkAuthentication(WebServer &server);
 bool checkAuthenticationIDF(httpd_req_t *req);
+String generatePasswordSalt();
 
 String hashPassword(String password);

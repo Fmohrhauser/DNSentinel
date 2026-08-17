@@ -25,6 +25,7 @@ struct Settings
     bool authEnabled;
     String username;
     String passwordHash;
+    String passwordSalt;
 };
 
 void initializeAuthentication();

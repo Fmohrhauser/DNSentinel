@@ -1,6 +1,8 @@
 #include "auth.h"
 #include "settings.h"
 #include "mbedtls/sha256.h"
+#include "esp_random.h"
+#include <cstring>
 
 
 String hashPassword(String password)
@@ -73,88 +75,43 @@ String decodeBase64(String input)
     return output;
 }
 
-void sendAuthRequired(WebServer &server)
+String generatePasswordSalt()
 {
-    server.sendHeader(
-        "WWW-Authenticate",
-        "Basic realm=\"DNSentinel\""
-    );
+    const int saltBytes = 16;
+    uint8_t salt[saltBytes];
 
-    server.send(401, "application/json",
-    "{\"error\":\"Authentication required\"}");
+    for(int i = 0; i < saltBytes; i +=4)
+    {
+        uint32_t randomValue = esp_random();
+
+        int remaining = saltBytes - i;
+        int bytesToCopy = remaining < 4 ? remaining : 4;
+        
+        memcpy(
+            salt + i,
+            &randomValue,
+            bytesToCopy
+        );
+    }
+
+    String saltString;
+
+    for(int i = 0; i < saltBytes; i++)
+    {
+        if(salt[i] < 16)
+            saltString += "0";
+
+        saltString += String(
+            salt[i],
+            HEX
+        );
+    }
+
+    return saltString;
 }
 
 
-bool checkAuthentication(WebServer &server)
-{
-    Settings settings =
-        getSettings();
 
-    //Auth disabled
-    if(!settings.authEnabled)
-    {
-        return true;
-    }
-
-    if(!server.hasHeader("Authorization"))
-    {
-        sendAuthRequired(server);
-        return false;
-    }
-
-    String header = 
-        server.header("Authorization");
-
-    if(!header.startsWith("Basic "))
-    {   
-        sendAuthRequired(server);
-        return false;
-    }
-
-    String encoded =
-        header.substring(6);
-
-    String decoded =
-        decodeBase64(encoded);
-
-    int separator =
-        decoded.indexOf(':');
-
-    if(separator < 0)
-    {
-        sendAuthRequired(server);
-        return false;
-    }
-
-    String username =
-        decoded.substring(
-            0,
-            separator
-        );
-
-    String password =
-        decoded.substring(
-            separator + 1
-        );
-
-    if(username != settings.username)
-    {
-        sendAuthRequired(server);
-        return false;
-    }
-
-    String passwordHash =
-        hashPassword(password);
-
-    
-    if(passwordHash != settings.passwordHash)
-    {
-        sendAuthRequired(server);
-        return false;
-    }
-
-    return true;
-}
 
 void sendAuthRequiredIDF(httpd_req_t *req)
 {
@@ -259,7 +216,7 @@ bool checkAuthenticationIDF(httpd_req_t *req)
     }
 
     String passwordHash =
-        hashPassword(password);
+        hashPassword(settings.passwordSalt + password);
 
     if(passwordHash != settings.passwordHash)
     {

@@ -574,8 +574,13 @@ esp_err_t authSetupAPIHandler(httpd_req_t *req)
 
     settings.username =
         username;
+    settings.passwordSalt =
+        generatePasswordSalt();
     settings.passwordHash =
-        hashPassword(password);
+        hashPassword(
+            settings.passwordSalt + password
+        );
+        
     settings.authEnabled = true;
 
     updateSettings(settings);

@@ -8,7 +8,8 @@ Settings settings;
 void initializeAuthentication(){
     settings.authEnabled = false;
     settings.username = "";
-    settings.passwordHash ="";
+    settings.passwordHash = "";
+    settings.passwordSalt = "";
 }
 
 
@@ -110,6 +111,9 @@ void saveSettings()
 
     doc["passwordHash"] =
         settings.passwordHash;
+    
+    doc["passwordSalt"] =
+        settings.passwordSalt;
 
 
 
@@ -191,6 +195,10 @@ void loadSettings()
         settings.passwordHash =
             doc["passwordHash"].as<String>();
     }
+
+    settings.passwordSalt =
+        doc["passwordSalt"] | "";
+
     file.close();
 
     Serial.println("Settings loaded");
