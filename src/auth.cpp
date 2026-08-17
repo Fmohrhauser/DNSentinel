@@ -4,6 +4,48 @@
 #include "esp_random.h"
 #include <cstring>
 
+const int MAX_AUTH_FAILURES = 5;
+const unsigned long AUTH_LOCKOUT_MS = 30000;
+
+int failedAuthAttempts = 0;
+unsigned long authLockoutUntil = 0;
+unsigned long authLockoutStarted = 0;
+bool authLockoutActive = false;
+
+bool authLockedOut()
+{
+    if(!authLockoutActive)
+        return false;
+
+    if(millis() - authLockoutStarted >= authLockoutUntil)
+    {
+        authLockoutActive = false;
+        failedAuthAttempts = 0;
+        return false;
+    }
+
+    return true;
+}
+
+void recordAuthFailure()
+{
+    failedAuthAttempts++;
+
+    if(failedAuthAttempts >= MAX_AUTH_FAILURES)
+    {
+        authLockoutUntil =
+            millis() + AUTH_LOCKOUT_MS;
+        authLockoutActive = true;
+    }
+}
+
+void resetAuthFailures()
+{
+    failedAuthAttempts = 0;
+    authLockoutUntil = 0;
+    authLockoutActive = false;
+}
+
 
 String hashPassword(String password)
 {
@@ -147,6 +189,27 @@ bool checkAuthenticationIDF(httpd_req_t *req)
     {
         return true;
     }
+    
+    if(authLockedOut())
+    {
+        httpd_resp_set_status(
+            req,
+            "429 Too Many Requests"
+        );
+
+        httpd_resp_set_type(
+            req,
+            "application/json"
+        );
+
+        httpd_resp_send(
+            req,
+            "{\"error\":\"Too many failed authentication attempts\"}",
+            HTTPD_RESP_USE_STRLEN
+        );
+
+        return false;
+    }
 
     size_t authLength = httpd_req_get_hdr_value_len(
         req,
@@ -170,7 +233,7 @@ bool checkAuthenticationIDF(httpd_req_t *req)
         );
 
     if(headerResult != ESP_OK)
-    {
+    {   
         sendAuthRequiredIDF(req);
         return false;
     }
@@ -178,7 +241,8 @@ bool checkAuthenticationIDF(httpd_req_t *req)
     String header = authHeader;
 
     if(!header.startsWith("Basic "))
-    {
+    {   
+        recordAuthFailure();
         sendAuthRequiredIDF(req);
         return false;
     }
@@ -194,6 +258,7 @@ bool checkAuthenticationIDF(httpd_req_t *req)
 
     if(separator < 0)
     {
+        recordAuthFailure();
         sendAuthRequiredIDF(req);
         return false;
     }
@@ -211,6 +276,7 @@ bool checkAuthenticationIDF(httpd_req_t *req)
 
     if(username != settings.username)
     {
+        recordAuthFailure();
         sendAuthRequiredIDF(req);
         return false;
     }
@@ -220,9 +286,10 @@ bool checkAuthenticationIDF(httpd_req_t *req)
 
     if(passwordHash != settings.passwordHash)
     {
+        recordAuthFailure();
         sendAuthRequiredIDF(req);
         return false;
     }
-
+    resetAuthFailures();
     return true;
 }
