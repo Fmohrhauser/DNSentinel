@@ -15,6 +15,7 @@
 
 httpd_handle_t idfServer = NULL;
 
+
 void sendErrorIDF(
     httpd_req_t *req,
     const char *status,
@@ -67,31 +68,55 @@ void sendStatusIDF(
         HTTPD_RESP_USE_STRLEN
     );
 }
-String readRequestBody(httpd_req_t *req){
+String readRequestBody(httpd_req_t *req, size_t maxBodySize, bool &tooLarge){
+    tooLarge = false;
+
     int bodyLength = req->content_len;
 
     if(bodyLength <= 0)
         return "";
 
-    char body[bodyLength + 1];
-
-    int totalReceived = 0;
-    while(totalReceived < bodyLength)
+    if(bodyLength > maxBodySize)
     {
-        int received = httpd_req_recv(
-            req,
-            body + totalReceived,
-            bodyLength - totalReceived
-        );
+        tooLarge = true;
+        return "";
+    }
+    String body;
+    body.reserve(bodyLength);
 
-        if(received <=0)
+    char buffer[512];
+
+    int totalRecieved = 0;
+
+    while(totalRecieved < bodyLength)
+    {
+        int remaining =
+            bodyLength - totalRecieved;
+        
+        int bytesToRead =
+            remaining < sizeof(buffer)
+            ? remaining
+            : sizeof(buffer);
+
+        int received =
+            httpd_req_recv(
+                req,
+                buffer,
+                bytesToRead
+            );
+
+        if(received <= 0)
             return "";
 
-        totalReceived += received;
+        body.concat(
+            buffer,
+            received
+        );
+
+        totalRecieved += received;
     }
-    
-    body[totalReceived] = '\0';
-    return String(body);
+
+    return body;
 }
 
 esp_err_t sendFileIDF(
@@ -496,23 +521,31 @@ esp_err_t queryLogsAPIHandler(httpd_req_t *req)
 
 esp_err_t authSetupAPIHandler(httpd_req_t *req)
 {
-    int bodyLength = req->content_len;
+    bool tooLarge = false;
 
-    char body[bodyLength + 1];
+    String bodyString = readRequestBody(req, 4096, tooLarge);
 
-    int recieved = httpd_req_recv(
-        req,
-        body,
-        bodyLength
-    );
+    if(tooLarge)
+    {
+        sendErrorIDF(
+            req,
+            "413 Payload Too Large",
+            "Request body too large"
+        );
 
-    if(recieved <= 0){
-        return ESP_FAIL;
+        return ESP_OK;
     }
 
-    body[recieved] = '\0';
+    if(bodyString.length() == 0)
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
 
-    String bodyString = body;
+        return ESP_OK;
+    }
 
     JsonDocument doc;
     DeserializationError error =
@@ -580,7 +613,7 @@ esp_err_t authSetupAPIHandler(httpd_req_t *req)
         hashPassword(
             settings.passwordSalt + password
         );
-        
+
     settings.authEnabled = true;
 
     updateSettings(settings);
@@ -614,7 +647,20 @@ esp_err_t settingsPOSTAPIHandler(httpd_req_t *req)
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
 
-    String body = readRequestBody(req);
+    bool tooLarge = false;
+
+    String body = readRequestBody(req, 4096, tooLarge);
+
+    if(tooLarge)
+    {
+        sendErrorIDF(
+            req,
+            "413 Payload Too Large",
+            "Request body too large"
+        );
+
+        return ESP_OK;
+    }
 
     if(body.length() == 0)
     {
@@ -785,7 +831,22 @@ esp_err_t blocklistAddAPIHandler(httpd_req_t *req)
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
 
-    String body = readRequestBody(req);
+    bool tooLarge = false;
+
+    String body = readRequestBody(req, 4096, tooLarge);
+
+
+
+    if(tooLarge)
+    {
+        sendErrorIDF(
+            req,
+            "413 Payload Too Large",
+            "Request body too large"
+        );
+
+        return ESP_OK;
+    }
 
     if(body.length() == 0)
     {
@@ -846,7 +907,20 @@ esp_err_t whitelistAddAPIHandler(httpd_req_t *req)
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
 
-    String body = readRequestBody(req);
+    bool tooLarge = false;
+
+    String body = readRequestBody(req, 4096, tooLarge);
+
+    if(tooLarge)
+    {
+        sendErrorIDF(
+            req,
+            "413 Payload Too Large",
+            "Request body too large"
+        );
+
+        return ESP_OK;
+    }
 
     if(body.length() == 0)
     {
@@ -906,7 +980,20 @@ esp_err_t blocklistRemoveAPIHandler(httpd_req_t *req)
 {
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
-    String body = readRequestBody(req);
+
+    bool tooLarge = false;
+    String body = readRequestBody(req, 4096, tooLarge);
+
+    if(tooLarge)
+    {
+        sendErrorIDF(
+            req,
+            "413 Payload Too Large",
+            "Request body too large"
+        );
+
+        return ESP_OK;
+    }
 
     if(body.length() == 0)
     {
@@ -966,7 +1053,20 @@ esp_err_t whitelistRemoveAPIHandler(httpd_req_t *req)
 {
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
-    String body = readRequestBody(req);
+
+    bool tooLarge = false;
+    String body = readRequestBody(req, 4096, tooLarge);
+
+    if(tooLarge)
+    {
+        sendErrorIDF(
+            req,
+            "413 Payload Too Large",
+            "Request body too large"
+        );
+
+        return ESP_OK;
+    }
 
     if(body.length() == 0)
     {
@@ -1025,7 +1125,20 @@ esp_err_t blocklistImportAPIHandler(httpd_req_t *req)
 {
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
-    String body = readRequestBody(req);
+
+    bool tooLarge = false;
+    String body = readRequestBody(req, 65536, tooLarge);
+
+    if(tooLarge)
+    {
+        sendErrorIDF(
+            req,
+            "413 Payload Too Large",
+            "Request body too large"
+        );
+
+        return ESP_OK;
+    }
 
     if(body.length() == 0)
     {
@@ -1087,7 +1200,20 @@ esp_err_t whitelistImportAPIHandler(httpd_req_t *req)
 {
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
-    String body = readRequestBody(req);
+
+    bool tooLarge = false;
+    String body = readRequestBody(req, 65536, tooLarge);
+
+    if(tooLarge)
+    {
+        sendErrorIDF(
+            req,
+            "413 Payload Too Large",
+            "Request body too large"
+        );
+
+        return ESP_OK;
+    }
 
     if(body.length() == 0)
     {
