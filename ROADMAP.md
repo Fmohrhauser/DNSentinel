@@ -120,19 +120,19 @@
 
 # Version 0.7 - Security Hardening
 
-☐ Create formal security threat model
+- Create formal security threat model
 ☐ Define DNSentinel security guarentees
-☐ Review local-network attack surface
-☐ Review authentication design
-☐ Research HTTPS/TLS deployment
-☐ Add authentication rate limiting/backoff
-☐ Review password hashing and salting
+- Review local-network attack surface
+- Review authentication design
+/ Research HTTPS/TLS deployment
+- Add authentication rate limiting/backoff
+- Review password hashing and salting
 ☐ Add authenticated password-change flow
-☐ Add request-size limits
-☐ Add blocklist import-size limits
+- Add request-size limits
+- Add blocklist import-size limits
 ☐ Validate DNS packet lengths
-☐ Review memory and buffer limits
-☐ Test malformed HTTP requests
+- Review memory and buffer limits
+/ Test malformed HTTP requests
 ☐ Test malformed DNS packets
 ☐ Test request flooding behavior
 ☐ Review storage of WiFi credentials and secrets

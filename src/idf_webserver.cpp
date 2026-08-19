@@ -1384,6 +1384,98 @@ esp_err_t whitelistImportAPIHandler(httpd_req_t *req)
     return ESP_OK;
 }
 
+esp_err_t authPasswordChangeAPIHandler(httpd_req_t *req)
+{
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+
+    bool tooLarge = false;
+
+    String body =
+        readRequestBody(
+            req,
+            4096,
+            tooLarge
+        );
+    if(tooLarge){
+        sendErrorIDF(
+            req,
+            "413 Payload Too Large",
+            "Request body too large"
+        );
+
+        return ESP_OK;
+    }
+
+    if(body.length() == 0)
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+
+        return ESP_OK;
+    }
+
+    JsonDocument doc;
+    DeserializationError error =
+        deserializeJson(doc, body);
+
+    if(error)
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid JSON"
+        );
+
+        return ESP_OK;
+    }
+
+    if(!doc["newPassword"].is<String>())
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Missing current or new password"
+        );
+
+        return ESP_OK;
+    }
+
+    String newPassword =
+        doc["newPassword"].as<String>();
+
+    if(newPassword.length() < MIN_PASSWORD_LENGTH ||
+        newPassword.length() > MAX_PASSWORD_LENGTH)
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid new password length"
+        );
+        return ESP_OK;
+    }
+
+    Settings settings = getSettings();
+
+    settings.passwordSalt = generatePasswordSalt();
+
+    settings.passwordHash =
+        hashPassword(settings.passwordSalt + newPassword);
+
+    updateSettings(settings);
+
+    sendStatusIDF(
+        req,
+        "200 OK",
+        "Password updated"
+    );
+
+    return ESP_OK;
+}
+
 //Static file routes
 httpd_uri_t dashboardFileRoute = {
     .uri = "/",
@@ -1617,6 +1709,13 @@ httpd_uri_t whitelistImportAPIRoute = {
     .user_ctx = NULL
 };
 
+httpd_uri_t authPasswordChangeAPIRoute = {
+    .uri = "/api/auth/password",
+    .method = HTTP_POST,
+    .handler = authPasswordChangeAPIHandler,
+    .user_ctx = NULL
+};
+
 
 void startIDFWebServer()
 {
@@ -1736,5 +1835,8 @@ void startIDFWebServer()
     );
     httpd_register_uri_handler(
         idfServer, &settingsJSRoute
+    );
+    httpd_register_uri_handler(
+        idfServer, &authPasswordChangeAPIRoute
     );
 }
