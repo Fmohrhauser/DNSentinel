@@ -321,6 +321,9 @@ esp_err_t systemAPIHandler(httpd_req_t *req)
 
 esp_err_t statsAPIHandler(httpd_req_t *req)
 {
+    if(!checkAuthenticationIDF(req))
+        return false;
+
     String response = createStatsJSON();
 
     httpd_resp_set_type(
@@ -377,6 +380,9 @@ esp_err_t settingsAPIHandler(httpd_req_t *req)
 
 esp_err_t blocklistAPIHandler(httpd_req_t *req)
 {
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+
     String response = createBlocklistJSON();
 
     httpd_resp_set_type(
@@ -394,6 +400,9 @@ esp_err_t blocklistAPIHandler(httpd_req_t *req)
 
 esp_err_t dnshealthAPIHandler(httpd_req_t *req)
 {
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+
     String response = createDNSHealthJSON();
 
     httpd_resp_set_type(
@@ -411,6 +420,9 @@ esp_err_t dnshealthAPIHandler(httpd_req_t *req)
 
 esp_err_t whitelistAPIHandler(httpd_req_t *req)
 {
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+
     String response = createWhitelistJSON();
 
     httpd_resp_set_type(
@@ -428,6 +440,9 @@ esp_err_t whitelistAPIHandler(httpd_req_t *req)
 
 esp_err_t blocklistCountAPIHandler(httpd_req_t *req)
 {
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+
     JsonDocument doc;
     doc["count"] = getBlocklistSize();
     String response;
@@ -449,6 +464,9 @@ esp_err_t blocklistCountAPIHandler(httpd_req_t *req)
 
 esp_err_t whitelistCountAPIHandler(httpd_req_t *req)
 {
+    if(!checkAuthenticationIDF(req))
+        return ESP_OK;
+
     JsonDocument doc;
     doc["count"] = getWhitelistSize();
     String response;
