@@ -305,6 +305,12 @@ tr:hover {
     margin: 15px 0;
 }
 
+.filterlist-domain-list{
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
 .filterlist-entry {
 
     display: flex;
@@ -336,6 +342,11 @@ tr:hover {
     padding: 5px 10px;
 
     cursor: pointer;
+}
+
+.domain-list-window {
+    max-height: 500px;
+    overflow-y: auto;
 }
 
 

@@ -492,8 +492,6 @@ esp_err_t queryLogsAPIHandler(httpd_req_t *req)
 
     size_t queryLength = 
         httpd_req_get_url_query_len(req);
-    Serial.print("Query length: ");
-    Serial.println(queryLength);
 
     if(queryLength > 128)
     {
@@ -515,13 +513,9 @@ esp_err_t queryLogsAPIHandler(httpd_req_t *req)
                 query,
                 queryLength + 1
             );
-        Serial.print("Query result: ");
-        Serial.println(queryResult);
 
         if(queryResult == ESP_OK)
         {
-            Serial.print("Query string: ");
-            Serial.println(query);
             
             char limitValue[12];
 
@@ -533,12 +527,8 @@ esp_err_t queryLogsAPIHandler(httpd_req_t *req)
                     sizeof(limitValue)
                 );
 
-            Serial.print("Value result: ");
-            Serial.println(valueResult);
 
             if(valueResult == ESP_OK){
-                Serial.print("Limit value: ");
-                Serial.println(limitValue);
                 bool validNumber = true;
 
                 for(int i = 0; limitValue[i] != '\0'; i++)
@@ -1247,8 +1237,10 @@ esp_err_t blocklistImportAPIHandler(httpd_req_t *req)
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
 
+
     bool tooLarge = false;
     String body = readRequestBody(req, 65536, tooLarge);
+
 
     if(tooLarge)
     {
@@ -1274,6 +1266,8 @@ esp_err_t blocklistImportAPIHandler(httpd_req_t *req)
     JsonDocument doc;
     DeserializationError error =
         deserializeJson(doc, body);
+
+    
     if(error){
         sendErrorIDF(
             req,
