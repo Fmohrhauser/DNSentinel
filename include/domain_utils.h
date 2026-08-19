@@ -5,4 +5,6 @@
 
 String normalizeDomain(String line);
 
+bool validDomain(const String &domain);
+
 #endif

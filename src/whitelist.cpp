@@ -131,6 +131,10 @@ ImportResultWhitelist importWhitelist(String data)
         {
             result.ignored++;
         }
+        else if(!validDomain(domain))
+        {
+            result.ignored++;
+        }
         else
         {
             if(whitelistedDomains.add(domain))

@@ -57,3 +57,52 @@ String normalizeDomain(String line)
 
   return line;
 }
+
+bool validDomain(const String &domain)
+{
+  if(domain.length() == 0)
+    return false;
+
+  if(domain.length() > 253)
+    return false;
+
+  if(domain.endsWith("."))
+    return false;
+
+  int labelStart = 0;
+
+  for(int i = 0; i<= domain.length(); i++)
+  {
+    if(i == domain.length() || domain[i] == '.')
+    {
+      int labelLength = i - labelStart;
+
+      if(labelLength <= 0 || labelLength > 63)
+        return false;
+
+      if(domain[labelStart] == '-' ||
+        domain[i-1] == '-')
+        {
+          return false;
+        }
+
+        for(int j = labelStart; j < i; j++)
+        {
+          char c = domain[j];
+
+          bool validChar =
+            (c >= 'a' && c <= 'z') ||
+            (c >= 'A' && c <= 'Z') ||
+            (c >= '0' && c <= '9') ||
+            c == '-';
+
+          if(!validChar)
+            return false;
+        }
+
+        labelStart = i + 1;
+    }
+  }
+
+  return true;
+}

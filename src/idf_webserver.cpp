@@ -11,6 +11,7 @@
 #include <ArduinoJson.h>
 #include "query_log.h"
 #include <LittleFS.h>
+#include "domain_utils.h"
 
 
 httpd_handle_t idfServer = NULL;
@@ -836,7 +837,6 @@ esp_err_t blocklistAddAPIHandler(httpd_req_t *req)
     String body = readRequestBody(req, 4096, tooLarge);
 
 
-
     if(tooLarge)
     {
         sendErrorIDF(
@@ -882,6 +882,18 @@ esp_err_t blocklistAddAPIHandler(httpd_req_t *req)
     }
 
     String domain = doc["domain"].as<String>();
+
+    domain.toLowerCase();
+    if(!validDomain(domain))
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid domain"
+        );
+
+        return ESP_OK;
+    }
 
     bool success = addBlockedDomain(domain);
     if(success){
@@ -957,6 +969,18 @@ esp_err_t whitelistAddAPIHandler(httpd_req_t *req)
 
     String domain = doc["domain"].as<String>();
 
+        domain.toLowerCase();
+    if(!validDomain(domain))
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid domain"
+        );
+
+        return ESP_OK;
+    }
+
     bool success = addWhitelistedDomain(domain);
     if(success){
         sendStatusIDF(
@@ -1030,6 +1054,18 @@ esp_err_t blocklistRemoveAPIHandler(httpd_req_t *req)
 
     String domain = doc["domain"].as<String>();
 
+        domain.toLowerCase();
+    if(!validDomain(domain))
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid domain"
+        );
+
+        return ESP_OK;
+    }
+
     bool success = removeBlockedDomain(domain);
     if(success){
         sendStatusIDF(
@@ -1102,6 +1138,20 @@ esp_err_t whitelistRemoveAPIHandler(httpd_req_t *req)
     }
 
     String domain = doc["domain"].as<String>();
+
+
+
+        domain.toLowerCase();
+    if(!validDomain(domain))
+    {
+        sendErrorIDF(
+            req,
+            "400 Bad Request",
+            "Invalid domain"
+        );
+
+        return ESP_OK;
+    }
 
     bool success = removeWhitelistedDomain(domain);
     if(success){
