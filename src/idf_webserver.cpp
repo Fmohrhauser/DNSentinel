@@ -16,6 +16,12 @@
 
 httpd_handle_t idfServer = NULL;
 
+const size_t MIN_USERNAME_LENGTH = 3;
+const size_t MAX_USERNAME_LENGTH = 32;
+
+const size_t MIN_PASSWORD_LENGTH = 8;
+const size_t MAX_PASSWORD_LENGTH = 64;
+
 
 void sendErrorIDF(
     httpd_req_t *req,
@@ -469,6 +475,17 @@ esp_err_t queryLogsAPIHandler(httpd_req_t *req)
     size_t queryLength = 
         httpd_req_get_url_query_len(req);
 
+    if(queryLength > 128)
+    {
+        sendErrorIDF(
+            req,
+            "414 URI Too Long",
+            "Query string too long"
+        );
+
+        return ESP_OK;
+    }
+
     if(queryLength > 0){
         char query[queryLength + 1];
 
@@ -492,6 +509,28 @@ esp_err_t queryLogsAPIHandler(httpd_req_t *req)
                 );
 
             if(valueResult == ESP_OK){
+                bool validNumber = true;
+
+                for(int i = 0; limitValue[i] != '\0'; i++)
+                {
+                    if(limitValue[i] < '0' || limitValue[i] > '9')
+                    {
+                        validNumber = false;
+                        break;
+                    }
+                }
+
+                if(!validNumber)
+                {
+                    sendErrorIDF(
+                        req,
+                        "400 Bad Request",
+                        "Invalid limit"
+                    );
+
+                    return ESP_OK;
+                }
+
                 limit = String(limitValue).toInt();
             }
         }
@@ -594,8 +633,10 @@ esp_err_t authSetupAPIHandler(httpd_req_t *req)
     String password =
         doc["password"].as<String>();
 
-    if(username.length()<3 ||
-        password.length() < 8)
+    if(username.length() < MIN_USERNAME_LENGTH ||
+        username.length() > MAX_USERNAME_LENGTH ||
+        password.length() < MIN_PASSWORD_LENGTH ||
+        password.length() > MAX_PASSWORD_LENGTH)
     {
         sendErrorIDF(
             req,
