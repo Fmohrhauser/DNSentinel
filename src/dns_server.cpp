@@ -209,18 +209,33 @@ void handleDNS(){
 
     //Skip the 10 byte DNS header post ID
     pos = 12;
-    byte question[64];
+    byte question[260];
     int questionLength = 0;
 
 
-    while(pos < bytesRead && questionLength < 64) {
+    while(pos < bytesRead && questionLength < sizeof(question)) {
       question[questionLength] = dnsPacket[pos];
       questionLength++;
       pos++;
     }
 
+    if(pos < bytesRead)
+    {
+      return;
+    }
+
 
     String domain = readDomain(question, questionLength, pos);
+
+    if(domain.length() == 0)
+    {
+      return;
+    }
+    
+    if(pos + 4 > questionLength)
+    {
+      return;
+    }
 
     byte qTypeHigh = question[pos];
     byte qTypeLow = question[pos + 1];
