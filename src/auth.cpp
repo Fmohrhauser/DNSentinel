@@ -3,6 +3,7 @@
 #include "mbedtls/sha256.h"
 #include "esp_random.h"
 #include <cstring>
+#include "debug.h"
 
 const int MAX_AUTH_FAILURES = 5;
 const unsigned long AUTH_LOCKOUT_MS = 30000;
@@ -36,6 +37,7 @@ void recordAuthFailure()
         authLockoutUntil =
             millis() + AUTH_LOCKOUT_MS;
         authLockoutActive = true;
+        DEBUG_PRINTLN("Security: authentication lockout triggered");
     }
 }
 
@@ -243,6 +245,7 @@ bool checkAuthenticationIDF(httpd_req_t *req)
     if(!header.startsWith("Basic "))
     {   
         recordAuthFailure();
+        DEBUG_PRINTLN("Security: invalid authentication attempt");
         sendAuthRequiredIDF(req);
         return false;
     }
@@ -259,6 +262,7 @@ bool checkAuthenticationIDF(httpd_req_t *req)
     if(separator < 0)
     {
         recordAuthFailure();
+        DEBUG_PRINTLN("Security: invalid authentication attempt");
         sendAuthRequiredIDF(req);
         return false;
     }
@@ -277,6 +281,7 @@ bool checkAuthenticationIDF(httpd_req_t *req)
     if(username != settings.username)
     {
         recordAuthFailure();
+        DEBUG_PRINTLN("Security: invalid authentication attempt");
         sendAuthRequiredIDF(req);
         return false;
     }
@@ -287,6 +292,7 @@ bool checkAuthenticationIDF(httpd_req_t *req)
     if(passwordHash != settings.passwordHash)
     {
         recordAuthFailure();
+        DEBUG_PRINTLN("Security: invalid authentication attempt");
         sendAuthRequiredIDF(req);
         return false;
     }
