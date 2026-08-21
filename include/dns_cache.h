@@ -16,6 +16,7 @@ struct CacheEntry
 
     int responseLength;
     unsigned long expiresAt;
+    unsigned long insertedAt;
 };
 
 

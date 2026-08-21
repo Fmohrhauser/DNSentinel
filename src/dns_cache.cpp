@@ -23,9 +23,20 @@ void cacheInsert(
     int responseLength
 )
 {
+    unsigned long ttl =
+        getDNSResponseTTL(
+            response,
+            responseLength
+        );
+
+    if(ttl == 0)
+    {
+        return;
+    }
+
     for(int i = 0; i< CACHE_SIZE; i++)
     {
-        if (!cache[i].valid)
+        if (!cache[i].valid || millis() > cache[i].expiresAt)
         {
             cache[i].valid = true;
 
@@ -40,22 +51,48 @@ void cacheInsert(
                 responseLength,
                 (int)MAX_DNS_PACKET_SIZE
             );
-            unsigned long ttl = getDNSResponseTTL(
-                response,
-                responseLength
-            );
-
-            if(ttl == 0)
-            {
-
-                return;
-            }
             cache[i].expiresAt = millis() + (ttl * 1000);
+            cache[i].insertedAt = millis();
 
             return;
         }
         
     }
+
+    int oldestIndex = 0;
+
+    for(int i = 1; i < CACHE_SIZE; i++)
+    {
+        if(cache[i].insertedAt < cache[oldestIndex].insertedAt)
+        {
+            oldestIndex = i;
+        }
+    }
+    DEBUG_PRINT("Cache full, evicting: ");
+    DEBUG_PRINT(cache[oldestIndex].domain);
+    DEBUG_PRINT(" QTYPE: ");
+    DEBUG_PRINTLN(cache[oldestIndex].qType);
+    cache[oldestIndex].valid = true;
+    cache[oldestIndex].domain = domain;
+    cache[oldestIndex].qType = qType;
+
+    memcpy(
+        cache[oldestIndex].response,
+        response,
+        min(responseLength, (int)MAX_DNS_PACKET_SIZE)
+    );
+
+    cache[oldestIndex].responseLength =
+        min(
+            responseLength,
+            (int)MAX_DNS_PACKET_SIZE
+        );
+
+    cache[oldestIndex].expiresAt =
+        millis() + (ttl * 1000);
+
+    cache[oldestIndex].insertedAt =
+        millis();
 
 }
 

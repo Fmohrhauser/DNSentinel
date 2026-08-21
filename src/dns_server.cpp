@@ -172,14 +172,14 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
         );
         unsigned long afterRead = micros();
 
-        DEBUG_PRINT("Upstream send time: ");
-        DEBUG_PRINTLN(afterSend - start);
+       //_PRINT("Upstream send time: ");
+        //DEBUG_PRINTLN(afterSend - start);
 
-        DEBUG_PRINT("Upstream wait time: ");
-        DEBUG_PRINTLN(responseRecieved - afterSend);
+        //DEBUG_PRINT("Upstream wait time: ");
+        //DEBUG_PRINTLN(responseRecieved - afterSend);
 
-        DEBUG_PRINT("Upstream read time: ");
-        DEBUG_PRINTLN(afterRead - responseRecieved);
+        //DEBUG_PRINT("Upstream read time: ");
+        //DEBUG_PRINTLN(afterRead - responseRecieved);
       return true;
     }
   }
@@ -363,14 +363,14 @@ void handleDNS(){
             udp.endPacket();
             unsigned long cacheSent = micros();
 
-            DEBUG_PRINT("Cache lookup path: ");
-            DEBUG_PRINTLN(cacheFound - requestStart);
+            //DEBUG_PRINT("Cache lookup path: ");
+            //DEBUG_PRINTLN(cacheFound - requestStart);
 
-            DEBUG_PRINT("Cache response send: ");
-            DEBUG_PRINTLN(cacheSent - requestStart);
+            //DEBUG_PRINT("Cache response send: ");
+            //DEBUG_PRINTLN(cacheSent - requestStart);
 
-            DEBUG_PRINT("Total cached request: ");
-            DEBUG_PRINTLN(cacheSent - requestStart);
+            //DEBUG_PRINT("Total cached request: ");
+            //DEBUG_PRINTLN(cacheSent - requestStart);
 
 
             return;
@@ -421,17 +421,17 @@ void handleDNS(){
 
         unsigned long responseSent = micros();
 
-        DEBUG_PRINT("Pre-forward time: ");
-        DEBUG_PRINTLN(beforeForward - requestStart);
+        //DEBUG_PRINT("Pre-forward time: ");
+        //DEBUG_PRINTLN(beforeForward - requestStart);
 
-        DEBUG_PRINT("ForwardDNS total: ");
-        DEBUG_PRINTLN(afterForward - beforeForward);
+        //DEBUG_PRINT("ForwardDNS total: ");
+        //DEBUG_PRINTLN(afterForward - beforeForward);
 
-        DEBUG_PRINT("Post-forward time: ");
-        DEBUG_PRINTLN(responseSent - afterForward);
+        //DEBUG_PRINT("Post-forward time: ");
+        //DEBUG_PRINTLN(responseSent - afterForward);
 
-        DEBUG_PRINT("Total DNSentinel time: ");
-        DEBUG_PRINTLN(responseSent - requestStart);
+        //DEBUG_PRINT("Total DNSentinel time: ");
+        //DEBUG_PRINTLN(responseSent - requestStart);
 
 
       }
