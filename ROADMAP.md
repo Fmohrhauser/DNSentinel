@@ -103,7 +103,7 @@
 
 # Version 0.6 - ESP-IDF Web Migration
 
-/ Research ESP-IDF HTTP server architecture
+- Research ESP-IDF HTTP server architecture
 
 - Migrate from Arduino `WebServer` to ESP-IDF `esp_http_server`
 - Port basic GET route registration
@@ -114,7 +114,7 @@
 - Remove Arduino `WebServer` dependency
 - Regression test all API endpoints
 
-☐ Research ESP-IDF HTTPS server migration
+- Research ESP-IDF HTTPS server migration
 
 ---
 

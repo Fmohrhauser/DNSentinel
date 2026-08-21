@@ -133,8 +133,8 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
 
   Settings currentSettings = getSettings();
 
-  unsigned long start = millis();
-
+  unsigned long start = micros();
+  unsigned long timeoutStart = millis();
   upstreamUdp.beginPacket(currentSettings.upstreamDNS.c_str(), 53);
 
 
@@ -142,16 +142,17 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
 
 
   upstreamUdp.endPacket();
+  unsigned long afterSend = micros();
 
 
   
 
 
-  while(millis() - start < UPSTREAM_TIMEOUT){
+  while(millis() - timeoutStart < UPSTREAM_TIMEOUT){
     int size = upstreamUdp.parsePacket();
 
     if(size){
-
+      unsigned long responseRecieved = micros();
       unsigned long latency =
         millis() - start;
 
@@ -169,7 +170,16 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
           response,
           MAX_DNS_PACKET_SIZE
         );
+        unsigned long afterRead = micros();
 
+        DEBUG_PRINT("Upstream send time: ");
+        DEBUG_PRINTLN(afterSend - start);
+
+        DEBUG_PRINT("Upstream wait time: ");
+        DEBUG_PRINTLN(responseRecieved - afterSend);
+
+        DEBUG_PRINT("Upstream read time: ");
+        DEBUG_PRINTLN(afterRead - responseRecieved);
       return true;
     }
   }
@@ -191,6 +201,7 @@ void handleDNS(){
 
 
   if(packetSize){
+    unsigned long requestStart = micros();
     incrementTotalRequests();
 
 
@@ -335,7 +346,7 @@ void handleDNS(){
 
         if(cacheLookup(domain, qType, cachedResponse, cachedLength))
         {
-
+            unsigned long cacheFound = micros();
             logQuery(domain, CACHE_HIT);
             //Restore transaction ID from current request
             cachedResponse[0] = dnsPacket[0];
@@ -350,7 +361,16 @@ void handleDNS(){
             udp.write(cachedResponse, cachedLength);
 
             udp.endPacket();
+            unsigned long cacheSent = micros();
 
+            DEBUG_PRINT("Cache lookup path: ");
+            DEBUG_PRINTLN(cacheFound - requestStart);
+
+            DEBUG_PRINT("Cache response send: ");
+            DEBUG_PRINTLN(cacheSent - requestStart);
+
+            DEBUG_PRINT("Total cached request: ");
+            DEBUG_PRINTLN(cacheSent - requestStart);
 
 
             return;
@@ -359,13 +379,14 @@ void handleDNS(){
         
         byte upstreamResponse[MAX_DNS_PACKET_SIZE];
         int responseLength = 0;
-
+        unsigned long beforeForward = micros();
         bool success = forwardDNS(
           dnsPacket,
           bytesRead,
           upstreamResponse,
           responseLength
         );
+        unsigned long afterForward = micros();
         if(success)
         {
           incrementForwardedRequests();
@@ -397,6 +418,20 @@ void handleDNS(){
           responseLength
         );
         udp.endPacket();
+
+        unsigned long responseSent = micros();
+
+        DEBUG_PRINT("Pre-forward time: ");
+        DEBUG_PRINTLN(beforeForward - requestStart);
+
+        DEBUG_PRINT("ForwardDNS total: ");
+        DEBUG_PRINTLN(afterForward - beforeForward);
+
+        DEBUG_PRINT("Post-forward time: ");
+        DEBUG_PRINTLN(responseSent - afterForward);
+
+        DEBUG_PRINT("Total DNSentinel time: ");
+        DEBUG_PRINTLN(responseSent - requestStart);
 
 
       }
