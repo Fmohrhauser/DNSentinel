@@ -58,5 +58,4 @@ String createDNSHealthJSON()
 
     return json;
 
-    float getUpstreamSuccessRate();
 }

@@ -154,7 +154,7 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
     if(size){
       unsigned long responseRecieved = micros();
       unsigned long latency =
-        millis() - start;
+        millis() - timeoutStart;
 
       totalUpstreamLatency +=latency;
 
