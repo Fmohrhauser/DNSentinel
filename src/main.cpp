@@ -16,6 +16,7 @@
 #include "auth.h"
 #include "whitelist.h"
 #include "idf_webserver.h"
+#include "debug.h"
 //variables
 
 //setup
@@ -46,6 +47,22 @@ void setup() {
 //main program
 void loop() {
   handleDNS();
+
+  static unsigned long lastHeapLog = 0;
+
+  if(millis() - lastHeapLog >= 10000)
+  {
+    lastHeapLog = millis();
+
+    DEBUG_PRINT("Free heap: ");
+    DEBUG_PRINTLN(ESP.getFreeHeap());
+
+    DEBUG_PRINT("Minimum free heap: ");
+    DEBUG_PRINTLN(ESP.getMinFreeHeap());
+
+    DEBUG_PRINT("Largest free block: ");
+    DEBUG_PRINTLN(ESP.getMaxAllocHeap());
+  }
 }
 
 

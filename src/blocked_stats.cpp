@@ -21,7 +21,10 @@ void incrementBlockedDomain(const String& domain)
             return;
         }
     }
-
+    if(blockedStatCount >= 100)
+    {
+        return;
+    }
     blockedStats[blockedStatCount].domain = domain;
 
     blockedStats[blockedStatCount].count = 1;

@@ -68,10 +68,6 @@ void cacheInsert(
             oldestIndex = i;
         }
     }
-    DEBUG_PRINT("Cache full, evicting: ");
-    DEBUG_PRINT(cache[oldestIndex].domain);
-    DEBUG_PRINT(" QTYPE: ");
-    DEBUG_PRINTLN(cache[oldestIndex].qType);
     cache[oldestIndex].valid = true;
     cache[oldestIndex].domain = domain;
     cache[oldestIndex].qType = qType;
