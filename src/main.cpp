@@ -36,8 +36,21 @@ void setup() {
   initCacheStats();
 
 
-  blockedDomains.begin();
-  whitelistedDomains.begin();
+  if(!blockedDomains.begin(
+    65536,
+    3 * 1024 * 1024
+  ))
+  {
+    DEBUG_PRINTLN("BLOCKLIST HASH TABLE INIT FAILED");
+  }
+
+  if(!whitelistedDomains.begin(
+    8192,
+    256 * 1024
+  ))
+  {
+    DEBUG_PRINTLN("WHITELIST HASH TABLE INIT FAILED");
+  }
   
   loadBlocklist();
   loadWhitelist();
@@ -62,6 +75,9 @@ void loop() {
 
     DEBUG_PRINT("Largest free block: ");
     DEBUG_PRINTLN(ESP.getMaxAllocHeap());
+
+    DEBUG_PRINT("Free PSRAM: ");
+    DEBUG_PRINTLN(ESP.getFreePsram());
   }
 }
 

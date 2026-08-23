@@ -43,9 +43,15 @@ void saveWhitelist()
         return;
     }
 
-    for(int i = 0; i < whitelistedDomains.size(); i++)
+    for(size_t i = 0; i < whitelistedDomains.getSlotCount(); i++)
     {
-        file.println(whitelistedDomains.get(i));
+        String domain =
+            whitelistedDomains.getSlot(i);
+
+        if(domain.length() > 0)
+        {
+            file.println(domain);
+        }
     }
     file.close();
 
@@ -93,11 +99,16 @@ String createWhitelistJSON()
 
     JsonArray array = doc.to<JsonArray>();
 
-    for(int i = 0; i < whitelistedDomains.size(); i++)
+    for(size_t i = 0; i < whitelistedDomains.getSlotCount(); i++)
     {
-        array.add(whitelistedDomains.get(i));
-    }
+        String domain =
+            whitelistedDomains.getSlot(i);
 
+        if(domain.length() > 0)
+        {
+            array.add(domain);
+        }
+    }
     String json;
 
     serializeJson(doc, json);

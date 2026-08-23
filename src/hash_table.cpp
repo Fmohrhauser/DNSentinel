@@ -6,16 +6,25 @@
 DomainHashTable::DomainHashTable()
 {
     table = nullptr;
+    domainPool = nullptr;
+
+    tableSize = 0;
+    poolSize = 0;
+    poolUsed = 0;
+
     entryCount = 0;
 }
 
-void DomainHashTable::begin()
+bool DomainHashTable::begin(
+    size_t requestedTableSize,
+    size_t requestedPoolSize
+)
 {
-    DEBUG_PRINTLN(sizeof(Entry));
-    DEBUG_PRINTLN(sizeof(Entry) * TABLE_SIZE);
+    tableSize = requestedTableSize;
+    poolSize = requestedPoolSize;
 
     table = (Entry*)heap_caps_calloc(
-        TABLE_SIZE,
+        tableSize,
         sizeof(Entry),
         MALLOC_CAP_SPIRAM
     );
@@ -23,35 +32,55 @@ void DomainHashTable::begin()
     if(table == nullptr)
     {
         DEBUG_PRINTLN("HASH TABLE PSRAM ALLOCATION FAILED");
-        return;
+        return false;
     }
 
-    Serial.println("HASH TABLE ALLOCATED");
+    domainPool = (char*)heap_caps_malloc(
+        poolSize,
+        MALLOC_CAP_SPIRAM
+    );
+
+    if(domainPool == nullptr)
+    {
+        DEBUG_PRINTLN("DOMAIN POOL PSRAM ALLOCATION FAILED");
+
+        heap_caps_free(table);
+        table = nullptr;
+
+        return false;
+    }
+
+    DEBUG_PRINT("Hash table entry size: ");
+    DEBUG_PRINTLN(sizeof(Entry));
+
+    DEBUG_PRINT("Hash table bytes: ");
+    DEBUG_PRINTLN(sizeof(Entry) * tableSize);
+
+    DEBUG_PRINT("Domain pool bytes: ");
+    DEBUG_PRINTLN(poolSize);
 
     clear();
-    
+
+    DEBUG_PRINTLN("HASH TABLE ALLOCATED");
+
+    return true;
 }
 
 void DomainHashTable::clear()
 {
 
-    if(table == nullptr)
+    if(table == nullptr || domainPool == nullptr)
     {
         DEBUG_PRINTLN("Cannot clear null hash table");
         return;
     }
 
     entryCount = 0;
+    poolUsed = 0;
 
-    for(int i = 0; i < TABLE_SIZE; i++)
-    {
+    memset(table, 0, sizeof(Entry) * tableSize);
 
-        table[i].state = Entry::EMPTY;
-        table[i].hash = 0;
-        memset(table[i].domain, 0, sizeof(table[i].domain));
-    }
-
-    Serial.println("HASH CLEAR COMPLETE");
+    DEBUG_PRINTLN("HASH CLEAR COMPLETE");
 }
 
 uint32_t DomainHashTable::hash(const String& domain)
@@ -69,20 +98,23 @@ uint32_t DomainHashTable::hash(const String& domain)
 
 bool DomainHashTable::add(String domain)
 {
-    if(table == nullptr)
+    if(table == nullptr || domainPool == nullptr)
         return false;
 
     domain.toLowerCase();
 
     uint32_t h = hash(domain);
 
-    int index = h % TABLE_SIZE;
-    int firstDeleted = - 1;
-    for(int i = 0; i < TABLE_SIZE; i++)
-    {
-        int current = (index + i) % TABLE_SIZE;
+    size_t index = h % tableSize;
 
-        if(table[current].state == Entry::DELETED)
+    int firstDeleted = -1;
+
+    for(size_t i = 0; i < tableSize; i++)
+    {
+        size_t current =
+            (index + i) % tableSize;
+
+        if(table[current].state == DELETED)
         {
             if(firstDeleted == -1)
             {
@@ -92,73 +124,138 @@ bool DomainHashTable::add(String domain)
             continue;
         }
 
-        if(table[current].state == Entry::EMPTY)
+        if(table[current].state == OCCUPIED)
+        {
+            const char* storedDomain =
+                &domainPool[
+                    table[current].domainOffset
+                ];
+
+            if(
+                table[current].hash == h &&
+                strcmp(
+                    storedDomain,
+                    domain.c_str()
+                ) == 0
+            )
+            {
+                return false;
+            }
+
+            continue;
+        }
+
+        if(table[current].state == EMPTY)
         {
             if(firstDeleted != -1)
             {
                 current = firstDeleted;
             }
-            table[current].hash = h;
 
-            strncpy(
-                table[current].domain,
+            size_t domainLength =
+                domain.length() + 1;
+            
+            if(poolUsed + domainLength > poolSize)
+            {
+                DEBUG_PRINTLN("DOMAIN POOL FULL");
+                return false;
+            }
+
+            uint32_t offset = poolUsed;
+
+            memcpy(
+                &domainPool[offset],
                 domain.c_str(),
-                sizeof(table[current].domain) - 1
+                domainLength
             );
 
-            table[current].domain[
-                sizeof(table[current].domain) - 1
-            ] = '\0';
+            poolUsed += domainLength;
 
-            table[current].state = Entry::OCCUPIED;
-            entryCount++;
+            table[current].hash = h;
+            table[current].domainOffset = offset;
+            table[current].state = OCCUPIED;
+
+            entryCount ++;
 
             return true;
         }
+    }
 
-        if(
-            table[current].state == Entry::OCCUPIED &&
-            table[current].hash == h &&
-            strcmp(table[current].domain, domain.c_str()) == 0
-        )
+    if(firstDeleted != -1)
+    {
+        size_t domainLength =
+            domain.length() + 1;
+
+        if(poolUsed + domainLength > poolSize)
         {
+            DEBUG_PRINTLN("DOMAIN POOL FULL");
             return false;
         }
+
+        uint32_t offset = poolUsed;
+
+        memcpy(
+            &domainPool[offset],
+            domain.c_str(),
+            domainLength
+        );
+
+        poolUsed += domainLength;
+
+        table[firstDeleted].hash = h;
+        table[firstDeleted].domainOffset = offset;
+        table[firstDeleted].state = OCCUPIED;
+
+        entryCount++;
+
+        return true;
     }
+
+    DEBUG_PRINTLN("HASH TABLE FULL");
 
     return false;
 }
 
 bool DomainHashTable::remove(String domain)
 {
-    if(table == nullptr)
+    if(table == nullptr || domainPool == nullptr)
         return false;
 
     domain.toLowerCase();
 
     uint32_t h = hash(domain);
 
-    int index = h % TABLE_SIZE;
+    size_t index = h % tableSize;
 
-    for(int i = 0; i < TABLE_SIZE; i++)
+    for(size_t i = 0; i < tableSize; i++)
     {
-        int current = (index + i) % TABLE_SIZE;
+        size_t current =
+            (index + i) % tableSize;
 
-        if(table[current].state == Entry::EMPTY)
+        if(table[current].state == EMPTY)
             return false;
 
         if(
-            table[current].state == Entry::OCCUPIED &&
-            table[current].hash == h &&
-            strcmp(table[current].domain, domain.c_str()) == 0
+            table[current].state == OCCUPIED &&
+            table[current].hash == h
         )
         {
-            table[current].state = Entry::DELETED;
-            table[current].domain[0] = '\0';
-            table[current].hash = 0;
-            entryCount--;
+            const char* storedDomain =
+                &domainPool[table[current].domainOffset];
+            
+            if(strcmp(
+                storedDomain,
+                domain.c_str()
+            ) == 0)
+            {
+                table[current].state = DELETED;
+                table[current].hash = 0;
+                table[current].domainOffset = 0;
 
-            return true;
+                entryCount--;
+
+                return true;
+            }
         }
     }
 
@@ -167,29 +264,37 @@ bool DomainHashTable::remove(String domain)
 
 bool DomainHashTable::contains(String domain)
 {
-    if(table == nullptr)
+    if(table == nullptr || domainPool == nullptr)
         return false;
 
     domain.toLowerCase();
 
     uint32_t h = hash(domain);
 
-    int index = h % TABLE_SIZE;
+    size_t index = h % tableSize;
 
-    for(int i = 0; i < TABLE_SIZE; i++)
+    for(size_t i = 0; i < tableSize; i++)
     {
-        int current = (index + i) % TABLE_SIZE;
+        size_t current =
+            (index + i) % tableSize;
 
-        if(table[current].state == Entry::EMPTY)
+        if(table[current].state == EMPTY)
             return false;
 
         if(
-            table[current].state == Entry::OCCUPIED &&
-            table[current].hash == h &&
-            strcmp(table[current].domain, domain.c_str()) == 0
+            table[current].state == OCCUPIED &&
+            table[current].hash == h
         )
         {
-            return true;
+            const char* storedDomain = &domainPool[table[current].domainOffset];
+
+            if(strcmp(
+                storedDomain,
+                domain.c_str()
+            ) == 0)
+            {
+                return true;
+            }
         }
     }
 
@@ -203,18 +308,18 @@ int DomainHashTable::size()
 
 String DomainHashTable::get(int index)
 {
-    if(table == nullptr)
+    if(table == nullptr || domainPool == nullptr)
         return "";
 
     int found = 0;
 
-    for(int i = 0; i < TABLE_SIZE; i++)
+    for(size_t i = 0; i < tableSize; i++)
     {
-        if(table[i].state == Entry::OCCUPIED)
+        if(table[i].state == OCCUPIED)
         {
             if(found == index)
             {
-                return String(table[i].domain);
+                return String(&domainPool[table[i].domainOffset]);
             }
 
             found++;
@@ -223,3 +328,37 @@ String DomainHashTable::get(int index)
 
     return "";
 }
+
+String DomainHashTable::getSlot(size_t slot)
+{
+    if(table == nullptr|| domainPool == nullptr)
+        return "";
+
+    if(slot >= tableSize)
+        return "";
+
+    if(table[slot].state != OCCUPIED)
+        return "";
+
+    return String(&domainPool[table[slot].domainOffset]);
+}
+
+size_t DomainHashTable::getSlotCount()
+{
+    return tableSize;
+}
+size_t DomainHashTable::getTableCapacity()
+{
+    return tableSize;
+}
+
+size_t DomainHashTable::getPoolCapacity()
+{
+    return poolSize;
+}
+
+size_t DomainHashTable::getPoolUsed()
+{
+    return poolUsed;
+}
+

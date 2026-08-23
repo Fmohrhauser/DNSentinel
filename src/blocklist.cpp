@@ -32,6 +32,21 @@ void loadBlocklist()
       if(blockedDomains.add(domain))
       {
         count++;
+
+        if(count % 5000 == 0)
+        {
+          DEBUG_PRINT("Loaded so far: ");
+          DEBUG_PRINTLN(count);
+
+          DEBUG_PRINT("Free PSRAM: ");
+          DEBUG_PRINTLN(ESP.getFreePsram());
+
+          DEBUG_PRINT("Blocklist pool used: ");
+          DEBUG_PRINTLN(blockedDomains.getPoolUsed());
+
+          DEBUG_PRINT("Blocklist pool capacity: ");
+          DEBUG_PRINTLN(blockedDomains.getPoolCapacity());
+        }
       }
       else
       {
@@ -62,10 +77,16 @@ void saveBlocklist()
     return;
   }
 
-  for(int i = 0; i < blockedDomains.size(); i++)
-{
-  file.println(blockedDomains.get(i));
-}
+  for(size_t i = 0; i < blockedDomains.getSlotCount(); i++)
+  {
+    String domain =
+      blockedDomains.getSlot(i);
+
+    if(domain.length() > 0)
+    {
+      file.println(domain);
+    }
+  }
 
   file.close();
   DEBUG_PRINTLN("Blocklist saved.");
@@ -115,9 +136,15 @@ String createBlocklistJSON()
 
   JsonArray array = doc.to<JsonArray>();
 
-  for(int i = 0; i < blockedDomains.size(); i++)
+  for(size_t i = 0; i < blockedDomains.getSlotCount(); i++)
   {
-    array.add(blockedDomains.get(i));
+    String domain =
+      blockedDomains.getSlot(i);
+
+    if(domain.length() > 0)
+    {
+      array.add(domain);
+    }
   }
 
   String json;
@@ -143,10 +170,15 @@ String createBlocklistPageJSON(
   int matched = 0;
   int added = 0;
 
-  for(int i = 0; i < blockedDomains.size(); i++)
+  for(size_t i = 0; i < blockedDomains.getSlotCount(); i++)
   {
     String domain =
-      blockedDomains.get(i);
+      blockedDomains.getSlot(i);
+
+    if(domain.length() == 0)
+    {
+      continue;
+    }
 
     domain.toLowerCase();
 
@@ -160,12 +192,12 @@ String createBlocklistPageJSON(
 
     if(matched >= offset &&
         added < limit)
-        {
-          domains.add(domain);
-          added++;
-        }
+      {
+        domains.add(domain);
+        added++;
+      }
 
-        matched++;
+      matched++;
   }
 
   doc["offset"] = offset;

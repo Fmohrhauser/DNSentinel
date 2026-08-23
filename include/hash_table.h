@@ -8,7 +8,10 @@ class DomainHashTable
 public:
     DomainHashTable();
 
-    void begin();
+    bool begin(
+        size_t tableSize,
+        size_t poolSize
+    );
 
     bool add(String domain);
     bool contains(String domain);
@@ -19,32 +22,46 @@ public:
     int size();
 
     String get(int index);
+    String getSlot(size_t slot);
+    size_t getSlotCount();
+
+    size_t getTableCapacity();
+    size_t getPoolCapacity();
+    size_t getPoolUsed();
 
 private:
+
+    enum EntryState : uint8_t
+    {
+        EMPTY,
+        OCCUPIED,
+        DELETED
+    };
 
     struct Entry
     {
         uint32_t hash;
-        char domain[128];
-        enum State
-        {
-            EMPTY,
-            OCCUPIED,
-            DELETED
-        };
-
-        State state;
+        uint32_t domainOffset;
+        uint8_t state;
     };
 
-    static const int TABLE_SIZE = 4096;
-
     Entry* table;
+    char* domainPool;
+
+    size_t tableSize;
+    size_t poolSize;
+    size_t poolUsed;
 
     int entryCount;
 
     uint32_t hash(const String& domain);
 
     int findIndex(const String& domain);
+
+    int findInsertIndex(
+        const String& domain,
+        uint32_t domainHash
+    );
 };
 
 #endif
