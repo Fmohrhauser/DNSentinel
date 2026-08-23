@@ -127,6 +127,58 @@ String createBlocklistJSON()
   return json;
 }
 
+String createBlocklistPageJSON(
+  int offset,
+  int limit,
+  String search
+)
+{
+  JsonDocument doc;
+
+  JsonArray domains =
+    doc["domains"].to<JsonArray>();
+
+  search.toLowerCase();
+  
+  int matched = 0;
+  int added = 0;
+
+  for(int i = 0; i < blockedDomains.size(); i++)
+  {
+    String domain =
+      blockedDomains.get(i);
+
+    domain.toLowerCase();
+
+    if(search.length() > 0)
+    {
+      if(domain.indexOf(search) == -1)
+      {
+        continue;
+      }
+    }
+
+    if(matched >= offset &&
+        added < limit)
+        {
+          domains.add(domain);
+          added++;
+        }
+
+        matched++;
+  }
+
+  doc["offset"] = offset;
+  doc["limit"] = limit;
+  doc["total"] = matched;
+
+  String json;
+
+  serializeJson(doc, json);
+
+  return json;
+}
+
 bool checkDomainAndParents(String domain)
 {
   while(true)

@@ -1,17 +1,33 @@
 let currentBlocklist = [];
+let blocklistOffset = 0;
+const blocklistLimit = 100;
+let blocklistTotal = 0;
 function updateBlocklist()
 {
-    fetch("/api/blocklist", {
+    let search =
+        document
+        .getElementById("blocklist-search")
+        .value;
+
+    let url = 
+        `/api/blocklist?offset=${blocklistOffset}&limit=${blocklistLimit}`;
+
+    if(search.length > 0)
+    {
+        url +=
+            `&search=${encodeURIComponent(search)}`;
+    }
+
+    fetch(url, {
         cache: "no-store"
     })
-
     .then(response => response.json())
-    .then(domains => {
+    .then(data => {
 
-        currentBlocklist = domains;
+        currentBlocklist = data.domains;
+        blocklistTotal = data.total;
 
         renderBlocklist(currentBlocklist);
-    
     });
 }
 
@@ -39,7 +55,7 @@ function addDomain()
     .then(() => {
 
         document.getElementById("new-domain").value="";
-
+        blocklistOffset = 0;
         updateBlocklist();
         updateBlocklistCount();
     });
@@ -63,7 +79,7 @@ function removeDomain(domain)
         })
     })
     .then(() => {
-
+        blocklistOffset = 0;
         updateBlocklist();
         updateBlocklistCount();
 
@@ -149,7 +165,8 @@ function importBlocklist()
         .getElementById("import-ignored")
         .innerHTML =
         result.ignored;
-        
+
+        blocklistOffset = 0;
         updateBlocklist();
         document
         .getElementById("import-list")
@@ -201,10 +218,27 @@ function renderBlocklist(domains)
     let container = 
         document.getElementById("blocklist");
 
+    let currentPage =
+        Math.floor(blocklistOffset / blocklistLimit) + 1;
+
+    let totalPages =
+        Math.max(
+            1,
+            Math.ceil(blocklistTotal / blocklistLimit)
+        );
+
+    document.getElementById("blocklist-prev").disabled = currentPage === 1;
+    document.getElementById("blocklist-next").disabled = currentPage === totalPages;
+
+    document
+    .getElementById("filterlist-page-marker")
+    .innerText =
+    `${currentPage}/${totalPages}`;
+
     document
     .getElementById("blocklist-results")
     .innerText =
-    `Showing ${domains.length} of ${currentBlocklist.length} domains`;
+    `Showing ${domains.length} of ${blocklistTotal} domains`;
 
     container.innerHTML = "";
 
@@ -233,6 +267,7 @@ function renderBlocklist(domains)
         button.addEventListener(
             "click",
             () => removeDomain(domain)
+
         );
 
         item.appendChild(span);
@@ -244,20 +279,9 @@ function renderBlocklist(domains)
 
 function filterBlocklist()
 {
-    let search =
-        document
-        .getElementById("blocklist-search")
-        .value
-        .toLowerCase();
+    blocklistOffset = 0;
 
-    let filtered =
-        currentBlocklist.filter(domain =>
-            domain
-            .toLowerCase()
-            .includes(search)
-        );
-
-        renderBlocklist(filtered);
+    updateBlocklist();
 }
 
 function resetBlocklist()
@@ -275,6 +299,7 @@ function resetBlocklist()
             method:"POST"
         })
         .then(() =>{
+            blocklistOffset = 0;
             updateBlocklist();
             updateBlocklistCount();
         });
@@ -291,6 +316,34 @@ document
 .addEventListener(
     "input",
     filterBlocklist
+);
+document
+.getElementById("blocklist-prev")
+.addEventListener(
+    "click",
+    () => {
+
+        if(blocklistOffset >= blocklistLimit)
+        {
+            blocklistOffset -= blocklistLimit;
+
+            updateBlocklist();
+        }
+    }
+);
+document
+.getElementById("blocklist-next")
+.addEventListener(
+    "click",
+    () => {
+
+        if(blocklistOffset + blocklistLimit < blocklistTotal)
+        {
+            blocklistOffset += blocklistLimit;
+
+            updateBlocklist();
+        }
+    }
 );
 updateBlocklist();
 updateBlocklistCount();

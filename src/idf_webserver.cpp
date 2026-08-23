@@ -382,8 +382,71 @@ esp_err_t blocklistAPIHandler(httpd_req_t *req)
 {
     if(!checkAuthenticationIDF(req))
         return ESP_OK;
+    int offset = 0;
+    int limit = 100;
+    String search = "";
 
-    String response = createBlocklistJSON();
+    size_t queryLength = httpd_req_get_url_query_len(req);
+
+    if(queryLength > 0 && queryLength <= 128)
+    {
+        char query[queryLength + 1];
+
+        if(httpd_req_get_url_query_str(
+            req,
+            query,
+            queryLength + 1
+        ) == ESP_OK)
+        {
+            char value[12];
+            char searchValue[64];
+
+            if(httpd_query_key_value(
+                query,
+                "offset",
+                value,
+                sizeof(value)
+            ) == ESP_OK)
+            {
+                offset = String(value).toInt();
+            }
+
+            if(httpd_query_key_value(
+                query,
+                "limit",
+                value,
+                sizeof(value)
+            ) == ESP_OK)
+            {
+                limit = String(value).toInt();
+            }
+            if(httpd_query_key_value(
+                query,
+                "search",
+                searchValue,
+                sizeof(searchValue)
+            ) == ESP_OK)
+            {
+                search = String(searchValue);
+            }
+        }
+    }
+
+    if(offset < 0)
+        offset = 0;
+
+    if(limit < 1)
+        limit = 1;
+    
+    if(limit > 500)
+        limit = 500;
+
+
+    String response = createBlocklistPageJSON(
+        offset,
+        limit,
+        search
+    );
 
     httpd_resp_set_type(
         req,

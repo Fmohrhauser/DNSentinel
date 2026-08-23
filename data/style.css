@@ -329,6 +329,55 @@ tr:hover {
 
 }
 
+.pagination-controls
+{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 18px;
+}
+
+.pagination-controls button
+{
+    padding:  8px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    font-size: 14px;
+    transition: 
+        transform 0.15s ease,
+        opacity 0.15s ease;
+}
+
+.pagination-controls button:hover
+{
+    transform: translateY(-1px);
+}
+
+.pagination-controls button:active
+{
+    transform: translateY(0);
+}
+
+#filterlist-page-marker
+{
+    min-width: 64px;
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba( 135,206, 250,0.05);
+}
+
+.pagination-controls button:disabled
+{
+    opacity:  0.4;
+    cursor: not-allowed;
+}
+
 .remove-domain {
 
     background: var(--danger);

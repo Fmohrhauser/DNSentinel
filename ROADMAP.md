@@ -142,15 +142,21 @@
 
 # Version 0.8 - Performance and Reliability
 
-☐ Memory profiling
-☐ PSRAM cache optimization
-☐ DNS request stress testing
-☐ HTTP request stress testing
-☐ Measure DNS response latency
-☐ Measure web API latency
-☐ Test large blocklists
-☐ Test long-term uptime
-☐ Optimize memory usage
+- Memory profiling
+/ PSRAM cache optimization
+- DNS request stress testing
+- HTTP request stress testing
+- Measure DNS response latency
+- Measure web API latency
+☐ Optimize large-list API/frontend behavior
+/ Test large blocklists
+/ Test long-term uptime
+/ Optimize memory usage
+- Add cache eviction behavior
+- Fix blocked stats buffer overflow
+- Test upstream DNS failure and recovery
+☐ Test WiFi disconnect/reconnect behavior
+☐ Full v0.8 regression test
 
 ---
 
