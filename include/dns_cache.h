@@ -34,7 +34,6 @@ void cacheInsert(
     int responseLength
 );
 
-void cacheCleanup();
 
 void initCache();
 

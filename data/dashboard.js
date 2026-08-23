@@ -153,10 +153,6 @@ setInterval(()=> {
         formatTime(currentUptime);
 }, 1000);
 
-function pad(n){
-    return String(n).padStart(2,"0");
-}
-
 function formatTime(seconds)
 {
     let hours = Math.floor(seconds / 3600);

@@ -13,27 +13,6 @@ unsigned long lastMinuteRequests = 0;
 
 unsigned long peakQueriesPerMinute = 0;
 
-void initStats()
-{
-    totalRequests = 0;
-    blockedRequests = 0;
-    forwardedRequests = 0;
-
-
-    minuteStart = millis();
-
-    requestsThisMinute = 0;
-
-    lastMinuteRequests = 0;
-}
-
-void resetStats()
-{
-    initStats();
-
-    DEBUG_PRINTLN("Statistics reset");
-}
-
 
 void incrementTotalRequests()
 {
@@ -108,25 +87,12 @@ unsigned long getQueriesPerMinute()
     return lastMinuteRequests;
 }
 
-float getAverageQueriesPerSecond()
-{
-    unsigned long uptime =
-        millis() / 1000;
-
-    if(uptime == 0)
-        return 0;
-
-    return
-        (float)totalRequests /
-        uptime;
-}
-
 float getSuccessRate()
 {
     if(totalRequests == 0)
         return 100;
 
-    return  
+    return
         (forwardedRequests * 100.0f) /
         totalRequests;
 }

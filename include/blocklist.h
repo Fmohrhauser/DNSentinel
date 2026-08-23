@@ -20,7 +20,6 @@ void saveBlocklist();
 bool addBlockedDomain(String domain);
 bool removeBlockedDomain(String domain);
 
-String createBlocklistJSON();
 String createBlocklistPageJSON(
   int offset,
   int limit,

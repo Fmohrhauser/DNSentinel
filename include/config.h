@@ -7,8 +7,6 @@
 
 //User Configuration
 #define DEVICE_NAME "DNSentinel"
-#define ENABLE_LOGGING true
-#define ENABLE_CACHE true
 
 
 constexpr size_t MAX_DNS_PACKET_SIZE = 512;

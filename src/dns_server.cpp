@@ -16,7 +16,6 @@
 WiFiUDP udp;
 WiFiUDP upstreamUdp;
 byte dnsPacket[MAX_DNS_PACKET_SIZE];
-unsigned long statsDelay = 0;
 int pos;
 
 
@@ -30,7 +29,6 @@ void startDNSServer(){
   if(success){
     Serial.println("DNS Server started");
   }
-  statsDelay = millis();
 }
 
 void parseIP(
@@ -194,11 +192,6 @@ void handleDNS(){
 
     int bytesRead = udp.read(dnsPacket, MAX_DNS_PACKET_SIZE);
 
-
-    for (int i = 0; i < bytesRead; i++) {
-
-    } 
-
     
     //save transaction id
     byte idHigh = dnsPacket[0];
@@ -237,12 +230,9 @@ void handleDNS(){
 
     byte qTypeHigh = question[pos];
     byte qTypeLow = question[pos + 1];
-    byte qClassHigh = question[pos + 2];
-    byte qClassLow = question[pos + 3];
     pos += 4; // moves parser position after qtype and qclass as we already "read" those 
 
     int qType = (qTypeHigh << 8) | qTypeLow;
-    int qClass = (qClassHigh << 8) | qClassLow;
 
 
 
@@ -338,7 +328,6 @@ void handleDNS(){
             cacheLookup(domain, qType, cachedResponse, cachedLength)
           )
         {
-            unsigned long cacheFound = micros();
             if(currentSettings.queryLoggingEnabled)
             {
               logQuery(domain, CACHE_HIT);
@@ -356,7 +345,7 @@ void handleDNS(){
             udp.write(cachedResponse, cachedLength);
 
             udp.endPacket();
-            unsigned long cacheSent = micros();
+
 
 
             return;
@@ -365,14 +354,12 @@ void handleDNS(){
         
         byte upstreamResponse[MAX_DNS_PACKET_SIZE];
         int responseLength = 0;
-        unsigned long beforeForward = micros();
         bool success = forwardDNS(
           dnsPacket,
           bytesRead,
           upstreamResponse,
           responseLength
         );
-        unsigned long afterForward = micros();
         if(success)
         {
           incrementForwardedRequests();
@@ -408,8 +395,6 @@ void handleDNS(){
           responseLength
         );
         udp.endPacket();
-
-        unsigned long responseSent = micros();
 
 
 

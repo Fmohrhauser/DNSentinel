@@ -9,6 +9,4 @@ extern bool upstreamOnline;
 extern bool upstreamChecked;
 extern unsigned long lastUpstreamSuccess;
 
-float getUpstreamSuccessRate();
-
 #endif

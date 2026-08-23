@@ -136,18 +136,3 @@ bool cacheLookup(
 
     return false;
 }
-
-
-void cacheCleanup()
-    {
-        for(int i=0; i< CACHE_SIZE; i++)
-        {
-            if(cache[i].valid && millis() > cache[i].expiresAt)
-            {
-                cache[i].valid = false;
-
-
-                cache[i].domain = "";
-            }
-        }
-    }

@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
-extern bool dnsStatus;
 
 String createSystemJSON()
 {

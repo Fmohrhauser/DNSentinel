@@ -56,12 +56,6 @@ private:
 
     uint32_t hash(const String& domain);
 
-    int findIndex(const String& domain);
-
-    int findInsertIndex(
-        const String& domain,
-        uint32_t domainHash
-    );
 };
 
 #endif

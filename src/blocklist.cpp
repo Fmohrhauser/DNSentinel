@@ -130,30 +130,6 @@ bool removeBlockedDomain(String domain)
   return false;
 }
 
-String createBlocklistJSON()
-{
-  JsonDocument doc;
-
-  JsonArray array = doc.to<JsonArray>();
-
-  for(size_t i = 0; i < blockedDomains.getSlotCount(); i++)
-  {
-    String domain =
-      blockedDomains.getSlot(i);
-
-    if(domain.length() > 0)
-    {
-      array.add(domain);
-    }
-  }
-
-  String json;
-
-  serializeJson(doc, json);
-
-  return json;
-}
-
 String createBlocklistPageJSON(
   int offset,
   int limit,

@@ -90,20 +90,6 @@ void getLatestQueries(
     }
 }
 
-void testLatest()
-{
-    QueryLogEntry recent[5];
-
-    getLatestQueries(recent, 5);
-
-    for(int i = 0; i < 5; i++)
-    {
-        DEBUG_PRINT(recent[i].domain);
-        DEBUG_PRINT(" ");
-
-        DEBUG_PRINTLN(actionToString(recent[i].action));
-    }
-}
 
 String actionToString(QueryAction action)
 {
