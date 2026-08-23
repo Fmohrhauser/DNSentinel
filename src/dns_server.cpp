@@ -27,7 +27,7 @@ void startDNSServer(){
   upstreamUdp.begin(0);
 
   if(success){
-    Serial.println("DNS Server started");
+    DEBUG_PRINTLN("DNS Server started");
   }
 }
 

@@ -111,6 +111,7 @@ bool cacheLookup(
         if(millis() > cache[i].expiresAt)
         {
             cache[i].valid = false;
+            cache[i].domain = "";
             continue;
         }
 

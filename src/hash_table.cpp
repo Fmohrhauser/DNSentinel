@@ -215,7 +215,9 @@ bool DomainHashTable::add(String domain)
 
     return false;
 }
-
+// removeed entries leave their domain data in the PSRAM pool(its linear)
+// pool space is reclaimed when the table is cleared or rebuilt
+// This acoids expensive pool compaction during individual removals.
 bool DomainHashTable::remove(String domain)
 {
     if(table == nullptr || domainPool == nullptr)

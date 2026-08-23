@@ -106,6 +106,46 @@ String actionToString(QueryAction action)
     return "UNKNOWN";
 }
 
+String escapeJSONString(const String& input)
+{
+    String output = "";
+
+    for(size_t i = 0; i < input.length(); i++)
+    {
+        char c = input[i];
+
+        switch(c)
+        {
+            case '"':
+                output += "\\\"";
+                break;
+            
+            case '\\':
+                output += "\\\\";
+                break;
+
+            case '\n':
+                output += "\\n";
+                break;
+
+            case '\r':
+                output += "\\r";
+                break;
+
+            case '\t':
+                output += "\\t";
+                break;
+
+            default:
+                output += c;
+                break;
+
+        }
+    }
+
+    return output;
+}
+
 String createQueryLogJSON(int limit)
 {
     String json = "[";
@@ -128,7 +168,7 @@ String createQueryLogJSON(int limit)
        json += "{";
 
        json += "\"domain\":\"";
-       json += recent[i].domain;
+       json += escapeJSONString(recent[i].domain);
        json += "\",";
 
        json += "\"action\":\"";
@@ -138,7 +178,7 @@ String createQueryLogJSON(int limit)
        json += ",";
 
        json += "\"timestamp\":\"";
-       json += recent[i].timestamp;
+       json += escapeJSONString(recent[i].timestamp);
        json += "\"";
 
        json += "}";

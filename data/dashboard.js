@@ -1,6 +1,3 @@
-let queryHistory = [];
-let previousRate = 0;
-let firstRateUpdate = true
 let currentUptime = 0;
 
 function updateTimestamp(element)
@@ -27,6 +24,28 @@ function updateStats()
             document.getElementById("blocked").innerHTML = data.blocked;
             document.getElementById("forwarded").innerHTML = data.forwarded;
             document.getElementById("cache_hits").innerHTML = data.cache_hits;
+
+            const rate = Number(data.queries_per_minute);
+
+            const rateElement = document.getElementById("query-race");
+
+            rateElement.innerHTML = rate;
+
+            if(rate >= 20)
+            {
+                rateElement.style.color =
+                    "var(--success)";
+            }
+            else if(rate >= 5)
+            {
+                rateElement.style.color =
+                    "var(--warning)";
+            }
+            else
+            {
+                rateElement.style.color =
+                    "var(--secondary-text)";
+            }
 
             let total = data.total
 
@@ -232,96 +251,6 @@ document.getElementById("hideIP").addEventListener("change", function(){
 
 });
 
-function updateQueryRate()
-{
-    fetch("/api/stats")
-        .then(response => response.json())
-        .then (data=>{
-
-            const now = Date.now();
-
-            queryHistory.push({
-                time: now,
-                total: Number(data.total)
-            });
-
-            
-
-            while(
-                    queryHistory.length > 0 &&
-                    now - queryHistory[0].time > 60000
-            )
-            {
-                queryHistory.shift();
-            }
-
-            let rate = 0;
-
-            if(queryHistory.length >= 2)
-            {
-                const oldest = queryHistory[0];
-                const newest = queryHistory[queryHistory.length - 1];
-
-                const queryDifference =
-                    newest.total - oldest.total;
-
-                const minuteDifference =
-                    (newest.time - oldest.time) / 60000;
-
-                if(minuteDifference > 0)
-                {
-                    rate = queryDifference / minuteDifference;
-                }
-            }
-
-  
-
-            const rateElement =
-                document.getElementById("query-rate");
-
-            const trend =
-                document.getElementById("query-trend");
-
-            const displayRate = Math.round(rate);
-
-            rateElement.innerHTML = displayRate;
-
-            if(rate >= 20)
-            {
-                rateElement.style.color =
-                    "var(--success)";
-            }
-            else if(rate >= 5)
-            {
-                rateElement.style.color =
-                    "var(--warning)";
-            }
-            else
-            {
-                rateElement.style.color = "var(--secondary-text)"
-            }
-            if(rate > previousRate + 1)
-            {
-                trend.innerHTML = "▲";
-                trend.style.color = "var(--success)";
-            }
-            else if(rate < previousRate - 1)
-            {
-                trend.innerHTML = "▼";
-                trend.style.color = "var(--danger)";
-            }
-            else
-            {
-                trend.innerHTML = "▬";
-                trend.style.color = "var(--secondary-text)";
-            }
-            previousRate = rate;
-    });
-}
-
-setInterval(updateQueryRate, 5000);
-
-updateQueryRate();
 
 
 

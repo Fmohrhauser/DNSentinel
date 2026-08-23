@@ -15,7 +15,7 @@ void initTime()
         ntpServer
     );
 
-    Serial.println("waiting for NTP time...");
+    DEBUG_PRINTLN("waiting for NTP time...");
 
     struct tm timeinfo;
 

@@ -121,7 +121,7 @@ void saveSettings()
 
     file.close();
 
-    Serial.println("Settings saved");
+    DEBUG_PRINTLN("Settings saved");
 }
 
 void loadSettings()
@@ -201,7 +201,7 @@ void loadSettings()
 
     file.close();
 
-    Serial.println("Settings loaded");
+    DEBUG_PRINTLN("Settings loaded");
 }
 bool validIP(String ip)
 {

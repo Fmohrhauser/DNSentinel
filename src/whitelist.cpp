@@ -28,9 +28,9 @@ void loadWhitelist()
 
     file.close();
 
-    Serial.print("Loaded ");
-    Serial.print(whitelistedDomains.size());
-    Serial.println(" whitelisted domains.");
+    DEBUG_PRINTLN("Loaded ");
+    DEBUG_PRINTLN(whitelistedDomains.size());
+    DEBUG_PRINTLN(" whitelisted domains.");
 }
 
 void saveWhitelist()
@@ -55,7 +55,7 @@ void saveWhitelist()
     }
     file.close();
 
-    Serial.println("Whitelist saved.");
+    DEBUG_PRINTLN("Whitelist saved.");
 }
 
 bool addWhitelistedDomain(String domain)
