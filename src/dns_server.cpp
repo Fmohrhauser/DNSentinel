@@ -259,6 +259,9 @@ void handleDNS(){
     createHeader(response, idHigh, idLow, true);
 
     bool blocked = !isWhitelisted(domain) && isBlocked(domain);
+
+    Settings currentSettings = getSettings();
+
     byte ipv41;
     byte ipv42;
     byte ipv43;
@@ -267,7 +270,10 @@ void handleDNS(){
 
     if(getSettings().blockingEnabled && blocked){
     
-      logQuery(domain, BLOCKED);
+      if(currentSettings.queryLoggingEnabled)
+      {
+        logQuery(domain, BLOCKED);
+      }
       incrementBlockedRequests();
       incrementBlockedDomain(domain);
 
@@ -281,8 +287,6 @@ void handleDNS(){
         );
         return;
       }
-
-      Settings currentSettings = getSettings();
 
       if(currentSettings.blockingMode == NULL_IP)
       {
@@ -326,14 +330,19 @@ void handleDNS(){
       
     }
     else{
-      
         byte cachedResponse[MAX_DNS_PACKET_SIZE];
         int cachedLength = 0;
 
-        if(cacheLookup(domain, qType, cachedResponse, cachedLength))
+        if(
+            currentSettings.cacheEnabled && 
+            cacheLookup(domain, qType, cachedResponse, cachedLength)
+          )
         {
             unsigned long cacheFound = micros();
-            logQuery(domain, CACHE_HIT);
+            if(currentSettings.queryLoggingEnabled)
+            {
+              logQuery(domain, CACHE_HIT);
+            }
             //Restore transaction ID from current request
             cachedResponse[0] = dnsPacket[0];
             cachedResponse[1] = dnsPacket[1];
@@ -368,22 +377,26 @@ void handleDNS(){
         {
           incrementForwardedRequests();
 
-          logQuery(
-            domain,
-            FORWARDED
-        );
+          if(currentSettings.queryLoggingEnabled)
+          {
+            logQuery(domain, FORWARDED);
+          }
         }
 
         
 
       
       if(success){
-        cacheInsert(
-          domain,
-          qType,
-          upstreamResponse,
-          responseLength
-        );
+        if(currentSettings.cacheEnabled)
+        {
+            cacheInsert(
+              domain,
+              qType,
+              upstreamResponse,
+              responseLength
+            );
+        }
+        
 
         udp.beginPacket(
           udp.remoteIP(),

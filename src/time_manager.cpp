@@ -19,14 +19,23 @@ void initTime()
 
     struct tm timeinfo;
 
+    const unsigned long timeout = 10000;
+    const unsigned long startTime = millis();
+
     while(!getLocalTime(&timeinfo))
     {
+        if(millis() - startTime >= timeout)
+        {
+            DEBUG_PRINTLN("NTP syncronization timed out");
+            return;
+        }
+
         delay(500);
-        Serial.print(".");
+        DEBUG_PRINT(".");
     }
 
-    Serial.println();
-    Serial.println("Time synchronized");
+    DEBUG_PRINTLN();
+    DEBUG_PRINTLN("Time synchronized");
 }
 
 String getCurrentTime()

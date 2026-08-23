@@ -22,19 +22,30 @@
 //setup
 void setup() {
   Serial.begin(115200);
+
+
   LittleFS.begin();
+
+
   initCache();
   initQueryLog();
+
+  
   connectWiFi();
-  startIDFWebServer();
-  startDNSServer();
+
+
   initializeSettings();
   initializeAuthentication();
   loadSettings();
+
+
   initTime();
 
-  initCacheStats();
 
+  startIDFWebServer();
+  startDNSServer();
+ 
+  initCacheStats();
 
   if(!blockedDomains.begin(
     65536,
