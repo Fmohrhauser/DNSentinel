@@ -40,11 +40,14 @@ String createDNSHealthJSON()
 
     float averageLatency = 0;
 
+    unsigned long successfulRequests =
+        upstreamRequests - upstreamFailures;
+
     if(upstreamRequests > 0)
     {
         averageLatency =
             (float)totalUpstreamLatency /
-            upstreamRequests;
+            successfulRequests;
     }
 
     json += "\"averageLatency\":";

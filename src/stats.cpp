@@ -1,10 +1,10 @@
 #include "stats.h"
 #include "debug.h"
+#include "cache_stats.h"
 
 unsigned long totalRequests = 0;
 unsigned long blockedRequests = 0;
 unsigned long forwardedRequests = 0;
-int cacheHits = 0;
 
 unsigned long minuteStart = 0;
 unsigned long requestsThisMinute = 0;
@@ -19,7 +19,6 @@ void initStats()
     blockedRequests = 0;
     forwardedRequests = 0;
 
-    cacheHits = 0;
 
     minuteStart = millis();
 
@@ -35,16 +34,6 @@ void resetStats()
     DEBUG_PRINTLN("Statistics reset");
 }
 
-
-void incrementCacheHits()
-{
-    cacheHits++;
-}
-
-int getCacheHits()
-{
-    return cacheHits;
-}
 
 void incrementTotalRequests()
 {
@@ -89,7 +78,7 @@ float getCachePercent()
         return 0;
 
     return
-        (cacheHits * 100.0f) /
+        (cacheStats.hits * 100.0f) /
         totalRequests;
 }
 
@@ -167,7 +156,7 @@ String createStatsJSON()
     json += ",";
 
     json += "\"cache_hits\":";
-    json += getCacheHits();
+    json += cacheStats.hits;
     json += ",";
 
     json += "\"blocked_percent\":";

@@ -135,6 +135,7 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
 
  
   unsigned long timeoutStart = millis();
+  upstreamRequests++;
   upstreamUdp.beginPacket(currentSettings.upstreamDNS.c_str(), 53);
 
 
@@ -155,7 +156,7 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
 
       totalUpstreamLatency +=latency;
 
-      upstreamRequests++;
+      
 
       lastUpstreamSuccess = millis();
 
@@ -268,7 +269,7 @@ void handleDNS(){
     byte ipv44;
 
 
-    if(getSettings().blockingEnabled && blocked){
+    if(currentSettings.blockingEnabled && blocked){
     
       if(currentSettings.queryLoggingEnabled)
       {
@@ -302,14 +303,13 @@ void handleDNS(){
       {
         if(qType == 1)
         {
-        int firstDot = currentSettings.redirectIP.indexOf('.');
-        int secondDot = currentSettings.redirectIP.indexOf('.', firstDot + 1);
-        int thirdDot = currentSettings.redirectIP.indexOf('.', secondDot + 1);
-
-        ipv41 = currentSettings.redirectIP.substring(0,firstDot).toInt();
-        ipv42 = currentSettings.redirectIP.substring(firstDot + 1, secondDot).toInt();
-        ipv43 = currentSettings.redirectIP.substring(secondDot + 1, thirdDot).toInt();
-        ipv44 = currentSettings.redirectIP.substring(thirdDot + 1).toInt();
+            parseIP(
+              currentSettings.redirectIP,
+              ipv41,
+              ipv42,
+              ipv43,
+              ipv44
+            );
         }
       }
       else if(currentSettings.blockingMode == NXDOMAIN)

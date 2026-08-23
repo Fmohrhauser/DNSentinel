@@ -25,8 +25,3 @@ void recordCacheHit(unsigned long lookupTime);
 
 void recordCacheMiss(unsigned long lookupTime);
 
-float getCacheHitRate();
-
-unsigned long getAverageLookupTime();
-
-String createCacheStatsJSON();

@@ -118,7 +118,8 @@ bool cacheLookup(
            cache[i].qType == qType 
         )
         {
-            recordCacheHit(lookupTime);
+            unsigned long elapsedTime = millis() - lookupTime;
+            recordCacheHit(elapsedTime);
             memcpy(
                 response,
                 cache[i].response,
@@ -126,13 +127,13 @@ bool cacheLookup(
              );
 
             responseLength = cache[i].responseLength;
-             incrementCacheHits();
-             lookupTime = millis() - lookupTime;
             return true;
         }
     }
-    recordCacheMiss(lookupTime);
-    lookupTime = millis() - lookupTime;
+    unsigned long elapsedTime = millis() - lookupTime;
+
+    recordCacheMiss(elapsedTime);
+
     return false;
 }
 
