@@ -143,38 +143,54 @@
 # Version 0.8 - Performance and Reliability
 
 - Memory profiling
-/ PSRAM cache optimization
 - DNS request stress testing
 - HTTP request stress testing
 - Measure DNS response latency
 - Measure web API latency
-☐ Optimize large-list API/frontend behavior
-/ Test large blocklists
-/ Test long-term uptime
-/ Optimize memory usage
 - Add cache eviction behavior
 - Fix blocked stats buffer overflow
 - Test upstream DNS failure and recovery
-☐ Test WiFi disconnect/reconnect behavior
-☐ Full v0.8 regression test
+- PSRAM optimization
+- Large-blocklist testing
+- Long-term uptime testing
+- Memory optimization
+
 
 ---
 
 # Version 1.0 - Stable Release
 
-☐ Complete documentation
-☐ Setup instructions
-☐ Installation instructions
-☐ Performance testing
-☐ Security review
-☐ User testing
-☐ Export/import configuration
-☐ complete blocklist management
-☐ Improve dashboard UX
-☐ Stable firmware release
-☐ HTTPS toggle integration
+- Complete project README
+- Add setup and installation instructions
+- Consolidate architecture documentation into the README
+- Remove unused and duplicate code
+- Clean up debug and development leftovers
+- Validate runtime settings behavior
+- Improve startup reliability
+- Harden query-log JSON output
+- Review memory-management behavior
+- Final API cleanup
+- Final frontend cleanup
+- Final codebase scrub
+- Clean production build
+- Stable firmware release
 
 ---
+
+# Version 1.x - Post-release Improvments
+
+☐ Test Wi-Fi disconnect/reconnect recovery
+☐ Expand malformed DNS packet testing
+☐ Expand malformed HTTP request testing
+☐ Gather more detailed performance benchmarks
+☐ Improve large-list API/frontend behavior
+☐ Configuration export/import
+☐ OTA firmware updates
+☐ Additional DNS protocol support
+☐ Additional memory profiling and optimization
+☐ Additional dashboard UX improvements
+☐ Additional network-security hardening
+☐ HTTPS/TLS management interface
 
 # Version 2.0 — Hardware Expansion
 
