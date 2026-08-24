@@ -308,28 +308,6 @@ int DomainHashTable::size()
     return entryCount;
 }
 
-String DomainHashTable::get(int index)
-{
-    if(table == nullptr || domainPool == nullptr)
-        return "";
-
-    int found = 0;
-
-    for(size_t i = 0; i < tableSize; i++)
-    {
-        if(table[i].state == OCCUPIED)
-        {
-            if(found == index)
-            {
-                return String(&domainPool[table[i].domainOffset]);
-            }
-
-            found++;
-        }
-    }
-
-    return "";
-}
 
 String DomainHashTable::getSlot(size_t slot)
 {
@@ -346,10 +324,6 @@ String DomainHashTable::getSlot(size_t slot)
 }
 
 size_t DomainHashTable::getSlotCount()
-{
-    return tableSize;
-}
-size_t DomainHashTable::getTableCapacity()
 {
     return tableSize;
 }

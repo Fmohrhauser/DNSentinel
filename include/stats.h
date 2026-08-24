@@ -4,16 +4,11 @@
 #include <Arduino.h>
 
 
-
-
-int getCacheHits();
-void incrementCacheHits();
 String createStatsJSON();
 
 void incrementTotalRequests();
 void incrementBlockedRequests();
 void incrementForwardedRequests();
-void incrementCacheHits();
 
 float getBlockedPercent();
 float getForwardedPercent();
@@ -23,7 +18,5 @@ float getSuccessRate();
 
 unsigned long getQueriesPerMinute();
 
-
-float getSuccessRate();
 
 #endif

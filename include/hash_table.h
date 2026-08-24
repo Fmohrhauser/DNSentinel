@@ -21,7 +21,6 @@ public:
 
     int size();
 
-    String get(int index);
     String getSlot(size_t slot);
     size_t getSlotCount();
 

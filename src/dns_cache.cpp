@@ -133,7 +133,6 @@ bool cacheLookup(
     }
     unsigned long elapsedTime = millis() - lookupTime;
 
-    recordCacheMiss(elapsedTime);
 
     return false;
 }

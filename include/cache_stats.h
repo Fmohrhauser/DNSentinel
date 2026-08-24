@@ -4,17 +4,7 @@
 
 struct CacheStatistics
 {
-    unsigned long totalLookups;
-
     unsigned long hits;
-
-    unsigned long misses;
-
-    unsigned long totalLookupTime;
-
-    unsigned long longestLookup;
-
-    unsigned long shortestLookup;
 };
 
 extern CacheStatistics cacheStats;

@@ -29,13 +29,6 @@ void logQuery(
 );
 
 
-int getQueryCount();
-
-
-QueryLogEntry getQuery(
-    int index
-);
-
 
 void getLatestQueries(
     QueryLogEntry output[],

@@ -53,17 +53,6 @@ void logQuery(
     
 }
 
-int getQueryCount()
-{
-    return queryCount;
-}
-
-QueryLogEntry getQuery(
-    int index
-)
-{
-    return logs[index];
-}
 
 void getLatestQueries(
     QueryLogEntry output[],

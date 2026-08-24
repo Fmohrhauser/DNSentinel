@@ -2,8 +2,6 @@
 #define CONFIG_H
 
 #include <Arduino.h>
-#include <Preferences.h>
-#include <IPAddress.h>
 
 //User Configuration
 #define DEVICE_NAME "DNSentinel"
