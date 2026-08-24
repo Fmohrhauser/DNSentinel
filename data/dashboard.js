@@ -27,7 +27,7 @@ function updateStats()
 
             const rate = Number(data.queries_per_minute);
 
-            const rateElement = document.getElementById("query-race");
+            const rateElement = document.getElementById("query-rate");
 
             rateElement.innerHTML = rate;
 

@@ -40,10 +40,6 @@ void setup() {
 
 
   initTime();
-
-
-  startIDFWebServer();
-  startDNSServer();
  
   initCacheStats();
 
@@ -65,6 +61,9 @@ void setup() {
   
   loadBlocklist();
   loadWhitelist();
+
+  startIDFWebServer();
+  startDNSServer();
   
 }
 

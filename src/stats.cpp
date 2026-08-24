@@ -13,10 +13,13 @@ unsigned long lastMinuteRequests = 0;
 
 unsigned long peakQueriesPerMinute = 0;
 
+void updateMinuteCounter();
+
 
 void incrementTotalRequests()
 {
-  
+    updateMinuteCounter();
+
     totalRequests++;
     requestsThisMinute++;
 }

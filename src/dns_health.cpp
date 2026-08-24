@@ -43,7 +43,7 @@ String createDNSHealthJSON()
     unsigned long successfulRequests =
         upstreamRequests - upstreamFailures;
 
-    if(upstreamRequests > 0)
+    if(successfulRequests > 0)
     {
         averageLatency =
             (float)totalUpstreamLatency /

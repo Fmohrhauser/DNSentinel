@@ -131,6 +131,24 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
 
   Settings currentSettings = getSettings();
 
+  if(length < 2)
+  {
+    return false;
+  }
+
+  const byte expectedIDHigh = packet [0];
+  const byte expectedIDLow = packet[1];
+
+  while(upstreamUdp.parsePacket() > 0)
+  {
+    byte discardBuffer[MAX_DNS_PACKET_SIZE];
+
+    upstreamUdp.read(
+      discardBuffer,
+      MAX_DNS_PACKET_SIZE
+    );
+  }
+
  
   unsigned long timeoutStart = millis();
   upstreamRequests++;
@@ -149,23 +167,39 @@ bool forwardDNS(byte packet[], int length, byte response[], int &responseLength)
     int size = upstreamUdp.parsePacket();
 
     if(size){
+      int recievedLength =
+        upstreamUdp.read(
+          response,
+          MAX_DNS_PACKET_SIZE
+        );
+
+      if(recievedLength < 2)
+      {
+        continue;
+      }
+
+      if(
+        response[0] != expectedIDHigh ||
+        response[1] != expectedIDLow
+      )
+      {
+        DEBUG_PRINTLN("Ignored mismatched upstream DNS response");
+
+        continue;
+      }
+
       unsigned long latency =
         millis() - timeoutStart;
 
-      totalUpstreamLatency +=latency;
-
-      
+      totalUpstreamLatency += latency;
 
       lastUpstreamSuccess = millis();
 
       upstreamOnline = true;
       upstreamChecked = true;
 
-      responseLength =
-        upstreamUdp.read(
-          response,
-          MAX_DNS_PACKET_SIZE
-        );
+      responseLength = recievedLength;
+
       return true;
     }
   }
@@ -204,10 +238,45 @@ void handleDNS(){
     int questionLength = 0;
 
 
-    while(pos < bytesRead && questionLength < sizeof(question)) {
-      question[questionLength] = dnsPacket[pos];
-      questionLength++;
-      pos++;
+    while(pos < bytesRead && questionLength < sizeof(question))
+    {
+      byte labelLength = dnsPacket[pos];
+
+      question[questionLength++] = dnsPacket[pos++];
+
+      //zero length label marks the end of QNAME
+      if(labelLength == 0)
+      {
+        break;
+      }
+
+      //make sure the full label is still inside the packet
+      if(pos + labelLength > bytesRead)
+      {
+        return;
+      }
+
+      // make sure it fits in the question buffer
+      if(questionLength + labelLength > sizeof(question))
+      {
+        return;
+      }
+
+      for(int i = 0; i < labelLength; i++)
+      {
+        question[questionLength++] = dnsPacket[pos++];
+      }
+    }
+
+    // QTYPE + QCLASS must follow the QNAME
+    if(pos + 4 > bytesRead)
+    {
+      return;
+    }
+
+    for(int i = 0; i < 4; i++)
+    {
+      question[questionLength++] = dnsPacket[pos++];
     }
 
     if(pos < bytesRead)
@@ -215,6 +284,7 @@ void handleDNS(){
       return;
     }
 
+    pos = 0;
 
     String domain = readDomain(question, questionLength, pos);
 
