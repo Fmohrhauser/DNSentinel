@@ -9,21 +9,23 @@ function updateLogs()
             table.innerHTML = "";
 
             sortQueries(limitQueries(logs)).forEach(query => {
-                    let time = (query.timestamp)
+                const tr = document.createElement("tr");
 
-                let row = `
-                    <tr>
-                        <td>${time}</td>
-                        <td>${query.domain}</td>
-                        <td>
-                            <span class="action ${query.action.toLowerCase().replaceAll(" ", "_")}">
-                                ${query.action}
-                            </span>
-                        </td>
-                    </tr>
-                `;
+                const domainCell = document.createElement("td");
+                domainCell.textContent = query.domain;
 
-                table.innerHTML += row;
+                const actionCell = document.createElement("td");
+                actionCell.textContent = query.action;
+
+                const timeCell = document.createElement("td");
+                timeCell.textContent = query.timestamp;
+
+                tr.appendChild(domainCell);
+                tr.appendChild(actionCell);
+                tr.appendChild(timeCell);
+
+                table.appendChild(tr);
+                
             });
             filterQueries();
         });

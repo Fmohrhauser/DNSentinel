@@ -137,9 +137,25 @@ String escapeJSONString(const String& input)
                 break;
 
             default:
-                output += c;
-                break;
+                if((unsigned char)c < 0x20)
+                {
+                    char buffer[7];
 
+                    snprintf(
+                        buffer,
+                        sizeof(buffer),
+                        "\\u%04X",
+                        (unsigned char)c
+                    );
+
+                    output += buffer;
+                }
+                else
+                {
+                    output += c;
+                }
+
+                break;
         }
     }
 

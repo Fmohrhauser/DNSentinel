@@ -9,7 +9,6 @@ const int MAX_AUTH_FAILURES = 5;
 const unsigned long AUTH_LOCKOUT_MS = 30000;
 
 int failedAuthAttempts = 0;
-unsigned long authLockoutUntil = 0;
 unsigned long authLockoutStarted = 0;
 bool authLockoutActive = false;
 
@@ -18,7 +17,7 @@ bool authLockedOut()
     if(!authLockoutActive)
         return false;
 
-    if(millis() - authLockoutStarted >= authLockoutUntil)
+    if(millis() - authLockoutStarted >= AUTH_LOCKOUT_MS)
     {
         authLockoutActive = false;
         failedAuthAttempts = 0;
@@ -34,8 +33,7 @@ void recordAuthFailure()
 
     if(failedAuthAttempts >= MAX_AUTH_FAILURES)
     {
-        authLockoutUntil =
-            millis() + AUTH_LOCKOUT_MS;
+        authLockoutStarted = millis();
         authLockoutActive = true;
         DEBUG_PRINTLN("Security: authentication lockout triggered");
     }
@@ -44,7 +42,7 @@ void recordAuthFailure()
 void resetAuthFailures()
 {
     failedAuthAttempts = 0;
-    authLockoutUntil = 0;
+    authLockoutStarted = 0;
     authLockoutActive = false;
 }
 
