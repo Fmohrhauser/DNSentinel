@@ -547,6 +547,93 @@ Open the ESP32's IP address in a browser to access the management interface.
 
 ---
 
+## Enabling Authentication
+
+Authentication is disabled by default until credentials are configured.
+
+In PowerShell, first set the ESP32's IP address:
+
+~~~powershell
+$ip = "YOUR_ESP_IP"
+~~~
+
+Then create the setup request:
+
+~~~powershell
+$body = @{
+    username = "YOUR_USERNAME"
+    password = "YOUR_PASSWORD"
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+    -Uri "http://$ip/api/auth/setup" `
+    -Method Post `
+    -ContentType "application/json" `
+    -Body $body
+~~~
+
+Usernames must be between 3 and 32 characters.
+
+Passwords must be between 8 and 64 characters.
+
+If setup succeeds, DNSentinel returns:
+
+~~~text
+Authentication enabled
+~~~
+
+The setup endpoint only works while authentication is disabled. Once credentials have been configured, password changes must use the authenticated password-change endpoint.
+
+## Changing the Password
+
+First create a PowerShell credential prompt:
+
+~~~powershell
+$cred = Get-Credential
+~~~
+
+Enter the current DNSentinel username and password.
+
+Then create the HTTP Basic Authentication header:
+
+~~~powershell
+$pair = "$($cred.UserName):$($cred.GetNetworkCredential().Password)"
+$encoded = [Convert]::ToBase64String(
+    [System.Text.Encoding]::ASCII.GetBytes($pair)
+)
+
+$headers = @{
+    Authorization = "Basic $encoded"
+}
+~~~
+
+Choose the new password:
+
+~~~powershell
+$body = @{
+    newPassword = "YOUR_NEW_PASSWORD"
+} | ConvertTo-Json
+~~~
+
+Then send the password-change request:
+
+~~~powershell
+Invoke-RestMethod `
+    -Uri "http://$ip/api/auth/password" `
+    -Method Post `
+    -Headers $headers `
+    -ContentType "application/json" `
+    -Body $body
+~~~
+
+If successful, DNSentinel returns:
+
+~~~text
+Password updated
+~~~
+
+---
+
 # Blocking Modes
 
 DNSentinel currently supports three blocking modes.

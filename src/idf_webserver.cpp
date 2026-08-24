@@ -1501,7 +1501,7 @@ esp_err_t authPasswordChangeAPIHandler(httpd_req_t *req)
         sendErrorIDF(
             req,
             "400 Bad Request",
-            "Missing current or new password"
+            "Missing new password"
         );
 
         return ESP_OK;
