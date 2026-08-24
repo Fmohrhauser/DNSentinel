@@ -4,6 +4,10 @@ DNSentinel is an embedded DNS sinkhole built on the ESP32-S3, specifically the N
 
 The project is designed as a self-contained network appliance rather than a simple DNS forwarding script. DNSentinel implements DNS packet handling, domain filtering, persistent configuration, statistics, response caching, authentication, and a web management interface directly on the microcontroller.
 
+## Dashboard
+
+![DNSentinel Dashboard](docs/images/dashboard.png)
+
 ## Features
 
 ### DNS Filtering
@@ -110,6 +114,14 @@ The frontend is built with:
 - JavaScript
 
 The HTTP backend uses the ESP-IDF HTTP server rather than the Arduino `WebServer` implementation used during earlier development.
+
+## Query Monitoring
+
+![DNSentinel Queries Page](docs/images/queries.png)
+
+## Blocklist Management
+
+![DNSentinel Blocklist](docs/images/blocklist.png)
 
 ### Configuration
 
