@@ -93,12 +93,12 @@ String readRequestBody(httpd_req_t *req, size_t maxBodySize, bool &tooLarge){
 
     char buffer[512];
 
-    int totalRecieved = 0;
+    int totalReceived = 0;
 
-    while(totalRecieved < bodyLength)
+    while(totalReceived < bodyLength)
     {
         int remaining =
-            bodyLength - totalRecieved;
+            bodyLength - totalReceived;
         
         int bytesToRead =
             remaining < sizeof(buffer)
@@ -120,7 +120,7 @@ String readRequestBody(httpd_req_t *req, size_t maxBodySize, bool &tooLarge){
             received
         );
 
-        totalRecieved += received;
+        totalReceived += received;
     }
 
     return body;

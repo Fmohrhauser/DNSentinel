@@ -21,7 +21,7 @@ struct Settings
     BlockingMode blockingMode;
     String redirectIP;
 
-    //Authenication
+    // Authentication
     bool authEnabled;
     String username;
     String passwordHash;

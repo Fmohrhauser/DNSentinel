@@ -440,7 +440,6 @@ DNSentinel/
 │
 ├── platformio.ini
 ├── README.md
-├── ARCHITECTURE.md
 └── ROADMAP.md
 ~~~
 
@@ -707,6 +706,6 @@ The current version represents a functional embedded DNS appliance rather than o
 # Status
 
 **Current target:** ESP32-S3 N16R8  
-**Current stage:** Functional submission build
+**Current stage:** Version 1.0 stable release
 
-Core DNS filtering, caching, blocklist/whitelist management, persistent settings, authentication, statistics, and the web management interface are implemented and integrated.
+Core DNS filtering, caching, blocklist/whitelist management, persistent settings, authentication, statistics, and the web management interface are implemented and integrated in the Version 1.0 release.

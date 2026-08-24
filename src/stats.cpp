@@ -35,34 +35,7 @@ void incrementForwardedRequests()
     forwardedRequests++;
 }
 
-float getBlockedPercent()
-{
-    if(totalRequests == 0)
-        return 0;
-    
-    return  (blockedRequests * 100.0f) /
-        totalRequests;
-}
 
-float getForwardedPercent()
-{
-    if(totalRequests == 0)
-        return 0;
-    
-    return
-        (forwardedRequests * 100.0f) /
-        totalRequests;
-}
-
-float getCachePercent()
-{
-    if(totalRequests == 0)
-        return 0;
-
-    return
-        (cacheStats.hits * 100.0f) /
-        totalRequests;
-}
 
 void updateMinuteCounter()
 {
@@ -90,23 +63,6 @@ unsigned long getQueriesPerMinute()
     return lastMinuteRequests;
 }
 
-float getSuccessRate()
-{
-    if(totalRequests == 0)
-        return 100;
-
-    return
-        (forwardedRequests * 100.0f) /
-        totalRequests;
-}
-
-
-
-unsigned long getPeakQueriesPerMinute()
-{
-    return peakQueriesPerMinute;
-}
-
 
 String createStatsJSON()
 {
@@ -128,28 +84,8 @@ String createStatsJSON()
     json += cacheStats.hits;
     json += ",";
 
-    json += "\"blocked_percent\":";
-    json += String(getBlockedPercent(),1);
-    json += ",";
-
-    json += "\"forwarded_percent\":";
-    json += String(getForwardedPercent(),1);
-    json += ",";
-
-    json += "\"cache_percent\":";
-    json += String(getCachePercent(),1);
-    json += ",";
-
-    json += "\"success_rate\":";
-    json += String(getSuccessRate(),1);
-    json += ",";
-
     json += "\"queries_per_minute\":";
     json += getQueriesPerMinute();
-    json += ",";
-
-    json += "\"peak_queries_per_minute\":";
-    json += getPeakQueriesPerMinute();
 
     json += "}";
 

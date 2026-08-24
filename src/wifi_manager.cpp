@@ -14,7 +14,7 @@ void connectWiFi(){
 
   Serial.println();
 
-  Serial.println("Wifi connected!");
+  Serial.println("Wi-Fi connected!");
   Serial.print("ESP32 IP address: ");
   Serial.println(WiFi.localIP());
 }

@@ -107,7 +107,7 @@
 
 - Migrate from Arduino `WebServer` to ESP-IDF `esp_http_server`
 - Port basic GET route registration
-- Port authenticated GET routes'
+- Port authenticated GET routes
 - Port POST request body handling
 - Port LittleFS static file hosting
 - Verify dashboard compatibility
@@ -121,7 +121,7 @@
 # Version 0.7 - Security Hardening
 
 - Create formal security threat model
-- Define DNSentinel security guarentees
+- Define DNSentinel security guarantees
 - Review local-network attack surface
 - Review authentication design
 - Research HTTPS/TLS deployment
@@ -136,7 +136,7 @@
 - Test malformed DNS packets
 - Test request flooding behavior
 - Review storage of WiFi credentials and secrets
-- Add security-ralated logging where appropriate
+- Add security-related logging where appropriate
 
 ---
 
@@ -177,7 +177,7 @@
 
 ---
 
-# Version 1.x - Post-release Improvments
+# Version 1.x - Post-release Improvements
 
 ☐ Test Wi-Fi disconnect/reconnect recovery
 ☐ Expand malformed DNS packet testing

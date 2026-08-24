@@ -26,7 +26,7 @@ void initTime()
     {
         if(millis() - startTime >= timeout)
         {
-            DEBUG_PRINTLN("NTP syncronization timed out");
+            DEBUG_PRINTLN("NTP synchronization timed out");
             return;
         }
 
